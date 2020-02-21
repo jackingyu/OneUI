@@ -9,7 +9,7 @@ import { generateIndexRouter } from "@/utils/util"
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/user/login', '/user/register', '/user/register-result','/user/alteration'] // no redirect whitelist
+const whiteList = ['/user/login', '/user/register', '/user/register-result', '/user/alteration'] // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
@@ -22,33 +22,63 @@ router.beforeEach((to, from, next) => {
     } else {
       if (store.getters.permissionList.length === 0) {
         store.dispatch('GetPermissionList').then(res => {
-              const menuData = res.result.menu;
-              console.log(res.message)
-              if (menuData === null || menuData === "" || menuData === undefined) {
-                return;
-              }
-              let constRoutes = [];
-              constRoutes = generateIndexRouter(menuData);
-              // 添加主界面路由
-              store.dispatch('UpdateAppRouter',  { constRoutes }).then(() => {
-                // 根据roles权限生成可访问的路由表
-                // 动态添加可访问路由表
-                router.addRoutes(store.getters.addRouters)
-                const redirect = decodeURIComponent(from.query.redirect || to.path)
-                if (to.path === redirect) {
-                  // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-                  next({ ...to, replace: true })
-                } else {
-                  // 跳转到目的路由
-                  next({ path: redirect })
+          let menuData = res.result.menu;
+          console.log(res.message)
+          if (menuData === null || menuData === "" || menuData === undefined) {
+            return;
+          }
+          let constRoutes = [];
+          if (process.env.VUE_APP_DEBUG) {
+            let hookInsertMenu = {
+              "id": "80015b2769fc80648e92d04e84ca059d",
+              "path": "/masterdata",
+              "name": "masterdata",
+              "component": "layouts/RouteView",
+              "route": "1",
+              "redirect": null,
+              "meta": {
+                "title": "基础数据管理",
+                "icon": "setting",
+                "keepAlive": false,
+                "internalOrExternal": false
+              },
+              "children": [
+                {
+                  "id": "90015b2769fc80648e92d04e84ca059d",
+                  "path": "/masterdata/material",
+                  "name": "masterdata-material",
+                  "component": "masterdata/material",
+                  "meta": {
+                    "title": "物料管理",
+                    "keepAlive": false,
+                    "internalOrExternal": false
+                  }
                 }
-              })
-            })
+              ]
+            }
+            menuData = [menuData[0], hookInsertMenu, ...menuData.slice(1)]
+          }
+          constRoutes = generateIndexRouter(menuData);
+          // 添加主界面路由
+          store.dispatch('UpdateAppRouter', { constRoutes }).then(() => {
+            // 根据roles权限生成可访问的路由表
+            // 动态添加可访问路由表
+            router.addRoutes(store.getters.addRouters)
+            const redirect = decodeURIComponent(from.query.redirect || to.path)
+            if (to.path === redirect) {
+              // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
+              next({ ...to, replace: true })
+            } else {
+              // 跳转到目的路由
+              next({ path: redirect })
+            }
+          })
+        })
           .catch(() => {
-           /* notification.error({
-              message: '系统提示',
-              description: '请求用户信息失败，请重试！'
-            })*/
+            // notification.error({
+            //   message: '系统提示',
+            //   description: '请求用户信息失败，请重试！'
+            // })
             store.dispatch('Logout').then(() => {
               next({ path: '/user/login', query: { redirect: to.fullPath } })
             })

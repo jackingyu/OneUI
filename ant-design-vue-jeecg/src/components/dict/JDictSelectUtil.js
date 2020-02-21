@@ -31,7 +31,7 @@ export function filterDictText(dictOptions, text) {
   //--update-begin----author:sunjianlei---date:20191025------for:修复字典替换方法在字典没有加载完成之前报错的问题、修复没有找到字典时返回空值的问题---
   if (dictOptions instanceof Array) {
     for (let dictItem of dictOptions) {
-      if (text === dictItem.value) {
+      if (text == dictItem.value) {
         return dictItem.text
       }
     }
