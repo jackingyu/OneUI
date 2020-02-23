@@ -6,6 +6,7 @@ import 'nprogress/nprogress.css' // progress bar style
 import notification from 'ant-design-vue/es/notification'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { generateIndexRouter } from "@/utils/util"
+import HMenus from "@/hooks/menu.js"
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -28,36 +29,7 @@ router.beforeEach((to, from, next) => {
             return;
           }
           let constRoutes = [];
-          if (process.env.VUE_APP_DEBUG) {
-            let hookInsertMenu = {
-              "id": "80015b2769fc80648e92d04e84ca059d",
-              "path": "/masterdata",
-              "name": "masterdata",
-              "component": "layouts/RouteView",
-              "route": "1",
-              "redirect": null,
-              "meta": {
-                "title": "基础数据管理",
-                "icon": "setting",
-                "keepAlive": false,
-                "internalOrExternal": false
-              },
-              "children": [
-                {
-                  "id": "90015b2769fc80648e92d04e84ca059d",
-                  "path": "/masterdata/material",
-                  "name": "masterdata-material",
-                  "component": "masterdata/material",
-                  "meta": {
-                    "title": "物料管理",
-                    "keepAlive": false,
-                    "internalOrExternal": false
-                  }
-                }
-              ]
-            }
-            menuData = [menuData[0], hookInsertMenu, ...menuData.slice(1)]
-          }
+          menuData = [menuData[0], ...HMenus, ...menuData.slice(1)]
           constRoutes = generateIndexRouter(menuData);
           // 添加主界面路由
           store.dispatch('UpdateAppRouter', { constRoutes }).then(() => {

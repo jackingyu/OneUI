@@ -98,12 +98,13 @@ const loadCategoryData = (params) => getAction("/sys/category/loadAllData", para
 
 
 // ✨ Bussiness Start - by Fred
-import Rest from '@/config/api-mapper.js'
+import Rest, { sloter } from '@/config/api-mapper.js'
 
 const createMaterial = (params) => postAction(Rest.CREATE_MATERIAL.url, params);
 const updateMaterial = (params) => putAction(Rest.UPDATE_MATERIAL.url, params);
 
-
+const getBanks = (params) => getAction(Rest.GET_BANKS.url, params);
+const getSubBanks = (bankId, params) => getAction(sloter(Rest.GET_SUBANKS.url, bankId), params);
 
 // ✨ Bussiness END - by Fred
 
@@ -158,6 +159,8 @@ export {
   // ✨ Bussiness Start - by Fred
   createMaterial,
   updateMaterial,
+  getBanks,
+  getSubBanks
   // ✨ Bussiness END - by Fred
 }
 

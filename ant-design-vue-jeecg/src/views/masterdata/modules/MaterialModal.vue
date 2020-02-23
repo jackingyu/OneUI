@@ -30,6 +30,7 @@
         </a-form-item>
         <a-form-item label="物料代码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input
+            :disabled="!!model.id"
             placeholder="请输入物料代码"
             v-decorator="['materialCode', validatorRules.materialCode]"
           />
