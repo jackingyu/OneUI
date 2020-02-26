@@ -4,6 +4,7 @@ import { ACCESS_TOKEN, USER_NAME, USER_INFO, USER_AUTH, SYS_BUTTON_AUTH } from "
 import { welcome } from "@/utils/util"
 import { queryPermissionsByUser } from '@/api/api'
 import { getAction } from '@/api/manage'
+import HMenus from "@/hooks/menu.js"
 
 const user = {
   state: {
@@ -120,36 +121,7 @@ const user = {
           sessionStorage.setItem(USER_AUTH, JSON.stringify(authData));
           sessionStorage.setItem(SYS_BUTTON_AUTH, JSON.stringify(allAuthData));
           if (menuData && menuData.length > 0) {
-            if (process.env.VUE_APP_DEBUG) {
-              let hookInsertMenu = {
-                "id": "80015b2769fc80648e92d04e84ca059d",
-                "path": "/masterdata",
-                "name": "masterdata",
-                "component": "layouts/RouteView",
-                "route": "1",
-                "redirect": null,
-                "meta": {
-                  "title": "基础数据管理",
-                  "icon": "setting",
-                  "keepAlive": false,
-                  "internalOrExternal": false
-                },
-                "children": [
-                  {
-                    "id": "90015b2769fc80648e92d04e84ca059d",
-                    "path": "/masterdata/material",
-                    "name": "masterdata-material",
-                    "component": "masterdata/material",
-                    "meta": {
-                      "title": "物料管理",
-                      "keepAlive": false,
-                      "internalOrExternal": false
-                    }
-                  }
-                ]
-              }
-              menuData = [menuData[0], hookInsertMenu, ...menuData.slice(1)]
-            }
+            menuData = [menuData[0], ...HMenus, ...menuData.slice(1)]
             commit('SET_PERMISSIONLIST', menuData)
           } else {
             reject('getPermissionList: permissions must be a non-null array !')

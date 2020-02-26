@@ -5,26 +5,8 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="物料名称">
-              <j-input placeholder="物料名称" v-model="queryParam.materialName"></j-input>
-            </a-form-item>
-          </a-col>
-
-          <a-col :md="6" :sm="8">
-            <a-form-item label="物料组">
-              <!-- <a-select v-model="queryParam.materialGroupCode" placeholder="请选择物料组">
-                <a-select-option value>请选择</a-select-option>
-                <a-select-option
-                  v-for="(item, index) in materialGroups"
-                  :key="index"
-                  :value="item.materialGroupCode"
-                >{{item.materialGroupName}}</a-select-option>
-              </a-select>-->
-              <j-dict-select-tag
-                v-model="queryParam.materialGroupCode"
-                placeholder="请选择物料组"
-                dictCode="material_group"
-              />
+            <a-form-item label="项目名称">
+              <j-input placeholder="请输入项目名称" v-model="queryParam.customerName"></j-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -44,7 +26,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增物料</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -80,7 +62,7 @@
       </a-table>
     </div>
     <!-- table区域-end -->
-    <!-- <material-modal ref="modalForm" @ok="modalFormOk"></material-modal> -->
+    <material-modal ref="modalForm" @ok="modalFormOk"></material-modal>
   </a-card>
 </template>
 
@@ -94,7 +76,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
-  name: 'Material',
+  name: 'Customer',
   mixins: [JeecgListMixin],
   components: {
     MaterialModal,
@@ -102,7 +84,7 @@ export default {
   },
   data() {
     return {
-      description: '这是用户管理页面',
+      description: '',
       queryParam: {},
       materialGroups: [],
       oneTimeFlags: [],
@@ -118,34 +100,20 @@ export default {
             }
           },*/
         {
-          title: '物料名称',
+          title: '项目代码',
           align: 'center',
-          width: 100,
-          dataIndex: 'materialName'
+          width: 160,
+          dataIndex: 'projectCode'
         },
         {
-          title: '物料代码',
+          title: '项目名称',
           align: 'center',
-          dataIndex: 'materialCode',
-          width: 120
+          dataIndex: 'projectName'
         },
         {
-          title: '物料分组',
+          title: '客户名称',
           align: 'center',
-          dataIndex: 'materialGroupCode',
-          width: 120,
-          customRender: text => {
-            return filterDictText(this.materialGroups, text) || text
-          }
-        },
-        {
-          title: '是否一次性物料',
-          align: 'center',
-          dataIndex: 'oneTimeFlag',
-          width: 120,
-          customRender: text => {
-            return filterDictText(this.oneTimeFlags, text) || text
-          }
+          dataIndex: 'customerName'
         },
         {
           title: '操作',
@@ -156,13 +124,7 @@ export default {
         }
       ],
       url: {
-        imgerver: window._CONFIG['domianURL'] + '/sys/common/view',
-        syncUser: '/process/extActProcess/doSyncUser',
-        list: Rest.GET_MATERIALS.url,
-        delete: '/sys/user/delete',
-        deleteBatch: '/sys/user/deleteBatch',
-        exportXlsUrl: '/sys/user/exportXls',
-        importExcelUrl: 'sys/user/importExcel'
+        list: Rest.GET_CUSTOMERS.url
       }
     }
   },
@@ -186,69 +148,19 @@ export default {
     },
     handleEdit(record) {
       this.$router.push({
-        path: '/masterdata/material-info',
+        path: '/masterdata/project-info',
         query: {
           ...record
         }
       })
     },
     handleAdd() {
-      this.$router.push({ path: '/masterdata/material-info' })
-    },
-    getAvatarView: function(avatar) {
-      return this.url.imgerver + '/' + avatar
-    },
-
-    batchFrozen: function(status) {
-      if (this.selectedRowKeys.length <= 0) {
-        this.$message.warning('请选择一条记录！')
-        return false
-      } else {
-        let ids = ''
-        let that = this
-        let isAdmin = false
-        that.selectionRows.forEach(function(row) {
-          if (row.username == 'admin') {
-            isAdmin = true
-          }
-        })
-        if (isAdmin) {
-          that.$message.warning('管理员账号不允许此操作,请重新选择！')
-          return
-        }
-        that.selectedRowKeys.forEach(function(val) {
-          ids += val + ','
-        })
-        that.$confirm({
-          title: '确认操作',
-          content: '是否' + (status == 1 ? '解冻' : '冻结') + '选中账号?',
-          onOk: function() {
-            frozenBatch({ ids: ids, status: status }).then(res => {
-              if (res.success) {
-                that.$message.success(res.message)
-                that.loadData()
-                that.onClearSelected()
-              } else {
-                that.$message.warning(res.message)
-              }
-            })
-          }
-        })
-      }
-    },
-    handleMenuClick(e) {
-      if (e.key == 1) {
-        this.batchDel()
-      } else if (e.key == 2) {
-        this.batchFrozen(2)
-      } else if (e.key == 3) {
-        this.batchFrozen(1)
-      }
+      this.$router.push({ path: '/masterdata/project-info' })
     },
     handleDelete(id) {}
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 @import '~@assets/less/common.less';
 </style>
