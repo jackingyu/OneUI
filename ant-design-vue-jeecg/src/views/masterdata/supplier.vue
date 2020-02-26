@@ -186,7 +186,7 @@ export default {
       this.$router.push({
         path: '/masterdata/supplier-info',
         query: {
-          ...record
+          id: record.id
         }
       })
     },

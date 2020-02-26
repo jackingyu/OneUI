@@ -3,6 +3,7 @@
     v-if="async"
     showSearch
     labelInValue
+    :disabled="disabled"
     @search="loadData"
     :placeholder="placeholder"
     v-model="selectedAsyncValue"
@@ -19,6 +20,7 @@
   <a-select
     v-else
     showSearch
+    :disabled="disabled"
     :placeholder="placeholder"
     optionFilterProp="children"
     style="width: 100%"
@@ -51,6 +53,7 @@ export default {
       default: '请选择',
       required: false
     },
+    searchWord: String,
     dict: String,
     dictOptions: Array,
     async: Boolean,
@@ -90,6 +93,11 @@ export default {
         this.initDictData()
       }
     },
+    searchWord: {
+      handler(val) {
+        this.loadData(val || '')
+      }
+    },
     dictOptions: {
       handler() {
         this.options = this.dictOptions
@@ -99,9 +107,7 @@ export default {
   methods: {
     initSelectValue() {
       if (this.async) {
-        if (!this.selectedAsyncValue || !this.selectedAsyncValue.key || this.selectedAsyncValue.key != this.value) {
-          console.log('这才请求后台//=>')
-        }
+        this.selectedValue = this.value
       } else {
         this.selectedValue = this.value
       }
@@ -173,7 +179,7 @@ export default {
           }
         }
       } else {
-        this.loadData()
+        this.loadData(this.searchWord || '')
       }
     },
     filterOption(input, option) {

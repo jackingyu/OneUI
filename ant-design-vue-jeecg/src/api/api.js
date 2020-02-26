@@ -106,6 +106,11 @@ const updateMaterial = (params) => putAction(Rest.UPDATE_MATERIAL.url, params);
 const getBanks = (params) => getAction(Rest.GET_BANKS.url, params);
 const getSubBanks = (bankId, params) => getAction(sloter(Rest.GET_SUBANKS.url, bankId), params);
 
+const createVendor = (params) => postAction(Rest.CREATE_SUPPLIER.url, params);
+const updateVendor = (params) => putAction(Rest.UPDATE_SUPPLIER.url, params);
+
+const getSuplier = (id, params) => getAction(sloter(Rest.GET_SUPPLIER.url, id), params);
+
 // ✨ Bussiness END - by Fred
 
 export {
@@ -160,7 +165,10 @@ export {
   createMaterial,
   updateMaterial,
   getBanks,
-  getSubBanks
+  getSubBanks,
+  createVendor,
+  updateVendor,
+  getSuplier
   // ✨ Bussiness END - by Fred
 }
 

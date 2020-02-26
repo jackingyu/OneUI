@@ -5,12 +5,9 @@
         <customer-form ref="repository" :showSubmit="false" />
       </a-card>
 
-      <div class="drawer-bootom-button" v-show="!disableSubmit">
-        <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
-          <a-button style="margin-right: .8rem">取消</a-button>
-        </a-popconfirm>
-        <a-button @click="handleSubmit" type="primary" :loading="confirmLoading">提交</a-button>
-      </div>
+      <footer-tool-bar>
+        <a-button type="primary" @click="validate" :loading="loading">提交</a-button>
+      </footer-tool-bar>
     </div>
   </page-view>
 </template>

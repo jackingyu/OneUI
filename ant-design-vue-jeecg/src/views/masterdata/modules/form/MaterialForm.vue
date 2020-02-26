@@ -1,6 +1,6 @@
 <template>
   <a-spin :spinning="confirmLoading">
-    <a-form :form="form">
+    <a-form :form="form" >
       <a-form-item label="物料名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
         <a-input placeholder="请输入物料名称" v-decorator="['materialName', validatorRules.materialName]" />
       </a-form-item>
@@ -37,7 +37,7 @@
         />
       </a-form-item>
 
-      <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+      <a-form-item :wrapperCol="submitCol">
         <a-button @click="handleSubmit" type="primary" :loading="confirmLoading">提交</a-button>
       </a-form-item>
     </a-form>
@@ -102,6 +102,10 @@ export default {
       title: '操作',
       visible: false,
       model: {},
+      submitCol: {
+        xs: { span: 24 },
+        sm: { span: 5, offset: 5 }
+      },
       labelCol: {
         xs: { span: 24 },
         sm: { span: 5 }

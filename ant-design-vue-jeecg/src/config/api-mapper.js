@@ -30,9 +30,17 @@ export default {
     url: `/masterdata/vendors`,
     method: 'GET'
   },
+  GET_SUPPLIER: {
+    url: `/masterdata/vendors/%@`,
+    method: 'GET'
+  },
   CREATE_SUPPLIER: {
     url: `/masterdata/vendors`,
     method: 'POST'
+  },
+  UPDATE_SUPPLIER: {
+    url: `/masterdata/vendors`,
+    method: 'PUT'
   },
   DEL_SUPPLIER_BANK: {
     url: `/masterdata/vendors/bankaccount/%@`,
