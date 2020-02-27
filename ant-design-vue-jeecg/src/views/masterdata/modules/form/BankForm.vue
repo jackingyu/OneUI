@@ -162,9 +162,9 @@ export default {
       if (item && item.subBranchId) {
         return [
           {
-            text: item.bank_name,
-            title: item.bank_name,
-            value: `${item.bank_id}`
+            text: item.subBranchName,
+            title: item.subBranchName,
+            value: item.subBranchId
           }
         ]
       }
@@ -192,6 +192,7 @@ export default {
     newMember() {
       this.data.push({
         key: `${-new Date()}`,
+        id: '',
         bankAccount: '',
         bankAccountName: '',
         bankId: '',
