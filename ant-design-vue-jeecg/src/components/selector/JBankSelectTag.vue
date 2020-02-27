@@ -2,7 +2,6 @@
   <a-select
     v-if="async"
     showSearch
-    labelInValue
     :disabled="disabled"
     @search="loadData"
     :placeholder="placeholder"
@@ -50,7 +49,7 @@ export default {
     disabled: Boolean,
     value: {
       type: String,
-      default: '请选择',
+      default: '',
       required: false
     },
     searchWord: String,
@@ -75,6 +74,7 @@ export default {
   },
   created() {
     this.initDictData()
+    window.T = this
   },
   watch: {
     value: {
@@ -94,20 +94,21 @@ export default {
       }
     },
     searchWord: {
+      immediate: false,
       handler(val) {
         this.loadData(val || '')
       }
     },
     dictOptions: {
-      handler() {
-        this.options = this.dictOptions
+      handler(val) {
+        // this.options = this.dictOptions
       }
     }
   },
   methods: {
     initSelectValue() {
       if (this.async) {
-        this.selectedValue = this.value
+        this.selectedAsyncValue = this.value
       } else {
         this.selectedValue = this.value
       }
@@ -190,8 +191,8 @@ export default {
       this.callback()
     },
     handleAsyncChange(selectedObj) {
+      this.selectedValue = selectedObj
       this.selectedAsyncValue = selectedObj
-      this.selectedValue = selectedObj ? selectedObj.key : ''
       this.callback()
     },
     callback() {

@@ -111,7 +111,7 @@ export default {
                 arData = values.data
               }
               let banks = arData.map(item => {
-                return pick(item, 'bankAccount', 'bankAccountName', 'bankId', 'subBranchId')
+                return pick(item, 'id', 'bankAccount', 'bankAccountName', 'bankId', 'subBranchId')
               })
               postData.bankAccounts = banks
               that.submitSupplier(postData)
