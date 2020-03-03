@@ -22,49 +22,31 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <a-form-item label="物料名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input
-            placeholder="请输入物料名称"
-            v-decorator="['materialName', validatorRules.materialName]"
-          />
+        <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input placeholder="请输入项目名称" v-decorator="['projectName', validatorRules.projectName]" />
         </a-form-item>
-        <a-form-item label="物料代码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input
+
+        <a-form-item label="公司" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select
+            v-decorator="['companyId']"
+            placeholder="请选择公司"
+            :filterOption="false"
+            :showSearch="true"
+            @search="fetchList"
+            @change="handleChange"
+            :notFoundContent="fetching ? undefined : null"
             :disabled="!!model.id"
-            placeholder="请输入物料代码"
-            v-decorator="['materialCode', validatorRules.materialCode]"
-          />
+          >
+            <a-spin v-if="fetching" slot="notFoundContent" size="small" />
+            <a-select-option
+              v-for="company in companies"
+              :key="company.companyCode"
+            >{{company.companyName}}</a-select-option>
+          </a-select>
         </a-form-item>
 
-        <template v-if="!model.id"></template>
-
-        <a-form-item label="物料组" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag
-            v-decorator="['materialGroupCode']"
-            :triggerChange="true"
-            placeholder="请选择物料组"
-            :type="'select'"
-            dictCode="material_group"
-          />
-        </a-form-item>
-
-        <a-form-item label="物料描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-textarea
-            placeholder="请输入物料描述"
-            :rows="4"
-            v-decorator="[ 'materialDescription']"
-            :readOnly="!!model.id"
-          />
-        </a-form-item>
-
-        <a-form-item label="一次性物料" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag
-            v-decorator="['oneTimeFlag', {}]"
-            placeholder
-            :type="'radio'"
-            :triggerChange="true"
-            dictCode="material_property"
-          />
+        <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-textarea placeholder="请输入备注" :rows="4" v-decorator="[ 'comments']" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -80,18 +62,22 @@
 
 <script>
 import pick from 'lodash.pick'
+import debounce from 'lodash/debounce'
 import moment from 'moment'
 import Vue from 'vue'
 // 引入搜索部门弹出框的组件
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { getAction } from '@/api/manage'
 import { disabledAuthFilter } from '@/utils/authFilter'
-import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
+import { createProject, updateProject, getCompanies } from '@/api/api'
 export default {
-  name: 'projectModal',
+  name: 'materialModal',
   data() {
+    this.fetchList = debounce(this.fetchList, 800)
     return {
-      materialGroups: [],
+      companies: [],
+      companyId: '',
+      fetching: false,
       modalWidth: 800,
       drawerWidth: 700,
       modaltoggleFlag: true,
@@ -99,11 +85,11 @@ export default {
       disableSubmit: false,
       dateFormat: 'YYYY-MM-DD',
       validatorRules: {
-        materialName: {
+        projectName: {
           rules: [
             {
               required: true,
-              message: '请输入物料名称!'
+              message: '请输入项目名称!'
             },
             {
               validator: void 0
@@ -141,11 +127,27 @@ export default {
   created() {
     const token = Vue.ls.get(ACCESS_TOKEN)
     this.headers = { 'X-Access-Token': token }
+    this.fetchList()
   },
   methods: {
     isDisabledAuth(code) {
       return disabledAuthFilter(code)
     },
+    fetchList(word = '') {
+      this.fetching = true
+      let that = this
+      getCompanies({ companyName: word })
+        .then(res => {
+          if (res.success) {
+            let { records = [] } = res.result
+            this.companies = records
+          }
+        })
+        .finally(() => {
+          this.fetching = false
+        })
+    },
+    handleChange() {},
     //窗口最大化切换
     toggleScreen() {
       if (this.modaltoggleFlag) {
@@ -166,14 +168,9 @@ export default {
       that.visible = true
       that.model = Object.assign({}, record)
       that.$nextTick(() => {
-        that.form.setFieldsValue(pick(this.model, 'materialName', 'materialCode', 'materialDescription'))
+        that.form.setFieldsValue(pick(this.model, 'projectName', 'comments'))
         that.form.setFieldsValue({
-          materialGroupCode: isNaN(this.model.materialGroupCode)
-            ? this.model.materialGroupCode
-            : '' + this.model.materialGroupCode
-        })
-        that.form.setFieldsValue({
-          oneTimeFlag: isNaN(this.model.oneTimeFlag) ? this.model.oneTimeFlag : '' + this.model.oneTimeFlag
+          companyId: isNaN(this.model.companyId) ? this.model.companyId : '' + this.model.companyId
         })
       })
     },
@@ -190,18 +187,16 @@ export default {
         if (!err) {
           console.log('-😪--values---', values)
           let formData = {
-            materialCode: values.materialCode,
-            materialDescription: values.materialDescription,
-            materialGroupCode: values.materialGroupCode,
-            materialName: values.materialName,
-            oneTimeFlag: values.oneTimeFlag
+            projectName: values.projectName,
+            companyId: values.companyId,
+            comments: values.comments
           }
           let obj
           if (!this.model.id) {
-            obj = createMaterial(formData)
+            obj = createProject(formData)
           } else {
             formData.id = this.model.id
-            obj = updateMaterial(formData)
+            obj = updateProject(formData)
           }
           obj
             .then(res => {

@@ -93,15 +93,70 @@ const hookMenu = [
       },
       {
         "id": "94945b2769fc80648e92d04e84ca059d",
-        "path": "/masterdata/project-info",
-        "name": "masterdata-projectinfo",
-        "component": "masterdata/project-info",
+        "path": "/purchase/contracts",
+        "name": "purchase-contracts",
+        "component": "purchase/contracts",
         "meta": {
-          "title": "项目信息",
+          "title": "采购合同列表",
           "keepAlive": false,
           "internalOrExternal": false
         }
-      }
+      },
+      {
+        "id": "99445b2769fc80648e92d04e84ca059d",
+        "path": "/purchase/contract",
+        "name": "purchase-contract",
+        "component": "purchase/contract",
+        "meta": {
+          "title": "采购合同信息",
+          "keepAlive": false,
+          "internalOrExternal": false
+        }
+      },
+      {
+        "id": "99995b2769fc80648e92d04e84ca059d",
+        "path": "/payment/payments",
+        "name": "payment-payments",
+        "component": "payment/payments",
+        "meta": {
+          "title": "供应商付款",
+          "keepAlive": false,
+          "internalOrExternal": false
+        }
+      },
+      {
+        "id": "99885b2769fc80648e92d04e84ca059d",
+        "path": "/payment/payment",
+        "name": "payment-payment",
+        "component": "payment/payment",
+        "meta": {
+          "title": "供应商付款信息",
+          "keepAlive": false,
+          "internalOrExternal": false
+        }
+      },
+      {
+        "id": "94445b2769fc80648e92d04e84ca059d",
+        "path": "/invoice/invoices",
+        "name": "invoice-invoices",
+        "component": "invoice/invoices",
+        "meta": {
+          "title": "供应商发票",
+          "keepAlive": false,
+          "internalOrExternal": false
+        }
+      },
+      {
+        "id": "94335b2769fc80648e92d04e84ca059d",
+        "path": "/invoice/invoice",
+        "name": "invoice-invoice",
+        "component": "invoice/invoice",
+        "meta": {
+          "title": "供应商发票信息",
+          "keepAlive": false,
+          "internalOrExternal": false
+        }
+      },
     ]
   }
 ]

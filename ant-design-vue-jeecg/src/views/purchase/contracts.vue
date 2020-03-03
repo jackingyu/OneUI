@@ -42,6 +42,7 @@
         :loading="loading"
         @change="handleTableChange"
       >
+        <span slot="date" slot-scope="text, record">{{record.beginDate + '~' + record.endDate}}</span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <!-- <a-divider type="vertical" /> -->
@@ -62,13 +63,13 @@
       </a-table>
     </div>
     <!-- table区域-end -->
-    <project-modal ref="modalForm" @ok="modalFormOk"></project-modal>
+    <!-- <project-modal ref="modalForm" @ok="modalFormOk"></project-modal> -->
   </a-card>
 </template>
 
 <script>
 import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
-import ProjectModal from './modules/ProjectModal'
+// import ProjectModal from './modules/ProjectModal'
 import { putAction } from '@/api/manage'
 import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
@@ -76,10 +77,10 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
-  name: 'Customer',
+  name: 'Contracts',
   mixins: [JeecgListMixin],
   components: {
-    ProjectModal,
+    // ProjectModal,
     JInput
   },
   data() {
@@ -89,31 +90,33 @@ export default {
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
-        /*{
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
-          },*/
         {
-          title: '项目代码',
+          title: '公司ID',
           align: 'center',
           width: 160,
-          dataIndex: 'id'
+          dataIndex: 'companyId'
         },
         {
-          title: '项目名称',
+          title: '合同名称',
           align: 'center',
-          dataIndex: 'projectName'
+          dataIndex: 'contractTitle'
         },
         {
-          title: '客户名称',
+          title: '联络人',
           align: 'center',
-          dataIndex: 'company'
+          dataIndex: 'contactPerson'
+        },
+        {
+          title: '联络人电话',
+          align: 'center',
+          dataIndex: 'contactPhone'
+        },
+        {
+          title: '合同有效期',
+          align: 'center',
+          scopedSlots: {
+            customRender: 'date'
+          }
         },
         {
           title: '操作',
@@ -124,7 +127,7 @@ export default {
         }
       ],
       url: {
-        list: Rest.GET_PROJECTS.url
+        list: Rest.GET_CONTRACTS.url
       }
     }
   },
@@ -147,7 +150,7 @@ export default {
       })
     },
     handleEdit(record) {
-      this.$refs.modalForm.edit(record)
+      // this.$refs.modalForm.edit(record)
       // this.$router.push({
       //   path: '/masterdata/project-info',
       //   query: {
@@ -156,8 +159,8 @@ export default {
       // })
     },
     handleAdd() {
-      this.$refs.modalForm.add()
-      // this.$router.push({ path: '/masterdata/project-info' })
+      // this.$refs.modalForm.add()
+      this.$router.push({ path: '/purchase/contract' })
     },
     handleDelete(id) {}
   }
