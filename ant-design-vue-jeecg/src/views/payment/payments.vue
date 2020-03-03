@@ -6,7 +6,20 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
             <a-form-item label="项目名称">
-              <j-input placeholder="请输入项目名称" v-model="queryParam.projectName"></j-input>
+              <j-dict-select-tag
+                v-model="queryParam.vendorCode"
+                placeholder="请选择材料商或者分包商"
+                dictCode="vendor_group"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="12">
+            <a-form-item label>
+              <a-range-picker
+                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                format="YYYY-MM-DD"
+                :placeholder="['开始时间', '结束时间']"
+              />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -42,6 +55,7 @@
         :loading="loading"
         @change="handleTableChange"
       >
+        <span slot="date" slot-scope="text, record">{{record.beginDate + '~' + record.endDate}}</span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <!-- <a-divider type="vertical" /> -->
@@ -62,13 +76,13 @@
       </a-table>
     </div>
     <!-- table区域-end -->
-    <project-modal ref="modalForm" @ok="modalFormOk"></project-modal>
+    <!-- <project-modal ref="modalForm" @ok="modalFormOk"></project-modal> -->
   </a-card>
 </template>
 
 <script>
 import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
-import ProjectModal from './modules/ProjectModal'
+// import ProjectModal from './modules/ProjectModal'
 import { putAction } from '@/api/manage'
 import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
@@ -76,10 +90,10 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
-  name: 'Customer',
+  name: 'Payments',
   mixins: [JeecgListMixin],
   components: {
-    ProjectModal,
+    // ProjectModal,
     JInput
   },
   data() {
@@ -89,31 +103,31 @@ export default {
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
-        /*{
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
-          },*/
         {
-          title: '项目代码',
+          title: '付款单编号',
           align: 'center',
           width: 160,
           dataIndex: 'id'
         },
         {
-          title: '项目名称',
+          title: '付款时间',
           align: 'center',
-          dataIndex: 'projectName'
+          dataIndex: 'paymentDate'
         },
         {
-          title: '客户名称',
+          title: '付款金额',
           align: 'center',
-          dataIndex: 'company'
+          dataIndex: 'paymentAmount'
+        },
+        {
+          title: '付款方式',
+          align: 'center',
+          dataIndex: 'paymentMethodCode'
+        },
+        {
+          title: '状态',
+          align: 'center',
+          dataIndex: 'comments'
         },
         {
           title: '操作',
@@ -124,7 +138,7 @@ export default {
         }
       ],
       url: {
-        list: Rest.GET_PROJECTS.url
+        list: Rest.GET_VENDORPAYMENTS.url
       }
     }
   },
@@ -147,7 +161,7 @@ export default {
       })
     },
     handleEdit(record) {
-      this.$refs.modalForm.edit(record)
+      // this.$refs.modalForm.edit(record)
       // this.$router.push({
       //   path: '/masterdata/project-info',
       //   query: {
@@ -156,7 +170,7 @@ export default {
       // })
     },
     handleAdd() {
-      this.$refs.modalForm.add()
+      // this.$refs.modalForm.add()
       // this.$router.push({ path: '/masterdata/project-info' })
     },
     handleDelete(id) {}

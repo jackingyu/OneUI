@@ -100,16 +100,35 @@ const loadCategoryData = (params) => getAction("/sys/category/loadAllData", para
 // ✨ Bussiness Start - by Fred
 import Rest, { sloter } from '@/config/api-mapper.js'
 
+const getMaterials = (params) => getAction(Rest.GET_MATERIALS.url, params);
 const createMaterial = (params) => postAction(Rest.CREATE_MATERIAL.url, params);
 const updateMaterial = (params) => putAction(Rest.UPDATE_MATERIAL.url, params);
+
+const getContracts = (params) => getAction(Rest.GET_CONTRACTS.url, params);
+const createContract = (params) => postAction(Rest.CREATE_CONTRACT.url, params);
+const updateContract = (params) => putAction(Rest.UPDATE_CONTRACT.url, params);
 
 const getBanks = (params) => getAction(Rest.GET_BANKS.url, params);
 const getSubBanks = (bankId, params) => getAction(sloter(Rest.GET_SUBANKS.url, bankId), params);
 
+const getVendors = (params) => getAction(Rest.GET_SUPPLIERS.url, params);
 const createVendor = (params) => postAction(Rest.CREATE_SUPPLIER.url, params);
 const updateVendor = (params) => putAction(Rest.UPDATE_SUPPLIER.url, params);
 
 const getSuplier = (id, params) => getAction(sloter(Rest.GET_SUPPLIER.url, id), params);
+
+
+const getProjects = (params) => getAction(Rest.GET_PROJECTS.url, params);
+const createProject = (params) => postAction(Rest.CREATE_PROJECT.url, params);
+const updateProject = (params) => putAction(Rest.UPDATE_PROJECT.url, params);
+
+
+const getVendorPayment = (params) => getAction(Rest.GET_VENDORPAYMENTS.url, params);
+const getVendorPayments = (params) => getAction(Rest.GET_VENDORPAYMENT.url, params);
+const createVendorPayment = (params) => postAction(Rest.CREATE_VENDORPAYMENT.url, params);
+const updateVendorPayment = (params) => putAction(Rest.UPDATE_VENDORPAYMENT.url, params);
+
+const getCompanies = (params) => getAction(Rest.GET_COMPANIES.url, params);
 
 // ✨ Bussiness END - by Fred
 
@@ -162,13 +181,26 @@ export {
   getSystemSubmenu,
   loadCategoryData,
   // ✨ Bussiness Start - by Fred
+  getMaterials,
   createMaterial,
   updateMaterial,
   getBanks,
   getSubBanks,
+  getVendors,
   createVendor,
   updateVendor,
-  getSuplier
+  getSuplier,
+  getCompanies,
+  getContracts,
+  createContract,
+  updateContract,
+  getProjects,
+  createProject,
+  updateProject,
+  getVendorPayment,
+  getVendorPayments,
+  createVendorPayment,
+  updateVendorPayment
   // ✨ Bussiness END - by Fred
 }
 

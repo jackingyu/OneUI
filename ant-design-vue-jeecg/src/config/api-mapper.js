@@ -68,6 +68,10 @@ export default {
     url: `/masterdata/projects`,
     method: 'POST'
   },
+  UPDATE_PROJECT: {
+    url: `/masterdata/projects`,
+    method: 'PUT'
+  },
   UPDATE_PROJECT_BANK: {
     url: `/masterdata/projects`,
     method: 'PUT'
@@ -80,5 +84,61 @@ export default {
   GET_SUBANKS: {
     url: `/masterdata/banks/%@`,
     method: 'GET'
+  },
+  //----- 公司 -- 
+  GET_COMPANIES: {
+    url: `/company`,
+    method: 'GET'
+  },
+  //---- 合同
+  GET_CONTRACTS: {
+    url: '/purchasecontracts',
+    method: 'GET'
+  },
+  CREATE_CONTRACT: {
+    url: '/purchasecontracts',
+    method: 'POST'
+  },
+  UPDATE_CONTRACT: {
+    url: '/purchasecontracts',
+    method: 'PUT'
+  },
+  //---- 供应商结算
+  GET_VENDORPAYMENT: {
+    url: '/vendorpayments/%@',
+    method: 'GET'
+  },
+  GET_VENDORPAYMENTS: {
+    url: '/vendorpayments',
+    method: 'GET'
+  },
+  CREATE_VENDORPAYMENT: {
+    url: '/vendorpayments',
+    method: 'POST'
+  },
+  UPDATE_VENDORPAYMENT: {
+    url: '/vendorpayments',
+    method: 'PUT'
+  },
+  //---- 供应商发票
+  GET_VENDORINVOICE: {
+    url: '/vendorinvoices/%@',
+    method: 'GET'
+  },
+  GET_VENDORINVOICES: {
+    url: '/vendorinvoices',
+    method: 'GET'
+  },
+  CREATE_VENDORINVOICES: {
+    url: '/vendorinvoices',
+    method: 'POST'
+  },
+  UPDATE_VENDORINVOICES: {
+    url: '/vendorinvoices',
+    method: 'PUT'
+  },
+  DEL_VENDORINVOICE: {
+    url: '/vendorinvoices/%@',
+    method: 'DELETE'
   },
 }

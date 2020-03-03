@@ -74,7 +74,6 @@ export default {
   },
   created() {
     this.initDictData()
-    window.T = this
   },
   watch: {
     value: {

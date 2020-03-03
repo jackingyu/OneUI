@@ -89,16 +89,6 @@ export default {
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
-        /*{
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
-          },*/
         {
           title: '客户代码',
           align: 'center',

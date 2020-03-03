@@ -80,7 +80,7 @@
       </a-table>
     </div>
     <!-- table区域-end -->
-    <!-- <material-modal ref="modalForm" @ok="modalFormOk"></material-modal> -->
+    <material-modal ref="modalForm" @ok="modalFormOk"></material-modal>
   </a-card>
 </template>
 
@@ -185,6 +185,7 @@ export default {
       })
     },
     handleEdit(record) {
+      // this.$refs.modalForm.edit(record)
       this.$router.push({
         path: '/masterdata/material-info',
         query: {
