@@ -20,7 +20,7 @@
             <a-form-item :label="item.label">
               <template v-if="item.inputType=='select'">
                 <a-select
-                  v-decorator="[`${item.valueKey}`,{rules: [{ required: true, message: '请选择'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请选择'+item.label}]}]"
                   :placeholder="`请选择${item.label}`"
                   :filterOption="false"
                   :disabled="item.readOnly"
@@ -30,10 +30,9 @@
                   :showSearch="!item.onlySelect"
                 >
                   <a-select-option
-                    v-if="(selectOptions[item.valueKey])"
-                    v-for="option in selectOptions[item.valueKey]"
-                    :key="option.key"
-                    :value="option.key"
+                    v-for="option in (selectOptions[item.valueKey]||[])"
+                    :key="''+option.key"
+                    :value="''+option.key"
                   >{{option.label}}</a-select-option>
                 </a-select>
               </template>
@@ -122,7 +121,9 @@
                 />
               </template>
               <template v-else>
-                <span v-text="item.evalue?item.evalue(form):item.value"></span>
+                <span
+                  v-text="item.evalue?item.evalue(form.getFieldValue('unitPrice'),form.getFieldValue('quantity')):item.value"
+                ></span>
               </template>
             </a-form-item>
           </a-col>
@@ -138,22 +139,6 @@ import pick from 'lodash.pick'
 import moment from 'moment'
 import { getMaterials } from '@/api/api'
 import { formItems } from './formOptions'
-const demoData = {
-  unitPrice: '100',
-  quantity: '33',
-  contractRowNum: 10,
-  materialGroupCode: '2',
-  materialCode: { key: 'M6', label: '测试物料6' },
-  comments: '合同内容',
-  unitCode: '1',
-  taxRate: { key: 6.25, label: '6.25‰', value: 6.25 },
-  acceptanceCriteria: 'YE',
-  contractSchedule: '180天',
-  qualityStandard: 'ISO9001',
-  paymentMethodCode: '1',
-  paymentTerm: '合同期前'
-}
-
 export default {
   name: 'RowProjectModal',
   props: {
@@ -177,7 +162,7 @@ export default {
       title: '操作',
       visible: false,
       contractType: this.type,
-      model: demoData,
+      model: {},
       selectOptions: {
         taxRate: [
           {
@@ -199,15 +184,58 @@ export default {
   },
   methods: {
     add() {
-      this.edit({ ...demoData })
+      this.edit({})
     },
     edit(record) {
       this.form.resetFields()
       this.model = Object.assign({}, record)
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue(this.model)
+        paymentMethodCode
+        this.form.setFieldsValue(
+          pick(
+            this.model,
+            'unitPrice',
+            'quantity',
+            'itemNo',
+            'comments',
+            'taxRate',
+            'acceptanceCriteria',
+            'contractSchedule',
+            'qualityStandard',
+            'paymentTerm'
+          )
+        )
+        this.form.setFieldsValue({
+          materialGroupCode: record.materialGroupCode,
+          unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode,
+          paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
+        })
+        if (record.materialId) {
+          this.form.setFieldsValue({
+            materialCode: {
+              key: record.materialId,
+              label: record.materialName
+            }
+          })
+        }
       })
+      // const demoData = {
+      //   unitPrice: '100',
+      //   quantity: '33',
+      //   itemNo: 10,
+      //   materialGroupCode: '2',
+      //   materialCode: { key: 'M6', label: '测试物料6' },
+      //   comments: '合同内容',
+      //   unitCode: '1',
+      //   taxRate: '0.225',
+      //   // taxRate: { key: 6.25, label: '6.25‰', value: 6.25 },
+      //   acceptanceCriteria: 'YE',
+      //   contractSchedule: '180天',
+      //   qualityStandard: 'ISO9001',
+      //   paymentMethodCode: '1',
+      //   paymentTerm: '合同期前'
+      // }
     },
     close() {
       this.$emit('close')
@@ -220,7 +248,7 @@ export default {
           this.confirmLoading = true
           let postData = {
             ...values,
-            taxRate: values.taxRate.key,
+            // taxRate: values.taxRate.key,
             materialCode: values.materialCode.key,
             materialName: values.materialCode.label
           }
@@ -256,8 +284,10 @@ export default {
             that.selectOptions['materialCode'] = res.result.records.map(item => {
               return {
                 node: item,
-                key: item.materialCode,
-                value: item.materialCode,
+                // key: item.materialCode,
+                // value: item.materialCode,
+                key: item.id,
+                value: item.id,
                 label: item.materialName
               }
             })

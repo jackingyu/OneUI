@@ -105,6 +105,7 @@ const createMaterial = (params) => postAction(Rest.CREATE_MATERIAL.url, params);
 const updateMaterial = (params) => putAction(Rest.UPDATE_MATERIAL.url, params);
 
 const getContracts = (params) => getAction(Rest.GET_CONTRACTS.url, params);
+const getContract = (id, params) => getAction(sloter(Rest.GET_CONTRACT.url, id), params);
 const createContract = (params) => postAction(Rest.CREATE_CONTRACT.url, params);
 const updateContract = (params) => putAction(Rest.UPDATE_CONTRACT.url, params);
 
@@ -192,6 +193,7 @@ export {
   getSuplier,
   getCompanies,
   getContracts,
+  getContract,
   createContract,
   updateContract,
   getProjects,

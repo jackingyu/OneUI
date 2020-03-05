@@ -1,7 +1,7 @@
 export const formItems = [
   {
     label: '合同行编号',
-    valueKey: 'contractRowNum',
+    valueKey: 'itemNo',
     inputType: 'input',
     readOnly: true,
     contractType: ''
@@ -11,6 +11,7 @@ export const formItems = [
     valueKey: 'materialGroupCode',
     inputType: 'dict',
     dict: 'material_group',
+    noTable: true,
     contractType: ''
   },
   {
@@ -51,15 +52,15 @@ export const formItems = [
     readOnly: true,
     justShow: true,
     contractType: '',
-    evalue: function (form) {
-      let val = form.getFieldValue('unitPrice') * form.getFieldValue('quantity')
+    evalue: function (unitPrice = 0, quantity = 0) {
+      let val = unitPrice * quantity
       return isNaN(val) ? 0 : val.toFixed(2)
     }
   },
   {
     label: '约定税率',
     valueKey: 'taxRate',
-    inputType: 'select',
+    inputType: 'input',
     contractType: ''
   },
   {
@@ -84,7 +85,7 @@ export const formItems = [
     label: '付款方式',
     valueKey: 'paymentMethodCode',
     inputType: 'dict',
-    dict: 'payment_method'
+    dict: 'payment_method',
   },
   {
     label: '付款节点',

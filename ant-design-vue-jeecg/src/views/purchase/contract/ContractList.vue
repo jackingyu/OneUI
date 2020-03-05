@@ -150,16 +150,14 @@ export default {
       })
     },
     handleEdit(record) {
-      // this.$refs.modalForm.edit(record)
-      // this.$router.push({
-      //   path: '/masterdata/project-info',
-      //   query: {
-      //     ...record
-      //   }
-      // })
+      this.$router.push({
+        path: '/purchase/contract',
+        query: {
+          id: record.id
+        }
+      })
     },
     handleAdd() {
-      // this.$refs.modalForm.add()
       this.$router.push({ path: '/purchase/contract' })
     },
     handleDelete(id) {}

@@ -95,6 +95,10 @@ export default {
     url: '/purchasecontracts',
     method: 'GET'
   },
+  GET_CONTRACT: {
+    url: '/purchasecontracts/%@',
+    method: 'GET'
+  },
   CREATE_CONTRACT: {
     url: '/purchasecontracts',
     method: 'POST'

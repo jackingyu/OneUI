@@ -24,7 +24,7 @@ import ContractRowProjectForm from './modules/form/ContractRowProjectForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getContracts, createContract, updateContract } from '@/api/api'
+import { getContract, getContracts, createContract, updateContract } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
@@ -56,19 +56,22 @@ export default {
   methods: {
     ...mapGetters(['userInfo']),
     initModel() {
-      // let { id = undefined } = this.$route.query
-      // if (id) {
-      //   getContracts(id).then(res => {
-      //     if (res.success) {
-      //       this.$refs.contract.edit(res.result)
-      //       this.$refs.rowproj.edit(res.result.bankAccounts)
-      //     } else {
-      //       this.$message.warning(res.message)
-      //     }
-      //   })
-      // } else {
-      //   this.$refs.contract.add()
-      // }
+      let { id = undefined } = this.$route.query
+      if (id) {
+        getContract(id).then(res => {
+          if (res.success) {
+            this.$refs.contract.edit({
+              ...res.result,
+              id
+            })
+            this.$refs.rowproj.edit(res.result.purchaseContractItems)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+      } else {
+        this.$refs.contract.add()
+      }
     },
     contractChange(v) {
       this.cType = v
@@ -112,6 +115,7 @@ export default {
             'contactPerson',
             'contactPhone'
           )
+          postData.companyId = '23'
           let spans = values.dateSpan.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
           postData.beginDate = spans[0]
           postData.endDate = spans[1]
@@ -144,6 +148,10 @@ export default {
                   return
                 }
               }
+              arData.map(item => {
+                item.materialId = item.materialCode
+                return item
+              })
               postData.purchaseContractItems = arData
               that.submitContract(postData)
             }

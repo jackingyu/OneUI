@@ -12,7 +12,7 @@
       <span slot="text" slot-scope="text, record, index">{{ text }}</span>
       <template slot="operation" slot-scope="text, record, index">
         <span>
-          <a @click="edit(record.key)">编辑</a>
+          <a @click="editRow(record.key)">编辑</a>
           <a-divider type="vertical" />
           <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
             <a>删除</a>
@@ -36,15 +36,34 @@ import RowProjectModal from '../RowProjectModal'
 import { getBanks } from '@/api/api'
 import { formItems } from '../formOptions'
 
-let columns = contractType => {
+import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
+
+let getColumns = thiz => {
+  let contractType = thiz.contractType
   return formItems
     .filter(item => !item.contractType || item.contractType == contractType)
+    .filter(item => !item.noTable)
     .map(item => {
+      let customRender = null
+      if (item.dict) {
+        customRender = text => {
+          return filterDictText(thiz.dicts[item.dict] || [], text) || text
+        }
+      } else if (item.valueKey == 'materialCode') {
+        customRender = (text, record) => {
+          return record.materialName
+        }
+      } else if (item.evalue) {
+        customRender = (text, record) => {
+          return item.evalue(record.unitPrice, record.quantity)
+        }
+      }
       return {
         title: item.label,
         dataIndex: item.valueKey,
         key: item.valueKey,
-        scopedSlots: { customRender: 'text' }
+        // scopedSlots: { customRender: 'text' },
+        customRender
       }
     })
 }
@@ -66,8 +85,12 @@ export default {
       loading: false,
       contractType: '',
       banks: [],
+      dicts: {},
       data: []
     }
+  },
+  mounted() {
+    this.initDictConfig()
   },
   watch: {
     data(n) {
@@ -76,7 +99,7 @@ export default {
   },
   computed: {
     columns() {
-      let cl = columns(this.contractType)
+      let cl = getColumns(this)
       return [
         ...cl,
         {
@@ -89,11 +112,18 @@ export default {
     }
   },
   methods: {
+    initDictConfig() {
+      initDictOptions('payment_method').then(res => {
+        if (res.success) {
+          this.dicts.payment_method = res.result
+        }
+      })
+    },
     contract(v) {
       this.contractType = v
     },
-    edit(banks) {
-      this.data = banks.map(item => {
+    edit(rows) {
+      this.data = rows.map(item => {
         return {
           ...item,
           key: item.key || item.id
@@ -148,18 +178,18 @@ export default {
       this.data = newData
       this.setForm(this.data)
     },
-    edit(key) {
-      let target = this.data.filter(item => item.key === key)[0]
+    editRow(key) {
+      let target = this.data.filter(item => item.key === key)[0] || {}
       target = {
         ...target,
         materialCode: {
           key: target.materialCode,
           label: target.materialName
-        },
-        taxRate: {
-          key: target.taxRate,
-          label: target.taxRate
         }
+        // taxRate: {
+        //   key: target.taxRate,
+        //   label: target.taxRate
+        // }
       }
       this.$refs.projectModal.edit(target)
     },

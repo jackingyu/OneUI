@@ -34,7 +34,7 @@
               :triggerChange="true"
               placeholder="请选择合同类型"
               dictCode="contract_type"
-              :readOnly="model&&model.id"
+              :disabled="model && !!model.id"
               @change="contractChange"
             />
           </a-form-item>
@@ -136,6 +136,7 @@
 </template>
 <script>
 import pick from 'lodash.pick'
+import moment from 'moment'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 
 import { getVendors, getProjects } from '@/api/api'
@@ -173,22 +174,21 @@ export default {
       this.model = record
       let that = this
       this.$nextTick(() => {
-        that.form.setFieldsValue(
-          pick(
-            record,
-            'id',
-            'vendorCode',
-            'vendorName',
-            'vendorGroupCode',
-            'contactPerson',
-            'contactPhone',
-            'contactPersonId',
-            'socialCreditCode',
-            'taxSubject',
-            'businessLicense',
-            'taxCode'
-          )
-        )
+        that.form.setFieldsValue(pick(record, 'id', 'contractCode', 'contractTitle', 'projectId'))
+        that.form.setFieldsValue({
+          contractTypeCode: '' + record.contractTypeCode
+        })
+        that.contractChange(record.contractTypeCode)
+        let vendor = record.vendor
+        that.form.setFieldsValue({
+          contactPhone: vendor.contactPhone,
+          contactPerson: vendor.contactPerson,
+          vendorId: '' + vendor.id
+        })
+
+        that.form.setFieldsValue({
+          dateSpan: [moment(record.beginDate), moment(record.endDate)]
+        })
       })
     },
     fetchVendorList(word) {
