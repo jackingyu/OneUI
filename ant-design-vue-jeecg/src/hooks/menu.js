@@ -95,7 +95,7 @@ const hookMenu = [
         "id": "94945b2769fc80648e92d04e84ca059d",
         "path": "/purchase/contracts",
         "name": "purchase-contracts",
-        "component": "purchase/contracts",
+        "component": "purchase/contract/ContractList",
         "meta": {
           "title": "采购合同列表",
           "keepAlive": false,
@@ -106,7 +106,7 @@ const hookMenu = [
         "id": "99445b2769fc80648e92d04e84ca059d",
         "path": "/purchase/contract",
         "name": "purchase-contract",
-        "component": "purchase/contract",
+        "component": "purchase/contract/Contract",
         "meta": {
           "title": "采购合同信息",
           "keepAlive": false,
@@ -115,9 +115,9 @@ const hookMenu = [
       },
       {
         "id": "99995b2769fc80648e92d04e84ca059d",
-        "path": "/payment/payments",
-        "name": "payment-payments",
-        "component": "payment/payments",
+        "path": "/purchase/payments",
+        "name": "purchase-payments",
+        "component": "purchase/payment/PaymentList",
         "meta": {
           "title": "供应商付款",
           "keepAlive": false,
@@ -126,9 +126,9 @@ const hookMenu = [
       },
       {
         "id": "99885b2769fc80648e92d04e84ca059d",
-        "path": "/payment/payment",
-        "name": "payment-payment",
-        "component": "payment/payment",
+        "path": "/purchase/payment",
+        "name": "purchase-payment",
+        "component": "purchase/payment/Payment",
         "meta": {
           "title": "供应商付款信息",
           "keepAlive": false,
@@ -137,9 +137,9 @@ const hookMenu = [
       },
       {
         "id": "94445b2769fc80648e92d04e84ca059d",
-        "path": "/invoice/invoices",
-        "name": "invoice-invoices",
-        "component": "invoice/invoices",
+        "path": "/purchase/invoices",
+        "name": "purchase-invoices",
+        "component": "purchase/invoice/InvoiceList",
         "meta": {
           "title": "供应商发票",
           "keepAlive": false,
@@ -148,9 +148,9 @@ const hookMenu = [
       },
       {
         "id": "94335b2769fc80648e92d04e84ca059d",
-        "path": "/invoice/invoice",
-        "name": "invoice-invoice",
-        "component": "invoice/invoice",
+        "path": "/purchase/invoice",
+        "name": "purchase-invoice",
+        "component": "purchase/invoice/Invoice",
         "meta": {
           "title": "供应商发票信息",
           "keepAlive": false,

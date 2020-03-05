@@ -6,20 +6,7 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
             <a-form-item label="项目名称">
-              <j-dict-select-tag
-                v-model="queryParam.vendorCode"
-                placeholder="请选择材料商或者分包商"
-                dictCode="vendor_group"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="12">
-            <a-form-item label>
-              <a-range-picker
-                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
-                format="YYYY-MM-DD"
-                :placeholder="['开始时间', '结束时间']"
-              />
+              <j-input placeholder="请输入项目名称" v-model="queryParam.projectName"></j-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -90,7 +77,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
-  name: 'Invoices',
+  name: 'ContractList',
   mixins: [JeecgListMixin],
   components: {
     // ProjectModal,
@@ -104,25 +91,32 @@ export default {
       oneTimeFlags: [],
       columns: [
         {
-          title: '发票号码',
+          title: '公司ID',
           align: 'center',
           width: 160,
-          dataIndex: 'invoiceNumber'
+          dataIndex: 'companyId'
         },
         {
-          title: '开票日期',
+          title: '合同名称',
           align: 'center',
-          dataIndex: 'invoiceDate'
+          dataIndex: 'contractTitle'
         },
         {
-          title: '票面金额',
+          title: '联络人',
           align: 'center',
-          dataIndex: 'amount'
+          dataIndex: 'contactPerson'
         },
         {
-          title: '税率',
+          title: '联络人电话',
           align: 'center',
-          dataIndex: 'taxRate'
+          dataIndex: 'contactPhone'
+        },
+        {
+          title: '合同有效期',
+          align: 'center',
+          scopedSlots: {
+            customRender: 'date'
+          }
         },
         {
           title: '操作',
@@ -133,7 +127,7 @@ export default {
         }
       ],
       url: {
-        list: Rest.GET_VENDORINVOICES.url
+        list: Rest.GET_CONTRACTS.url
       }
     }
   },
@@ -166,7 +160,7 @@ export default {
     },
     handleAdd() {
       // this.$refs.modalForm.add()
-      // this.$router.push({ path: '/masterdata/project-info' })
+      this.$router.push({ path: '/purchase/contract' })
     },
     handleDelete(id) {}
   }
