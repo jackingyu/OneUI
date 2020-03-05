@@ -28,7 +28,7 @@ import { getContracts, createContract, updateContract } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
-  name: 'ContractDetail',
+  name: 'Contract',
   components: {
     PageView,
     FooterToolBar,

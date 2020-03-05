@@ -90,7 +90,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
-  name: 'Payments',
+  name: 'PaymentList',
   mixins: [JeecgListMixin],
   components: {
     // ProjectModal,
