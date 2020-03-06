@@ -8,6 +8,13 @@
           </a-form-item>
           <a-form-item label="合同编号">
             <a-input
+              placeholder="请输入公司id"
+              v-decorator="[
+              'companyId',
+              {rules: [{ required: true, message: '请输入公司id', whitespace: false}]}
+            ]"
+            />
+            <a-input
               placeholder="请输入合同编号"
               v-decorator="[
               'contractCode',
@@ -180,11 +187,13 @@ export default {
         })
         that.contractChange(record.contractTypeCode)
         let vendor = record.vendor
-        that.form.setFieldsValue({
-          contactPhone: vendor.contactPhone,
-          contactPerson: vendor.contactPerson,
-          vendorId: '' + vendor.id
-        })
+        if (vendor) {
+          that.form.setFieldsValue({
+            contactPhone: vendor.contactPhone,
+            contactPerson: vendor.contactPerson,
+            vendorId: '' + vendor.id
+          })
+        }
 
         that.form.setFieldsValue({
           dateSpan: [moment(record.beginDate), moment(record.endDate)]

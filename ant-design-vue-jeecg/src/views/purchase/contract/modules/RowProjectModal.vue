@@ -72,7 +72,6 @@
                   <template v-if="item.suffix">
                     <j-dict-select-tag
                       slot="addonAfter"
-                      defaultValue=".com"
                       style="width: 80px"
                       v-if="item.suffix.inputType=='dict'"
                       v-decorator="[item.suffix.valueKey]"
@@ -183,8 +182,10 @@ export default {
     }
   },
   methods: {
-    add() {
-      this.edit({})
+    add(num) {
+      this.edit({
+        itemNo: num
+      })
     },
     edit(record) {
       this.form.resetFields()
@@ -247,6 +248,7 @@ export default {
         if (!err) {
           this.confirmLoading = true
           let postData = {
+            ...this.model,
             ...values,
             // taxRate: values.taxRate.key,
             materialCode: values.materialCode.key,
@@ -264,7 +266,7 @@ export default {
     searchWordSelect(word, key) {},
     onSelectChangeWithKey(val, key) {
       if (key == 'materialGroupCode') {
-        this.form.setFieldsValue({ materialCode: '' })
+        this.form.setFieldsValue({ materialCode: '-1', materialName: '请选择' })
         this.materialList('', val)
       }
     },
@@ -277,11 +279,12 @@ export default {
       let that = this
       getMaterials({
         materialGroupCode: materialGroupCode,
-        materialName: keyWord || this.model.materialName
+        materialName: keyWord
       })
         .then(res => {
           if (res.success) {
-            that.selectOptions['materialCode'] = res.result.records.map(item => {
+            let options = { ...that.selectOptions }
+            options.materialCode = res.result.records.map(item => {
               return {
                 node: item,
                 // key: item.materialCode,
@@ -291,6 +294,9 @@ export default {
                 label: item.materialName
               }
             })
+            that.selectOptions = options
+          } else {
+            that.selectOptions['materialCode'] = []
           }
         })
         .finally(() => {})

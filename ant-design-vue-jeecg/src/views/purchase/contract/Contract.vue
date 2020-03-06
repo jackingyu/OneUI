@@ -7,6 +7,10 @@
         <contract-row-project-form ref="rowproj" :showSubmit="false" />
       </a-card>
 
+      <a-card v-if="!!model.id" class="card" title="合同附件">
+        <attach-files-form ref="rowfiles" :showSubmit="false" />
+      </a-card>
+
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
         <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
@@ -21,6 +25,7 @@
 import pick from 'lodash.pick'
 import ContractForm from './modules/form/ContractForm'
 import ContractRowProjectForm from './modules/form/ContractRowProjectForm'
+import AttachFilesForm from './modules/form/AttachFilesForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
@@ -33,12 +38,14 @@ export default {
     PageView,
     FooterToolBar,
     ContractRowProjectForm,
-    ContractForm
+    ContractForm,
+    AttachFilesForm
   },
   data() {
     return {
       cType: '',
       loading: false,
+      model: {},
       rowFields: []
     }
   },
@@ -60,10 +67,11 @@ export default {
       if (id) {
         getContract(id).then(res => {
           if (res.success) {
-            this.$refs.contract.edit({
+            this.model = {
               ...res.result,
               id
-            })
+            }
+            this.$refs.contract.edit(this.model)
             this.$refs.rowproj.edit(res.result.purchaseContractItems)
           } else {
             this.$message.warning(res.message)
@@ -107,6 +115,7 @@ export default {
           let postData = pick(
             values,
             'id',
+            'companyId',
             'contractTitle',
             'contractCode',
             'projectId',
@@ -115,7 +124,6 @@ export default {
             'contactPerson',
             'contactPhone'
           )
-          postData.companyId = '23'
           let spans = values.dateSpan.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
           postData.beginDate = spans[0]
           postData.endDate = spans[1]
