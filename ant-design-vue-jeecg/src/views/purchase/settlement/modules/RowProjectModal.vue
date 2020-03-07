@@ -11,12 +11,7 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-row :gutter="24">
-          <a-col
-            v-for="(item, index) in formItems"
-            :key="index"
-            :xs="24"
-            :md="item.inputType=='textarea'?24: 8"
-          >
+          <a-col v-for="(item, index) in formItems" :key="index" :xs="24" :md="8">
             <a-form-item :label="item.label">
               <template v-if="item.inputType=='select'">
                 <a-select
@@ -138,17 +133,16 @@ import pick from 'lodash.pick'
 import moment from 'moment'
 import { getMaterials } from '@/api/api'
 import { formItems } from './formOptions'
-
 import FormFieldMixin from '@/mixins/FormFieldMixin'
 export default {
   name: 'RowProjectModal',
-  mixins: [FormFieldMixin],
   props: {
     type: {
       type: String,
       default: 'st'
     }
   },
+  mixins: [FormFieldMixin],
   watch: {
     type: function(n, o) {
       this.contractType = n
@@ -174,6 +168,9 @@ export default {
         edit: '/test/jeecgDemo/edit'
       }
     }
+  },
+  created() {
+    window.Z = this
   },
   methods: {
     add(num) {
@@ -202,8 +199,7 @@ export default {
         )
         this.form.setFieldsValue({
           materialGroupCode: record.materialGroupCode,
-          unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode,
-          paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
+          unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode
         })
         if (record.materialId) {
           this.form.setFieldsValue({
@@ -257,7 +253,7 @@ export default {
       this.close()
     },
     searchWordSelect(word, key) {
-      if (key == 'materialCode') {
+      if (key == 'materialId') {
         let code = this.form.getFieldValue('materialGroupCode')
         this.materialList({
           materialGroupCode: code,
@@ -284,7 +280,7 @@ export default {
     },
     materialList(params) {
       this.request({
-        key: 'materialCode',
+        key: 'materialId',
         funcName: 'GetMaterials',
         params
       })

@@ -1,15 +1,15 @@
 <template>
   <page-view>
     <div slot="route-view">
-      <a-card class="card">
-        <contract-form @contractChange="contractChange" ref="contract" :showSubmit="false" />
+      <a-card>
+        <settlement-form @contractChange="contractChange" ref="contract" :showSubmit="false" />
         <!-- table -->
-        <detail-list title="合同行项目">
-          <contract-row-project-form ref="rowproj" :showSubmit="false" />
+        <detail-list title="结算行项目">
+          <settlement-row-project-form ref="rowproj" :showSubmit="false" />
         </detail-list>
         <template v-if="!!model.id">
           <a-divider style="margin-bottom: 32px" />
-          <detail-list title="合同附件">
+          <detail-list v-if="!!model.id" title="结算附件">
             <attach-files-form ref="rowfiles" :showSubmit="false" />
           </detail-list>
         </template>
@@ -27,23 +27,23 @@
 
 <script>
 import pick from 'lodash.pick'
-import ContractForm from './modules/form/ContractForm'
-import ContractRowProjectForm from './modules/form/ContractRowProjectForm'
+import SettlementForm from './modules/form/SettlementForm'
+import SettlementRowProjectForm from './modules/form/SettlementRowProjectForm'
 import AttachFilesForm from './modules/form/AttachFilesForm'
+import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
-import DetailList from '@/components/tools/DetailList'
 import PageView from '@comp/layouts/PageView'
 import { getContract, getContracts, createContract, updateContract } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
-  name: 'Contract',
+  name: 'Settlement',
   components: {
     PageView,
     FooterToolBar,
-    ContractRowProjectForm,
-    ContractForm,
+    SettlementRowProjectForm,
+    SettlementForm,
     AttachFilesForm,
     DetailList
   },

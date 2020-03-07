@@ -25,7 +25,7 @@
       type="dashed"
       icon="plus"
       @click="newMember"
-    >新增行项目</a-button>
+    >上传附件</a-button>
     <row-project-modal :type="this.contractType" @submit="getRowData" ref="projectModal" />
   </a-form>
 </template>
@@ -38,38 +38,8 @@ import { formItems } from '../formOptions'
 
 import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
 
-let getColumns = thiz => {
-  let contractType = thiz.contractType
-  return formItems
-    .filter(item => !item.contractType || item.contractType == contractType)
-    .filter(item => !item.noTable)
-    .map(item => {
-      let customRender = null
-      if (item.dict) {
-        customRender = text => {
-          return filterDictText(thiz.dicts[item.dict] || [], text) || text
-        }
-      } else if (item.valueKey == 'materialCode') {
-        customRender = (text, record) => {
-          return record.materialName
-        }
-      } else if (item.evalue) {
-        customRender = (text, record) => {
-          return item.evalue(record.unitPrice, record.quantity)
-        }
-      }
-      return {
-        title: item.label,
-        dataIndex: item.valueKey,
-        key: item.valueKey,
-        // scopedSlots: { customRender: 'text' },
-        customRender
-      }
-    })
-}
-
 export default {
-  name: 'ContractRowProjectForm',
+  name: 'AttachFilesForm',
   components: {
     RowProjectModal
   },
@@ -86,7 +56,25 @@ export default {
       contractType: '',
       banks: [],
       dicts: {},
-      data: []
+      data: [],
+      columns: [
+        {
+          title: '附件名称',
+          dataIndex: 'name',
+          key: 'name'
+        },
+        {
+          title: '附件URL',
+          dataIndex: 'url',
+          key: 'url'
+        },
+        {
+          title: '操作',
+          key: 'action',
+          width: 120,
+          scopedSlots: { customRender: 'operation' }
+        }
+      ]
     }
   },
   mounted() {
@@ -96,20 +84,6 @@ export default {
   watch: {
     data(n) {
       this.setForm(this.data)
-    }
-  },
-  computed: {
-    columns() {
-      let cl = getColumns(this)
-      return [
-        ...cl,
-        {
-          title: '操作',
-          key: 'action',
-          width: 120,
-          scopedSlots: { customRender: 'operation' }
-        }
-      ]
     }
   },
   methods: {
@@ -175,16 +149,16 @@ export default {
       }
     },
     newMember() {
-      if (!this.contractType) {
-        this.$message.error('请先选择合同类型')
-        return
-      }
-      let MaxRowNum = this.data.map(item => item.itemNo).sort()
-      let maxCount = 0
-      if (MaxRowNum && MaxRowNum.length > 0) {
-        maxCount = MaxRowNum[MaxRowNum.length - 1]
-      }
-      this.$refs.projectModal.add(maxCount + 10)
+      // if (!this.contractType) {
+      //   this.$message.error('请先选择合同类型')
+      //   return
+      // }
+      // let MaxRowNum = this.data.map(item => item.itemNo).sort()
+      // let maxCount = 0
+      // if (MaxRowNum && MaxRowNum.length > 0) {
+      //   maxCount = MaxRowNum[MaxRowNum.length - 1]
+      // }
+      // this.$refs.projectModal.add(maxCount + 10)
     },
     remove(key) {
       const newData = this.data.filter(item => item.key !== key)

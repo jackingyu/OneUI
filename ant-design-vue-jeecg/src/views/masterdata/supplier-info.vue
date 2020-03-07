@@ -1,12 +1,14 @@
 <template>
   <page-view>
     <div slot="route-view">
-      <a-card class="card" title="基础信息" :bordered="false">
-        <supplier-form ref="supplier" :showSubmit="false" />
-      </a-card>
-      <!-- table -->
-      <a-card class="card" title="银行账号">
-        <bank-form ref="bank" :showSubmit="false" />
+      <a-card class="card">
+        <detail-list title="基础信息">
+          <supplier-form ref="supplier" :showSubmit="false" />
+        </detail-list>
+        <a-divider style="margin-bottom: 32px" />
+        <detail-list title="银行账号">
+          <bank-form ref="bank" :showSubmit="false" />
+        </detail-list>
       </a-card>
 
       <!-- fixed footer toolbar -->
@@ -25,14 +27,15 @@ import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
 import { getBanks, getSuplier, createVendor, updateVendor } from '@/api/api'
-
+import DetailList from '@/components/tools/DetailList'
 export default {
   name: 'AdvancedForm',
   components: {
     PageView,
     FooterToolBar,
     BankForm,
-    SupplierForm
+    SupplierForm,
+    DetailList
   },
   data() {
     return {

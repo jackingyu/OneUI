@@ -3,12 +3,7 @@
     <a-form-item v-show="false">
       <a-input v-decorator="['data']" />
     </a-form-item>
-    <a-table :columns="columns" :dataSource="data" :pagination="false">
-      <!-- <template
-        v-for="(col, i) in ['bankId', 'subBranchId','bankAccount','bankAccountName']"
-        :slot="col"
-        slot-scope="text, record, index"
-      >{{ text }}</template>-->
+    <a-table :columns="columns" :dataSource="data" :pagination="true">
       <span slot="text" slot-scope="text, record, index">{{ text }}</span>
       <template slot="operation" slot-scope="text, record, index">
         <span>
@@ -69,7 +64,7 @@ let getColumns = thiz => {
 }
 
 export default {
-  name: 'ContractRowProjectForm',
+  name: 'SettlementRowProjectForm',
   components: {
     RowProjectModal
   },
@@ -175,10 +170,6 @@ export default {
       }
     },
     newMember() {
-      if (!this.contractType) {
-        this.$message.error('请先选择合同类型')
-        return
-      }
       let MaxRowNum = this.data.map(item => item.itemNo).sort()
       let maxCount = 0
       if (MaxRowNum && MaxRowNum.length > 0) {
