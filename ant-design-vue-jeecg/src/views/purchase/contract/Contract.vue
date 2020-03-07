@@ -1,14 +1,18 @@
 <template>
   <page-view>
     <div slot="route-view">
-      <contract-form @contractChange="contractChange" ref="contract" :showSubmit="false" />
-      <!-- table -->
-      <a-card class="card" title="合同行项目">
-        <contract-row-project-form ref="rowproj" :showSubmit="false" />
-      </a-card>
-
-      <a-card v-if="!!model.id" class="card" title="合同附件">
-        <attach-files-form ref="rowfiles" :showSubmit="false" />
+      <a-card class="card">
+        <contract-form @contractChange="contractChange" ref="contract" :showSubmit="false" />
+        <!-- table -->
+        <detail-list title="合同行项目">
+          <contract-row-project-form ref="rowproj" :showSubmit="false" />
+        </detail-list>
+        <template v-if="!!model.id">
+          <a-divider style="margin-bottom: 32px" />
+          <detail-list title="合同附件">
+            <attach-files-form ref="rowfiles" :showSubmit="false" />
+          </detail-list>
+        </template>
       </a-card>
 
       <!-- fixed footer toolbar -->
@@ -28,6 +32,7 @@ import ContractRowProjectForm from './modules/form/ContractRowProjectForm'
 import AttachFilesForm from './modules/form/AttachFilesForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
+import DetailList from '@/components/tools/DetailList'
 import PageView from '@comp/layouts/PageView'
 import { getContract, getContracts, createContract, updateContract } from '@/api/api'
 import { formItems } from './modules/formOptions'
@@ -39,7 +44,8 @@ export default {
     FooterToolBar,
     ContractRowProjectForm,
     ContractForm,
-    AttachFilesForm
+    AttachFilesForm,
+    DetailList
   },
   data() {
     return {
@@ -57,9 +63,7 @@ export default {
   mounted() {
     this.initModel()
   },
-  created() {
-    window.TT = this
-  },
+  created() {},
   methods: {
     ...mapGetters(['userInfo']),
     initModel() {

@@ -1,10 +1,11 @@
 <template>
   <page-view>
     <div slot="route-view">
-      <a-card class="card" title="基础信息" :bordered="false">
-        <project-form ref="repository" :showSubmit="false" />
+      <a-card>
+        <detail-list title="基础信息">
+          <project-form ref="repository" :showSubmit="false" />
+        </detail-list>
       </a-card>
-
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
         <a-button>暂存</a-button>
@@ -19,9 +20,11 @@
 import ProjectForm from './modules/form/ProjectForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import PageView from '@comp/layouts/PageView'
+import DetailList from '@/components/tools/DetailList'
 export default {
   name: 'AdvancedForm',
   components: {
+    DetailList,
     PageView,
     FooterToolBar,
     ProjectForm

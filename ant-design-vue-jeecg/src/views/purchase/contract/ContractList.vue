@@ -5,8 +5,17 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="项目名称">
-              <j-input placeholder="请输入项目名称" v-model="queryParam.projectName"></j-input>
+            <a-form-item label="合同类型">
+              <j-dict-select-tag
+                v-model="queryParam.contractTypeCode"
+                placeholder="请选择合同类型"
+                dictCode="contract_type"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="12">
+            <a-form-item label="供应商名称">
+              <j-input placeholder="请输入供应商名称" v-model="queryParam.vendorName"></j-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">

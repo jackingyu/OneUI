@@ -1,19 +1,12 @@
 <template>
   <a-form :form="form" class="form">
-    <a-card class="card" title="基础信息" :bordered="false">
+    <detail-list title="基础信息">
       <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item style="display:none">
             <a-input v-decorator="['id']" />
           </a-form-item>
           <a-form-item label="合同编号">
-            <a-input
-              placeholder="请输入公司id"
-              v-decorator="[
-              'companyId',
-              {rules: [{ required: true, message: '请输入公司id', whitespace: false}]}
-            ]"
-            />
             <a-input
               placeholder="请输入合同编号"
               v-decorator="[
@@ -58,7 +51,8 @@
               @search="fetchProjectList"
             >
               <a-select-option
-                v-for="(project, index) in projects"
+                v-if="FormFieldOptions.projects"
+                v-for="(project, index) in FormFieldOptions.projects"
                 :key="index"
                 :value="project.id"
               >{{project.projectName}}</a-select-option>
@@ -74,20 +68,28 @@
             />
           </a-form-item>
         </a-col>
-        <!-- <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="状态">
-            <j-dict-select-tag
+        <a-col :lg="8" :md="12" :sm="24">
+          <a-form-item label="公司id">
+            <!-- <j-dict-select-tag
               v-decorator="[ 'status', {rules: [{ required: true, message: '请选择状态'}]} ]"
               :triggerChange="true"
               placeholder="请选择合同状态"
               dictCode="bpm_status"
               disabled
+            />-->
+            <a-input
+              placeholder="请输入公司id"
+              v-decorator="[
+              'companyId',
+              {rules: [{ required: true, message: '请输入公司id', whitespace: false}]}
+            ]"
             />
           </a-form-item>
-        </a-col>-->
+        </a-col>
       </a-row>
-    </a-card>
-    <a-card class="card" title="供应商信息" :bordered="false">
+    </detail-list>
+    <a-divider style="margin-bottom: 32px" />
+    <detail-list title="供应商信息">
       <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="供应商">
@@ -100,7 +102,7 @@
               @change="handleVendorChange"
             >
               <a-select-option
-                v-for="(vendor, index) in vendors"
+                v-for="(vendor, index) in (FormFieldOptions.vendors||[])"
                 :key="index"
                 :value="vendor.id"
               >{{vendor.vendorName}}</a-select-option>
@@ -135,24 +137,27 @@
           </a-form-item>
         </a-col>
       </a-row>
-    </a-card>
+    </detail-list>
     <a-form-item v-if="showSubmit">
       <a-button htmlType="submit">Submit</a-button>
     </a-form-item>
+    <a-divider style="margin-bottom: 32px" />
   </a-form>
 </template>
 <script>
 import pick from 'lodash.pick'
 import moment from 'moment'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
-
+import DetailList from '@/components/tools/DetailList'
 import { getVendors, getProjects } from '@/api/api'
-
+import FormFieldMixin from '@/mixins/FormFieldMixin'
 export default {
   name: 'ContractForm',
   components: {
-    JBankSelectTag
+    JBankSelectTag,
+    DetailList
   },
+  mixins: [FormFieldMixin],
   props: {
     showSubmit: {
       type: Boolean,
@@ -163,15 +168,13 @@ export default {
     return {
       form: this.$form.createForm(this),
       contractType: 'Null',
-      model: null,
+      model: {},
       vendors: [],
       projects: []
     }
   },
-  created() {
-    this.fetchVendorList()
-    this.fetchProjectList()
-    // contractTypeCode
+  mounted() {
+    this.fetchVendorList(this.model.vendorName)
   },
   methods: {
     add() {
@@ -182,9 +185,12 @@ export default {
       let that = this
       this.$nextTick(() => {
         that.form.setFieldsValue(pick(record, 'id', 'contractCode', 'contractTitle', 'projectId'))
-        that.form.setFieldsValue({
-          contractTypeCode: '' + record.contractTypeCode
-        })
+        if (record.contractTypeCode != undefined) {
+          that.form.setFieldsValue({
+            contractTypeCode: '' + record.contractTypeCode
+          })
+        }
+
         that.contractChange(record.contractTypeCode)
         let vendor = record.vendor
         if (vendor) {
@@ -194,29 +200,39 @@ export default {
             vendorId: '' + vendor.id
           })
         }
-
-        that.form.setFieldsValue({
-          dateSpan: [moment(record.beginDate), moment(record.endDate)]
-        })
+        if (ecord.beginDate) {
+          that.form.setFieldsValue({
+            dateSpan: [moment(record.beginDate), moment(record.endDate)]
+          })
+        }
       })
     },
+    initFields() {
+      return [
+        {
+          key: 'projects',
+          funcName: 'GetProjects',
+          params: {}
+        }
+      ]
+    },
     fetchVendorList(word) {
-      getVendors()
-        .then(res => {
-          if (res.success) {
-            this.vendors = res.result.records
-          }
-        })
-        .finally(() => {})
+      this.request({
+        key: 'vendors',
+        funcName: 'GetVendors',
+        params: {
+          vendorName: word ? `*${word}*` : ''
+        }
+      })
     },
     fetchProjectList(word) {
-      getProjects()
-        .then(res => {
-          if (res.success) {
-            this.projects = res.result.records
-          }
-        })
-        .finally(() => {})
+      this.request({
+        key: 'projects',
+        funcName: 'GetProjects',
+        params: {
+          projectName: word ? `*${word}*` : ''
+        }
+      })
     },
     contractChange(v) {
       if (v == 1) {

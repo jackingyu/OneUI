@@ -108,6 +108,23 @@ export default {
     method: 'PUT'
   },
   //---- 供应商结算
+  GET_SETTLEMENT: {
+    url: '/vendorsettlements/%@',
+    method: 'GET'
+  },
+  GET_SETTLEMENTS: {
+    url: '/vendorsettlements',
+    method: 'GET'
+  },
+  CREATE_SETTLEMENTS: {
+    url: '/vendorsettlements',
+    method: 'POST'
+  },
+  UPDATE_SETTLEMENTS: {
+    url: '/vendorsettlements',
+    method: 'PUT'
+  },
+  //---- 供应商付款
   GET_VENDORPAYMENT: {
     url: '/vendorpayments/%@',
     method: 'GET'

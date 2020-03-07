@@ -30,7 +30,7 @@
                   :showSearch="!item.onlySelect"
                 >
                   <a-select-option
-                    v-for="option in (selectOptions[item.valueKey]||[])"
+                    v-for="option in (FormFieldOptions[item.valueKey]||[])"
                     :key="''+option.key"
                     :value="''+option.key"
                   >{{option.label}}</a-select-option>
@@ -63,7 +63,7 @@
                       style="width: 80px"
                     >
                       <a-select-option
-                        v-for="option in (selectOptions[item.prefix.valueKey]||[])"
+                        v-for="option in (FormFieldOptions[item.prefix.valueKey]||[])"
                         :key="option.key"
                         :value="option.key"
                       >{{option.label}}</a-select-option>
@@ -92,7 +92,7 @@
                       :defaultValue="item.suffix.value"
                     >
                       <a-select-option
-                        v-for="option in (selectOptions[item.suffix.valueKey]||[])"
+                        v-for="option in (FormFieldOptions[item.suffix.valueKey]||[])"
                         :key="option.key"
                         :value="option.key"
                       >{{option.label}}</a-select-option>
@@ -138,8 +138,11 @@ import pick from 'lodash.pick'
 import moment from 'moment'
 import { getMaterials } from '@/api/api'
 import { formItems } from './formOptions'
+
+import FormFieldMixin from '@/mixins/FormFieldMixin'
 export default {
   name: 'RowProjectModal',
+  mixins: [FormFieldMixin],
   props: {
     type: {
       type: String,
@@ -162,15 +165,6 @@ export default {
       visible: false,
       contractType: this.type,
       model: {},
-      selectOptions: {
-        taxRate: [
-          {
-            key: 6.25,
-            value: '6.25',
-            label: '6.25‰'
-          }
-        ]
-      },
       col: 3,
       confirmLoading: false,
       form: this.$form.createForm(this),
@@ -192,7 +186,6 @@ export default {
       this.model = Object.assign({}, record)
       this.visible = true
       this.$nextTick(() => {
-        paymentMethodCode
         this.form.setFieldsValue(
           pick(
             this.model,
@@ -263,43 +256,38 @@ export default {
     handleCancel() {
       this.close()
     },
-    searchWordSelect(word, key) {},
-    onSelectChangeWithKey(val, key) {
-      if (key == 'materialGroupCode') {
-        this.form.setFieldsValue({ materialCode: '-1', materialName: '请选择' })
-        this.materialList('', val)
+    searchWordSelect(word, key) {
+      if (key == 'materialCode') {
+        let code = this.form.getFieldValue('materialGroupCode')
+        this.materialList({
+          materialGroupCode: code,
+          materialName: word ? `*${word}*` : undefined
+        })
       }
     },
-    //
-    materialList(keyWord, code) {
-      let materialGroupCode = code ? code : this.form.getFieldValue('materialGroupCode')
-      if (!materialGroupCode) {
-        return
-      }
-      let that = this
-      getMaterials({
-        materialGroupCode: materialGroupCode,
-        materialName: keyWord
-      })
-        .then(res => {
-          if (res.success) {
-            let options = { ...that.selectOptions }
-            options.materialCode = res.result.records.map(item => {
-              return {
-                node: item,
-                // key: item.materialCode,
-                // value: item.materialCode,
-                key: item.id,
-                value: item.id,
-                label: item.materialName
-              }
-            })
-            that.selectOptions = options
-          } else {
-            that.selectOptions['materialCode'] = []
-          }
+    onSelectChangeWithKey(val, key) {
+      if (key == 'materialGroupCode') {
+        this.form.setFieldsValue({ materialCode: {} })
+        this.materialList({
+          materialGroupCode: val
         })
-        .finally(() => {})
+      }
+    },
+    initFields() {
+      return [
+        {
+          key: 'materialId',
+          funcName: 'GetMaterials',
+          params: {}
+        }
+      ]
+    },
+    materialList(params) {
+      this.request({
+        key: 'materialCode',
+        funcName: 'GetMaterials',
+        params
+      })
     }
   }
 }

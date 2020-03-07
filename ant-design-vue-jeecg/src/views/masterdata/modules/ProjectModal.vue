@@ -22,8 +22,17 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
+        <a-form-item label="项目编码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input placeholder="请输入项目编码" v-decorator="['projectCode', validatorRules.projectName]" />
+        </a-form-item>
         <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input placeholder="请输入项目名称" v-decorator="['projectName', validatorRules.projectName]" />
+        </a-form-item>
+        <a-form-item label="项目分组" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input
+            placeholder="请输入项目分组代号"
+            v-decorator="['projectGroupCode', validatorRules.projectName]"
+          />
         </a-form-item>
 
         <a-form-item label="公司" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -45,8 +54,27 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-textarea placeholder="请输入备注" :rows="4" v-decorator="[ 'comments']" />
+        <a-form-item label="项目经理" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input
+            placeholder="请输入项目经理"
+            v-decorator="[
+              'projectPerson',
+              {rules: [{ required: true, message: '请输入项目经理', whitespace: true}]}
+            ]"
+          />
+        </a-form-item>
+
+        <a-form-item label="联系电话" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input
+            placeholder="请输入联系电话"
+            v-decorator="[
+              'contactPhone',
+              {rules: [{ required: true, message: '请输入联系电话', whitespace: true}]}
+            ]"
+          />
+        </a-form-item>
+        <a-form-item label="项目描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-textarea placeholder="请输入项目描述" :rows="4" v-decorator="[ 'comments']" />
         </a-form-item>
       </a-form>
     </a-spin>
