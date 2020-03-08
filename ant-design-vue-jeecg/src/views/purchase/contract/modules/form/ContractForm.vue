@@ -200,7 +200,7 @@ export default {
             vendorId: '' + vendor.id
           })
         }
-        if (ecord.beginDate) {
+        if (record.beginDate) {
           that.form.setFieldsValue({
             dateSpan: [moment(record.beginDate), moment(record.endDate)]
           })

@@ -63,7 +63,7 @@
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="财务年度">
             <a-select
-              v-decorator="['vendorId']"
+              v-decorator="['annual']"
               placeholder="请选择财务年度"
               :filterOption="false"
               disabled
@@ -74,8 +74,9 @@
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="结算类型">
             <j-dict-select-tag
-              v-decorator="['vendorId']"
+              v-decorator="['settlementType']"
               dictCode="settlement_type"
+              :triggerChange="true"
               placeholder="请选择"
             />
           </a-form-item>
@@ -121,33 +122,36 @@ export default {
   created() {
     this.fetchVendorList()
     this.fetchProjectList()
-    // contractTypeCode
+    window.F = this.form
   },
   methods: {
     add() {
       this.edit({})
     },
     edit(record) {
-      this.model = record
+      this.model = record || {}
       let that = this
       this.$nextTick(() => {
-        that.form.setFieldsValue(pick(record, 'id', 'contractCode', 'contractTitle', 'projectId'))
-        that.form.setFieldsValue({
-          contractTypeCode: '' + record.contractTypeCode
-        })
-        that.contractChange(record.contractTypeCode)
-        let vendor = record.vendor
+        that.form.setFieldsValue(pick(this.model, 'id', 'contractCode', 'contractTitle', 'projectId'))
+        if (this.model.contractTypeCode) {
+          that.form.setFieldsValue({
+            contractTypeCode: '' + this.model.contractTypeCode
+          })
+        }
+        that.contractChange(this.model.contractTypeCode)
+        let vendor = this.model.vendor
         if (vendor) {
           that.form.setFieldsValue({
             contactPhone: vendor.contactPhone,
             contactPerson: vendor.contactPerson,
-            vendorId: '' + vendor.id
+            vendorId: vendor.id != undefined ? '' + vendor.id : ''
           })
         }
-
-        that.form.setFieldsValue({
-          dateSpan: [moment(record.beginDate), moment(record.endDate)]
-        })
+        if (this.model.beginDate) {
+          that.form.setFieldsValue({
+            dateSpan: [moment(this.model.beginDate), moment(this.model.endDate)]
+          })
+        }
       })
     },
     fetchVendorList(word) {
