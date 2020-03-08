@@ -156,6 +156,30 @@ export default {
   data() {
     return {
       title: '操作',
+      FieldsSet: {
+        material: {
+          key: 'materialId',
+          funcName: 'GetMaterials',
+          params: {}
+        },
+        contract: {
+          key: 'contractId',
+          funcName: 'GetContracts',
+          params: {}
+        },
+        project: {
+          key: 'projectId',
+          funcName: 'GetProjects',
+          params: {},
+          mapper: item => {
+            return {
+              key: item.id,
+              value: item.id,
+              label: item.contractTitle
+            }
+          }
+        }
+      },
       visible: false,
       contractType: this.type,
       model: {},
@@ -259,6 +283,14 @@ export default {
           materialGroupCode: code,
           materialName: word ? `*${word}*` : undefined
         })
+      } else if (key == 'projectId') {
+        this.projectList({
+          projectName: word ? `*${word}*` : undefined
+        })
+      } else if (key == 'projectId') {
+        this.contractList({
+          contractName: word ? `*${word}*` : undefined
+        })
       }
     },
     onSelectChangeWithKey(val, key) {
@@ -270,18 +302,23 @@ export default {
       }
     },
     initFields() {
-      return [
-        {
-          key: 'materialId',
-          funcName: 'GetMaterials',
-          params: {}
-        }
-      ]
+      return Object.values(this.FieldsSet)
     },
     materialList(params) {
       this.request({
-        key: 'materialId',
-        funcName: 'GetMaterials',
+        ...this.FieldsSet.material,
+        params
+      })
+    },
+    projectList(params) {
+      this.request({
+        ...this.FieldsSet.project,
+        params
+      })
+    },
+    contractList(params) {
+      this.request({
+        ...this.FieldsSet.project,
         params
       })
     }

@@ -16,7 +16,7 @@ export default {
     request(item) {
       let func = this[`_${item.funcName}`]
       if (typeof func === 'function') {
-        func.apply(this, [item.key, item.params])
+        func.apply(this, [item.key, item.params, item.mapper])
       }
     },
     $initFieldsOptions() {
@@ -25,8 +25,8 @@ export default {
         this.request(item)
       })
     },
-    _GetMaterials(key = "materialCode", params = {}) {
-      this.__baseReq(API.getMaterials(params), key, item => {
+    _GetMaterials(key = "materialCode", params = {}, mapper) {
+      this.__baseReq(API.getMaterials(params), key, mapper ? mapper : item => {
         return {
           node: item,
           // key: item.materialCode,
@@ -37,11 +37,14 @@ export default {
         }
       });
     },
-    _GetProjects(key = "projects", params = {}) {
-      this.__baseReq(API.getProjects(params), key);
+    _GetProjects(key = "projects", params = {}, mapper) {
+      this.__baseReq(API.getProjects(params), key, mapper);
     },
-    _GetVendors(key = "vendors", params = {}) {
-      this.__baseReq(API.getVendors(params), key);
+    _GetVendors(key = "vendors", params = {}, mapper) {
+      this.__baseReq(API.getVendors(params), key, mapper);
+    },
+    _GetContracts(key = "contracts", params = {}, mapper) {
+      this.__baseReq(API.getContracts(params), key, mapper);
     },
     __baseReq(req, key, mapper = item => item) {
       if (!key) {

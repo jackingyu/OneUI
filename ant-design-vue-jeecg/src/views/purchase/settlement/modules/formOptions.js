@@ -19,7 +19,7 @@ export const formItems = [
   },
   {
     label: '合同',
-    valueKey: 'id',
+    valueKey: 'contractId',
     inputType: 'select',
     contractType: ''
   },

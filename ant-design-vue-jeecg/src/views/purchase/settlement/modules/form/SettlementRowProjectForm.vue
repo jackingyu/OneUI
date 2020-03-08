@@ -125,12 +125,12 @@ export default {
           key: item.itemNo || `${+new Date()}`
         }
       })
-      this.$nextTick(() => {
-        this.setForm(this.data)
-      })
+      this.setForm(this.data)
     },
     setForm(val) {
-      this.form.setFieldsValue({ data: JSON.stringify(val) })
+      this.$nextTick(() => {
+        this.form.setFieldsValue({ data: JSON.stringify(val) })
+      })
     },
     defaultSearchWord(record) {
       if (record) {

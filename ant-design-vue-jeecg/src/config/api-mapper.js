@@ -107,6 +107,10 @@ export default {
     url: '/purchasecontracts',
     method: 'PUT'
   },
+  // GET_CONTRACT_ITEMS: {
+  //   url: '/purchasecontracts/items',
+  //   method: 'GET'
+  // },
   //---- 供应商结算
   GET_SETTLEMENT: {
     url: '/vendorsettlements/%@',
