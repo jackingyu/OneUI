@@ -20,7 +20,7 @@
             <a-form-item :label="item.label">
               <template v-if="item.inputType=='select'">
                 <a-select
-                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请选择'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
                   :placeholder="`请选择${item.label}`"
                   :filterOption="false"
                   :disabled="item.readOnly"
@@ -38,7 +38,7 @@
               </template>
               <template v-else-if="item.inputType=='input'">
                 <a-input
-                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请输入'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label}]}]"
                   :disabled="item.readOnly"
                   :placeholder="`请输入${item.label}`"
                 >
@@ -74,7 +74,7 @@
                       slot="addonAfter"
                       style="width: 80px"
                       v-if="item.suffix.inputType=='dict'"
-                      v-decorator="[item.suffix.valueKey]"
+                      v-decorator="[item.suffix.valueKey,{rules: [{ required: item.suffix.required, message: '请选择'+item.label}]}]"
                       :triggerChange="true"
                       :disabled="item.suffix.readOnly"
                       :readOnly="item.suffix.readOnly"
@@ -84,7 +84,7 @@
                       :dictCode="item.suffix.dict"
                     />
                     <a-select
-                      v-decorator="[item.suffix.valueKey]"
+                      v-decorator="[item.suffix.valueKey,{rules: [{ required: item.suffix.required, message: '请选择'+item.label}]}]"
                       v-else
                       slot="addonAfter"
                       style="width: 80px"
@@ -102,14 +102,14 @@
               </template>
               <template v-else-if="item.inputType=='textarea'" :disabled="item.readOnly">
                 <a-textarea
-                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请输入'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label}]}]"
                   :autosize="{ minRows: 5, maxRows: 10 }"
                   :placeholder="`请输入${item.label}`"
                 />
               </template>
               <template v-else-if="item.inputType=='dict'">
                 <j-dict-select-tag
-                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请选择'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
                   :triggerChange="true"
                   :disabled="item.readOnly"
                   :readOnly="item.readOnly"
@@ -159,6 +159,9 @@ export default {
       return formItems.filter(item => !item.contractType || item.contractType == this.contractType)
     }
   },
+  created() {
+    window.M = this
+  },
   data() {
     return {
       title: '操作',
@@ -168,11 +171,7 @@ export default {
       col: 3,
       confirmLoading: false,
       form: this.$form.createForm(this),
-      validatorRules: {},
-      url: {
-        add: '/test/jeecgDemo/add',
-        edit: '/test/jeecgDemo/edit'
-      }
+      validatorRules: {}
     }
   },
   methods: {
@@ -201,14 +200,14 @@ export default {
           )
         )
         this.form.setFieldsValue({
-          materialGroupCode: record.materialGroupCode,
+          materialTypeCode: isNaN(record.materialTypeCode) ? record.materialTypeCode : '' + record.materialTypeCode,
           unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode,
           paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
         })
-        if (record.materialId) {
+        if (record.materialCode) {
           this.form.setFieldsValue({
             materialCode: {
-              key: record.materialId,
+              key: record.materialCode == undefined ? '' : record.materialCode + '',
               label: record.materialName
             }
           })
@@ -218,7 +217,7 @@ export default {
       //   unitPrice: '100',
       //   quantity: '33',
       //   itemNo: 10,
-      //   materialGroupCode: '2',
+      //   materialTypeCode: '2',
       //   materialCode: { key: 'M6', label: '测试物料6' },
       //   comments: '合同内容',
       //   unitCode: '1',
@@ -258,7 +257,7 @@ export default {
     },
     searchWordSelect(word, key) {
       if (key == 'materialCode') {
-        let code = this.form.getFieldValue('materialGroupCode')
+        let code = this.form.getFieldValue('materialTypeCode')
         this.materialList({
           materialGroupCode: code,
           materialName: word ? `*${word}*` : undefined
@@ -266,17 +265,22 @@ export default {
       }
     },
     onSelectChangeWithKey(val, key) {
-      if (key == 'materialGroupCode') {
+      if (key == 'materialTypeCode') {
         this.form.setFieldsValue({ materialCode: {} })
         this.materialList({
           materialGroupCode: val
         })
+      } else if (key == 'materialCode') {
+        // this.form.setFieldsValue({ materialCode: {} })
+        // this.materialList({
+        //   materialGroupCode: val
+        // })
       }
     },
     initFields() {
       return [
         {
-          key: 'materialId',
+          key: 'materialCode',
           funcName: 'GetMaterials',
           params: {}
         }

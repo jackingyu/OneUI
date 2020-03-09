@@ -26,7 +26,7 @@ export const formItems = [
   {
     label: '合同行项目',
     valueKey: 'contractItemId',
-    inputType: 'input',
+    inputType: 'select',
     contractType: ''
   },
   {

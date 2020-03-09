@@ -44,7 +44,7 @@
               placeholder="结算时间"
               format="YYYY-MM-DD"
               style="width:100%"
-              v-decorator="['dateStr',{rules: [{ required: true, message: '请选择结算时间'}]}]"
+              v-decorator="['settlementTime',{rules: [{ required: true, message: '请选择结算时间'}]}]"
             ></j-date>
           </a-form-item>
         </a-col>
@@ -52,12 +52,9 @@
       <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="本次结算总价">
-            <a-input
-              placeholder="请输入本次结算总价"
-              v-decorator="[
-              'contactPerson'
-            ]"
-            />
+            <a-input placeholder="请输入本次结算总价" v-decorator="[
+              'total'
+            ]" />
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
@@ -74,7 +71,7 @@
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="结算类型">
             <j-dict-select-tag
-              v-decorator="['settlementType']"
+              v-decorator="['settlementTypeCode']"
               dictCode="settlement_type"
               :triggerChange="true"
               placeholder="请选择"

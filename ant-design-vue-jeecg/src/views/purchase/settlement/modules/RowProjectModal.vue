@@ -165,7 +165,29 @@ export default {
         contract: {
           key: 'contractId',
           funcName: 'GetContracts',
-          params: {}
+          params: {},
+          mapper: item => {
+            return {
+              key: item.id,
+              value: item.id,
+              label: item.contractTitle
+            }
+          }
+        },
+        contractItems: {
+          key: 'contractItemId',
+          funcName: 'GetContractsItems',
+          params: {},
+          mapper: item => {
+            return {
+              key: item.id,
+              value: item.id,
+              label: '[' + item.itemNo + ']' + item.comments
+            }
+          },
+          resTransformer: res => {
+            return res.result.purchaseContractItems
+          }
         },
         project: {
           key: 'projectId',
@@ -175,7 +197,7 @@ export default {
             return {
               key: item.id,
               value: item.id,
-              label: item.contractTitle
+              label: item.projectName
             }
           }
         }
@@ -287,7 +309,7 @@ export default {
         this.projectList({
           projectName: word ? `*${word}*` : undefined
         })
-      } else if (key == 'projectId') {
+      } else if (key == 'contractId') {
         this.contractList({
           contractName: word ? `*${word}*` : undefined
         })
@@ -298,6 +320,10 @@ export default {
         this.form.setFieldsValue({ materialCode: {} })
         this.materialList({
           materialGroupCode: val
+        })
+      } else if (key == 'contractId') {
+        this.contractItemsList({
+          id: val.key
         })
       }
     },
@@ -316,9 +342,15 @@ export default {
         params
       })
     },
+    contractItemsList(params) {
+      this.request({
+        ...this.FieldsSet.contractItems,
+        params
+      })
+    },
     contractList(params) {
       this.request({
-        ...this.FieldsSet.project,
+        ...this.FieldsSet.contract,
         params
       })
     }

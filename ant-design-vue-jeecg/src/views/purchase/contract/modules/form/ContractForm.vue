@@ -68,24 +68,6 @@
             />
           </a-form-item>
         </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="公司id">
-            <!-- <j-dict-select-tag
-              v-decorator="[ 'status', {rules: [{ required: true, message: '请选择状态'}]} ]"
-              :triggerChange="true"
-              placeholder="请选择合同状态"
-              dictCode="bpm_status"
-              disabled
-            />-->
-            <a-input
-              placeholder="请输入公司id"
-              v-decorator="[
-              'companyId',
-              {rules: [{ required: true, message: '请输入公司id', whitespace: false}]}
-            ]"
-            />
-          </a-form-item>
-        </a-col>
       </a-row>
     </detail-list>
     <a-divider style="margin-bottom: 32px" />
@@ -168,9 +150,7 @@ export default {
     return {
       form: this.$form.createForm(this),
       contractType: 'Null',
-      model: {},
-      vendors: [],
-      projects: []
+      model: {}
     }
   },
   mounted() {
@@ -248,7 +228,7 @@ export default {
       this.$emit('contractChange', this.contractType)
     },
     handleVendorChange(v) {
-      let vendor = this.vendors.find(item => (item.id = v))
+      let vendor = this.FormFieldOptions.vendors.find(item => (item.id = v))
       if (vendor) {
         this.form.setFieldsValue({
           contactPerson: vendor.contactPerson,

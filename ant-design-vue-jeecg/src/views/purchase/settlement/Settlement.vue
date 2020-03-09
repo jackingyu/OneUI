@@ -1,5 +1,5 @@
 <template>
-  <page-view>
+  <page-view :pageTitle="pageTitle">
     <div slot="route-view">
       <a-card>
         <settlement-form @contractChange="contractChange" ref="contract" :showSubmit="false" />
@@ -56,6 +56,9 @@ export default {
     }
   },
   computed: {
+    pageTitle() {
+      return this.model.id ? '编辑供应商结算' : '新建供应商结算'
+    },
     orgCode() {
       return this.userInfo().orgCode
     }
@@ -69,18 +72,18 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getContract(id).then(res => {
-          if (res.success) {
-            this.model = {
-              ...res.result,
-              id
-            }
-            this.$refs.contract.edit(this.model)
-            this.$refs.rowproj.edit(res.result.purchaseContractItems)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        // getContract(id).then(res => {
+        //   if (res.success) {
+        //     this.model = {
+        //       ...res.result,
+        //       id
+        //     }
+        //     this.$refs.contract.edit(this.model)
+        //     this.$refs.rowproj.edit(res.result.purchaseContractItems)
+        //   } else {
+        //     this.$message.warning(res.message)
+        //   }
+        // })
       } else {
         this.$refs.contract.add()
       }

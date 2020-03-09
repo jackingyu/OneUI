@@ -1,6 +1,6 @@
 <template>
   <a-spin :spinning="confirmLoading">
-    <a-form :form="form" >
+    <a-form :form="form">
       <a-form-item label="物料名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
         <a-input placeholder="请输入物料名称" v-decorator="['materialName', validatorRules.materialName]" />
       </a-form-item>
