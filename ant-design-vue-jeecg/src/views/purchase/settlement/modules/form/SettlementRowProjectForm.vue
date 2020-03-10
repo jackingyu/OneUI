@@ -21,22 +21,20 @@
       icon="plus"
       @click="newMember"
     >新增行项目</a-button>
-    <row-project-modal :type="this.contractType" @submit="getRowData" ref="projectModal" />
+    <row-project-modal :type="this.settlementTypeCode" @submit="getRowData" ref="projectModal" />
   </a-form>
 </template>
 
 <script>
-import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import RowProjectModal from '../RowProjectModal'
-import { getBanks } from '@/api/api'
 import { formItems } from '../formOptions'
 
 import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
 
 let getColumns = thiz => {
-  let contractType = thiz.contractType
+  let settlementTypeCode = thiz.settlementTypeCode
   return formItems
-    .filter(item => !item.contractType || item.contractType == contractType)
+    .filter(item => !item.settlementType || item.settlementType == settlementTypeCode)
     .filter(item => !item.noTable)
     .map(item => {
       let customRender = null
@@ -78,8 +76,8 @@ export default {
     return {
       form: this.$form.createForm(this),
       loading: false,
-      contractType: '',
-      banks: [],
+      settlementTypeCode: '',
+      model: {},
       dicts: {},
       data: []
     }
@@ -109,14 +107,14 @@ export default {
   },
   methods: {
     initDictConfig() {
-      initDictOptions('payment_method').then(res => {
-        if (res.success) {
-          this.dicts.payment_method = res.result
-        }
-      })
+      // initDictOptions('payment_method').then(res => {
+      //   if (res.success) {
+      //     this.dicts.payment_method = res.result
+      //   }
+      // })
     },
-    contract(v) {
-      this.contractType = v
+    settlementType(v) {
+      this.settlementTypeCode = v
     },
     edit(rows) {
       this.data = rows.map(item => {
@@ -132,15 +130,6 @@ export default {
         this.form.setFieldsValue({ data: JSON.stringify(val) })
       })
     },
-    defaultSearchWord(record) {
-      if (record) {
-        let m = this.banks.find(item => item.value == record.bankId)
-        if (m) {
-          return m.text
-        }
-      }
-      return ''
-    },
     defaultOptions(item) {
       if (item && item.subBranchId) {
         return [
@@ -152,9 +141,6 @@ export default {
         ]
       }
       return []
-    },
-    handleSubmit(e) {
-      e.preventDefault()
     },
     getRowData(row) {
       const newData = [...this.data]
@@ -170,12 +156,14 @@ export default {
       }
     },
     newMember() {
-      let MaxRowNum = this.data.map(item => item.itemNo).sort()
-      let maxCount = 0
-      if (MaxRowNum && MaxRowNum.length > 0) {
-        maxCount = MaxRowNum[MaxRowNum.length - 1]
+      if (!this.settlementTypeCode) {
+        this.$message.error('请先选择结算类型')
+        return
       }
-      this.$refs.projectModal.add(maxCount + 10)
+      this.$refs.projectModal.add({
+        ...this.model,
+        settlementTypeCode: this.settlementTypeCode
+      })
     },
     remove(key) {
       const newData = this.data.filter(item => item.key !== key)

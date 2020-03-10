@@ -15,7 +15,7 @@
             <a-form-item :label="item.label">
               <template v-if="item.inputType=='select'">
                 <a-select
-                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请选择'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
                   :placeholder="`请选择${item.label}`"
                   :filterOption="false"
                   :disabled="item.readOnly"
@@ -33,7 +33,7 @@
               </template>
               <template v-else-if="item.inputType=='input'">
                 <a-input
-                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请输入'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label}]}]"
                   :disabled="item.readOnly"
                   :placeholder="`请输入${item.label}`"
                 >
@@ -97,14 +97,14 @@
               </template>
               <template v-else-if="item.inputType=='textarea'" :disabled="item.readOnly">
                 <a-textarea
-                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请输入'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required,  message: '请输入'+item.label}]}]"
                   :autosize="{ minRows: 5, maxRows: 10 }"
                   :placeholder="`请输入${item.label}`"
                 />
               </template>
               <template v-else-if="item.inputType=='dict'">
                 <j-dict-select-tag
-                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请选择'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
                   :triggerChange="true"
                   :disabled="item.readOnly"
                   :readOnly="item.readOnly"
@@ -165,7 +165,29 @@ export default {
         contract: {
           key: 'contractId',
           funcName: 'GetContracts',
-          params: {}
+          params: {},
+          mapper: item => {
+            return {
+              key: item.id,
+              value: item.id,
+              label: item.contractTitle
+            }
+          }
+        },
+        contractItems: {
+          key: 'contractItemId',
+          funcName: 'GetContractsItems',
+          params: {},
+          mapper: item => {
+            return {
+              key: item.id,
+              value: item.id,
+              label: '[' + item.itemNo + ']' + item.comments
+            }
+          },
+          resTransformer: res => {
+            return res.result.purchaseContractItems
+          }
         },
         project: {
           key: 'projectId',
@@ -175,7 +197,7 @@ export default {
             return {
               key: item.id,
               value: item.id,
-              label: item.contractTitle
+              label: item.projectName
             }
           }
         }
@@ -197,10 +219,8 @@ export default {
     window.Z = this
   },
   methods: {
-    add(num) {
-      this.edit({
-        itemNo: num
-      })
+    add(model) {
+      this.edit(model || {})
     },
     edit(record) {
       this.form.resetFields()
@@ -227,7 +247,7 @@ export default {
         })
         if (record.materialId) {
           this.form.setFieldsValue({
-            materialCode: {
+            materialId: {
               key: record.materialId,
               label: record.materialName
             }
@@ -260,12 +280,13 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           this.confirmLoading = true
+          let formData = pick(values, 'unitPrice', 'quantity', 'unitCode', 'contractContent')
           let postData = {
-            ...this.model,
-            ...values,
-            // taxRate: values.taxRate.key,
-            materialCode: values.materialCode.key,
-            materialName: values.materialCode.label
+            ...formData,
+            projectId: values.projectId.key,
+            materialId: values.materialId.key,
+            contractId: values.contractId.key,
+            contractItemId: values.contractItemId.key
           }
           this.$emit('submit', postData)
           this.visible = false
@@ -287,7 +308,7 @@ export default {
         this.projectList({
           projectName: word ? `*${word}*` : undefined
         })
-      } else if (key == 'projectId') {
+      } else if (key == 'contractId') {
         this.contractList({
           contractName: word ? `*${word}*` : undefined
         })
@@ -295,9 +316,13 @@ export default {
     },
     onSelectChangeWithKey(val, key) {
       if (key == 'materialGroupCode') {
-        this.form.setFieldsValue({ materialCode: {} })
+        this.form.setFieldsValue({ materialId: {} })
         this.materialList({
           materialGroupCode: val
+        })
+      } else if (key == 'contractId') {
+        this.contractItemsList({
+          id: val.key
         })
       }
     },
@@ -316,9 +341,15 @@ export default {
         params
       })
     },
+    contractItemsList(params) {
+      this.request({
+        ...this.FieldsSet.contractItems,
+        params
+      })
+    },
     contractList(params) {
       this.request({
-        ...this.FieldsSet.project,
+        ...this.FieldsSet.contract,
         params
       })
     }

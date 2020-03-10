@@ -197,15 +197,15 @@ export default {
       })
     },
     handleEdit(record) {
-      // this.$router.push({
-      //   path: '/purchase/settlement',
-      //   query: {
-      //     id: record.id
-      //   }
-      // })
+      this.$router.push({
+        path: '/purchase/settlement',
+        query: {
+          id: record.id
+        }
+      })
     },
     handleAdd() {
-      // this.$router.push({ path: '/purchase/settlement' })
+      this.$router.push({ path: '/purchase/settlement' })
     },
     handleDelete(id) {}
   }

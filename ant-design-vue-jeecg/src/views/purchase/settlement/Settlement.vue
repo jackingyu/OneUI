@@ -1,8 +1,12 @@
 <template>
-  <page-view>
+  <page-view :pageTitle="pageTitle">
     <div slot="route-view">
       <a-card>
-        <settlement-form @contractChange="contractChange" ref="contract" :showSubmit="false" />
+        <settlement-form
+          @settlementTypeCodeChange="settlementTypeCodeChange"
+          ref="settlement"
+          :showSubmit="false"
+        />
         <!-- table -->
         <detail-list title="结算行项目">
           <settlement-row-project-form ref="rowproj" :showSubmit="false" />
@@ -34,7 +38,7 @@ import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getContract, getContracts, createContract, updateContract } from '@/api/api'
+import { getSettlements, getSettlement, createSettlement, updateSettlement } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
@@ -56,6 +60,9 @@ export default {
     }
   },
   computed: {
+    pageTitle() {
+      return this.model.id ? '编辑供应商结算' : '新建供应商结算'
+    },
     orgCode() {
       return this.userInfo().orgCode
     }
@@ -69,34 +76,34 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getContract(id).then(res => {
-          if (res.success) {
-            this.model = {
-              ...res.result,
-              id
-            }
-            this.$refs.contract.edit(this.model)
-            this.$refs.rowproj.edit(res.result.purchaseContractItems)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        // getContract(id).then(res => {
+        //   if (res.success) {
+        //     this.model = {
+        //       ...res.result,
+        //       id
+        //     }
+        //     this.$refs.contract.edit(this.model)
+        //     this.$refs.rowproj.edit(res.result.purchaseContractItems)
+        //   } else {
+        //     this.$message.warning(res.message)
+        //   }
+        // })
       } else {
-        this.$refs.contract.add()
+        this.$refs.settlement.add()
       }
     },
-    contractChange(v) {
+    settlementTypeCodeChange(v) {
       this.cType = v
-      this.rowFields = formItems.filter(item => !item.contractType || item.contractType == v)
-      this.$refs.rowproj.contract(v)
+      this.rowFields = formItems.filter(item => !item.settlementTypeCode || item.settlementTypeCode == v)
+      this.$refs.rowproj.settlementType(v)
     },
-    submitContract(postData) {
+    submitSettlement(postData) {
       this.loading = true
       let promises
       if (postData.id) {
-        promises = updateContract(postData)
+        promises = updateSettlement(postData)
       } else {
-        promises = createContract(postData)
+        promises = createSettlement(postData)
       }
       promises
         .then(res => {
@@ -113,24 +120,12 @@ export default {
     // 最终全页面提交
     validate() {
       let that = this
-      that.$refs.contract.form.validateFields((err, values) => {
-        console.info('contract', values)
+      that.$refs.settlement.form.validateFields((err, values) => {
+        console.info('settlement', values)
         if (!err) {
-          let postData = pick(
-            values,
-            'id',
-            'companyId',
-            'contractTitle',
-            'contractCode',
-            'projectId',
-            'contractTypeCode',
-            'vendorId',
-            'contactPerson',
-            'contactPhone'
-          )
-          let spans = values.dateSpan.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
-          postData.beginDate = spans[0]
-          postData.endDate = spans[1]
+          let postData = pick(values, 'id', 'projectId', 'vendorId', 'settlementTime', 'total', 'settlementTypeCode')
+          postData.settlementTime = postData.settlementTime + ' 00:00:00'
+          postData.fiscalYear = '0'
           that.$refs.rowproj.form.validateFields((err, values) => {
             if (!err) {
               let arData = []
@@ -160,12 +155,8 @@ export default {
                   return
                 }
               }
-              arData.map(item => {
-                item.materialId = item.materialCode
-                return item
-              })
-              postData.purchaseContractItems = arData
-              that.submitContract(postData)
+              postData.vendorSettlementItems = arData
+              that.submitSettlement(postData)
             }
           })
         }

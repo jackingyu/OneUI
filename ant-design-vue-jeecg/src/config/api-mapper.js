@@ -120,11 +120,11 @@ export default {
     url: '/vendorsettlements',
     method: 'GET'
   },
-  CREATE_SETTLEMENTS: {
+  CREATE_SETTLEMENT: {
     url: '/vendorsettlements',
     method: 'POST'
   },
-  UPDATE_SETTLEMENTS: {
+  UPDATE_SETTLEMENT: {
     url: '/vendorsettlements',
     method: 'PUT'
   },

@@ -72,8 +72,7 @@ export default {
         getContract(id).then(res => {
           if (res.success) {
             this.model = {
-              ...res.result,
-              id
+              ...res.result
             }
             this.$refs.contract.edit(this.model)
             this.$refs.rowproj.edit(res.result.purchaseContractItems)
@@ -119,7 +118,7 @@ export default {
           let postData = pick(
             values,
             'id',
-            'companyId',
+            // 'companyId',
             'contractTitle',
             'contractCode',
             'projectId',
@@ -148,13 +147,23 @@ export default {
               })
               let typeFields = that.rowFields
               let fields = typeFields.filter(item => !item.justShow).map(item => item.valueKey)
-              let childFields =
-                typeFields.filter(item => !!item.suffix || !!item.prefix).map(item => item.valueKey) || []
+              let childFields = []
+              typeFields
+                .filter(item => !!item.suffix || !!item.prefix)
+                .forEach(item => {
+                  if (!!item.suffix) {
+                    childFields.push(item)
+                  }
+                  if (!!item.prefix) {
+                    childFields.push(item)
+                  }
+                })
+              childFields = childFields.map(item => item.valueKey) || []
               fields = fields.concat(childFields)
               for (let i = 0; i < arData.length; i++) {
                 let rowData = arData[i]
                 let inValidField = fields.find(item => !rowData[item])
-                if (inValidField) {
+                if (inValidField && inValidField.required) {
                   let jRow = typeFields.find(item => item.valueKey == inValidField)
                   that.$message.error(`请检查行项目【${jRow.label}】是否填写完整`)
                   return

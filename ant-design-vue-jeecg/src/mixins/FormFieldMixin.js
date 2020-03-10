@@ -16,7 +16,7 @@ export default {
     request(item) {
       let func = this[`_${item.funcName}`]
       if (typeof func === 'function') {
-        func.apply(this, [item.key, item.params, item.mapper])
+        func.apply(this, [item.key, item.params, item.mapper, item.resTransformer])
       }
     },
     $initFieldsOptions() {
@@ -25,8 +25,8 @@ export default {
         this.request(item)
       })
     },
-    _GetMaterials(key = "materialCode", params = {}, mapper) {
-      this.__baseReq(API.getMaterials(params), key, mapper ? mapper : item => {
+    _GetMaterials(key = "materialCode", params = {}, mapper, resTransformer) {
+      this.__baseRequest(API.getMaterials(params), key, mapper ? mapper : item => {
         return {
           node: item,
           // key: item.materialCode,
@@ -35,18 +35,25 @@ export default {
           value: item.id,
           label: item.materialName
         }
-      });
+      }, resTransformer);
     },
-    _GetProjects(key = "projects", params = {}, mapper) {
-      this.__baseReq(API.getProjects(params), key, mapper);
+    _GetProjects(key = "projects", params = {}, mapper, resTransformer) {
+      this.__baseRequest(API.getProjects(params), key, mapper, resTransformer);
     },
-    _GetVendors(key = "vendors", params = {}, mapper) {
-      this.__baseReq(API.getVendors(params), key, mapper);
+    _GetVendors(key = "vendors", params = {}, mapper, resTransformer) {
+      this.__baseRequest(API.getVendors(params), key, mapper, resTransformer);
     },
-    _GetContracts(key = "contracts", params = {}, mapper) {
-      this.__baseReq(API.getContracts(params), key, mapper);
+    _GetContracts(key = "contracts", params = {}, mapper, resTransformer) {
+      this.__baseRequest(API.getContracts(params), key, mapper, resTransformer);
+    },
+    _GetContractsItems(key = "contractItems", params = {}, mapper, resTransformer) {
+      if (!params.id) return
+      this.__baseRequest(API.getContract(params.id, params), key, mapper, resTransformer);
     },
     __baseReq(req, key, mapper = item => item) {
+      this.__baseRequest(req, key, mapper)
+    },
+    __baseRequest(req, key, mapper = item => item, resTransformer = res => res.result.records) {
       if (!key) {
         return
       }
@@ -55,7 +62,7 @@ export default {
           if (res.success) {
             this.FormFieldOptions = {
               ...this.FormFieldOptions,
-              [key]: res.result.records.map(mapper)
+              [key]: resTransformer(res).map(mapper)
             }
           } else {
             this.FormFieldOptions = {

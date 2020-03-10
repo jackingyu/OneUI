@@ -124,10 +124,15 @@ const createProject = (params) => postAction(Rest.CREATE_PROJECT.url, params);
 const updateProject = (params) => putAction(Rest.UPDATE_PROJECT.url, params);
 
 
-const getVendorPayment = (params) => getAction(Rest.GET_VENDORPAYMENTS.url, params);
-const getVendorPayments = (params) => getAction(Rest.GET_VENDORPAYMENT.url, params);
+const getVendorPayment = (id, params) => getAction(Rest.GET_VENDORPAYMENT.url, params);
+const getVendorPayments = (params) => getAction(Rest.GET_VENDORPAYMENTS.url, params);
 const createVendorPayment = (params) => postAction(Rest.CREATE_VENDORPAYMENT.url, params);
 const updateVendorPayment = (params) => putAction(Rest.UPDATE_VENDORPAYMENT.url, params);
+
+const getSettlements = (params) => getAction(Rest.GET_SETTLEMENTS.url, params);
+const getSettlement = (id, params) => getAction(sloter(Rest.GET_SETTLEMENT.url, id), params);
+const createSettlement = (params) => postAction(Rest.CREATE_SETTLEMENT.url, params);
+const updateSettlement = (params) => putAction(Rest.UPDATE_SETTLEMENT.url, params);
 
 const getCompanies = (params) => getAction(Rest.GET_COMPANIES.url, params);
 
@@ -202,7 +207,11 @@ export {
   getVendorPayment,
   getVendorPayments,
   createVendorPayment,
-  updateVendorPayment
+  updateVendorPayment,
+  getSettlements,
+  getSettlement,
+  createSettlement,
+  updateSettlement
   // ✨ Bussiness END - by Fred
 }
 
