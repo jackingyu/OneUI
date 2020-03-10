@@ -75,6 +75,7 @@
               dictCode="settlement_type"
               :triggerChange="true"
               placeholder="请选择"
+              @change="settlementTypeCodeChange"
             />
           </a-form-item>
         </a-col>
@@ -111,7 +112,7 @@ export default {
     return {
       form: this.$form.createForm(this),
       contractType: 'Null',
-      model: null,
+      model: {},
       vendors: [],
       projects: []
     }
@@ -130,12 +131,12 @@ export default {
       let that = this
       this.$nextTick(() => {
         that.form.setFieldsValue(pick(this.model, 'id', 'contractCode', 'contractTitle', 'projectId'))
-        if (this.model.contractTypeCode) {
+        if (this.model.settlementTypeCode) {
           that.form.setFieldsValue({
-            contractTypeCode: '' + this.model.contractTypeCode
+            settlementTypeCode: '' + this.model.settlementTypeCode
           })
+          that.settlementTypeCodeChange(this.model.settlementTypeCode)
         }
-        that.contractChange(this.model.contractTypeCode)
         let vendor = this.model.vendor
         if (vendor) {
           that.form.setFieldsValue({
@@ -169,18 +170,8 @@ export default {
         })
         .finally(() => {})
     },
-    contractChange(v) {
-      if (v == 1) {
-        //外包
-        this.contractType = 'subpack'
-      } else if (v == 2) {
-        this.contractType = 'material'
-      } else if (v == 3) {
-        this.contractType = 'st'
-      } else {
-        this.contractType = ''
-      }
-      this.$emit('contractChange', this.contractType)
+    settlementTypeCodeChange(v) {
+      this.$emit('settlementTypeCodeChange', v)
     },
     handleVendorChange(v) {
       let vendor = this.vendors.find(item => (item.id = v))

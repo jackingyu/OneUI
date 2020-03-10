@@ -1,88 +1,11 @@
 <template>
   <a-form :form="form" class="form">
-    <a-card class="card" title="基础信息" :bordered="false">
+    <detail-list title="基础信息">
       <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item style="display:none">
             <a-input v-decorator="['id']" />
           </a-form-item>
-          <a-form-item label="合同编号">
-            <a-input
-              placeholder="请输入合同编号"
-              v-decorator="[
-              'contractCode',
-              {rules: [{ required: true, message: '请输入合同编号', whitespace: false}]}
-            ]"
-            />
-          </a-form-item>
-        </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="合同名称">
-            <a-input
-              placeholder="合同名称"
-              v-decorator="[
-              'contractTitle',
-              {rules: [{ required: true, message: '请输入合同名称', whitespace: false}]}
-            ]"
-            />
-          </a-form-item>
-        </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="合同类型">
-            <j-dict-select-tag
-              v-decorator="[ 'contractTypeCode', {rules: [{ required: true, message: '请选择合同类型'}]} ]"
-              :triggerChange="true"
-              placeholder="请选择合同类型"
-              dictCode="contract_type"
-              :readOnly="model&&model.id"
-              @change="contractChange"
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row class="form-row" :gutter="16">
-        <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="项目名称">
-            <a-select
-              v-decorator="['projectId',{rules: [{ required: true, message: '请选择项目', whitespace: true}]}]"
-              placeholder="请选择项目"
-              :filterOption="false"
-              :showSearch="true"
-              @search="fetchProjectList"
-            >
-              <a-select-option
-                v-for="(project, index) in projects"
-                :key="index"
-                :value="project.id"
-              >{{project.projectName}}</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="生效日期">
-            <a-range-picker
-              v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
-              format="YYYY-MM-DD"
-              :placeholder="['开始时间', '结束时间']"
-            />
-          </a-form-item>
-        </a-col>
-        <!-- <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="状态">
-            <j-dict-select-tag
-              v-decorator="[ 'status', {rules: [{ required: true, message: '请选择状态'}]} ]"
-              :triggerChange="true"
-              placeholder="请选择合同状态"
-              dictCode="bpm_status"
-              disabled
-            />
-          </a-form-item>
-        </a-col>-->
-      </a-row>
-    </a-card>
-    <a-card class="card" title="供应商信息" :bordered="false">
-      <a-row class="form-row" :gutter="16">
-        <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="供应商">
             <a-select
               v-decorator="['vendorId',{rules: [{ required: true, message: '请选择供应商', whitespace: true}]}]"
@@ -100,35 +23,104 @@
             </a-select>
           </a-form-item>
         </a-col>
+
         <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="联络人">
-            <a-input
-              placeholder="请输入联络人"
-              disabled
-              v-decorator="[
-              'contactPerson'
-            ]"
-            />
-          </a-form-item>
-          <a-form-item v-if="false">
-            <a-input disabled v-decorator="[
-              'contactPersonId'
-            ]" />
+          <a-form-item label="财务年度">
+            <!-- fiscalYear -->
           </a-form-item>
         </a-col>
+      </a-row>
+    </detail-list>
+    <a-divider style="margin-bottom: 32px" />
+    <!-- <detail-list title="物料信息">
+      <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="联系电话">
-            <a-input
-              disabled
-              placeholder="请输入联系电话"
+          <a-form-item label="规格型号">
+            <a-select
+              v-decorator="['vendorId',{rules: [{ required: true, message: '请选择物料', whitespace: true}]}]"
+              placeholder="请选择物料"
+              :filterOption="false"
+              :showSearch="true"
+              @search="fetchVendorList"
+              @change="handleVendorChange"
+            >
+              <a-select-option
+                v-for="(vendor, index) in vendors"
+                :key="index"
+                :value="vendor.id"
+              >{{vendor.vendorName}}</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :lg="24" :md="24" :sm="24">
+          <a-form-item label="物料描述">
+            <a-textarea
+              placeholder="请输入物料描述"
               v-decorator="[
-              'contactPhone'
+              'bankAccountId'
             ]"
             />
           </a-form-item>
         </a-col>
       </a-row>
-    </a-card>
+    </detail-list>-->
+    <detail-list title="开票项目">
+      <a-row class="form-row" :gutter="16">
+        <a-col :lg="8" :md="12" :sm="24">
+          <a-form-item label="合同实施内容">
+            <a-input
+              placeholder="请输入合同实施内容"
+              v-decorator="[
+              'contractContent'
+            ]"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col :lg="8" :md="12" :sm="24">
+          <a-form-item label="开票日期">
+            <j-date
+              :trigger-change="true"
+              placeholder="付款日期"
+              format="YYYY-MM-DD"
+              style="width:100%"
+              v-decorator="['invoiceDate',{rules: [{ required: true, message: '请选择结算时间'}]}]"
+            ></j-date>
+          </a-form-item>
+        </a-col>
+        <a-col :lg="8" :md="12" :sm="24">
+          <a-form-item label="开票金额">
+            <a-input
+              disabled
+              placeholder="请输入付款金额"
+              v-decorator="[
+              'amount'
+            ]"
+            />
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row class="form-row" :gutter="16">
+        <a-col :lg="8" :md="12" :sm="24">
+          <a-form-item label="发票号码">
+            <a-input
+              placeholder="请输入发票号码"
+              v-decorator="[
+              'invoiceNumber'
+            ]"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col :lg="8" :md="12" :sm="24">
+          <a-form-item label="税率">
+            <a-input placeholder="请输入税率" v-decorator="[
+              'taxRate'
+            ]" />
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </detail-list>
+    <a-divider style="margin-bottom: 32px" />
+    <detail-list title="附件"></detail-list>
     <a-form-item v-if="showSubmit">
       <a-button htmlType="submit">Submit</a-button>
     </a-form-item>
@@ -138,12 +130,15 @@
 import pick from 'lodash.pick'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 
+import DetailList from '@/components/tools/DetailList'
 import { getVendors, getProjects } from '@/api/api'
-
+import JDate from '@/components/jeecg/JDate'
 export default {
-  name: 'ContractForm',
+  name: 'InvoiceForm',
   components: {
-    JBankSelectTag
+    JBankSelectTag,
+    DetailList,
+    JDate
   },
   props: {
     showSubmit: {
@@ -156,6 +151,7 @@ export default {
       form: this.$form.createForm(this),
       contractType: 'Null',
       model: null,
+      banks: [],
       vendors: [],
       projects: []
     }

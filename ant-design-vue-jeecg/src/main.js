@@ -36,6 +36,8 @@ import {
 } from "@/store/mutation-types"
 import config from '@/defaultSettings'
 
+import i18n from '@/i18n/i18n'
+
 import JDictSelectTag from './components/dict/index.js'
 import hasPermission from '@/utils/hasPermission'
 import vueBus from '@/utils/vueBus';
@@ -58,6 +60,7 @@ Vue.use(JeecgComponents);
 new Vue({
   router,
   store,
+  i18n,
   mounted() {
     store.commit('SET_SIDEBAR_TYPE', Vue.ls.get(SIDEBAR_TYPE, true))
     store.commit('TOGGLE_THEME', Vue.ls.get(DEFAULT_THEME, config.navTheme))

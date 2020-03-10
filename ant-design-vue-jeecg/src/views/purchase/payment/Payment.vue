@@ -1,17 +1,15 @@
 <template>
   <page-view>
     <div slot="route-view">
-      <contract-form @contractChange="contractChange" ref="contract" :showSubmit="false" />
-      <!-- table -->
-      <a-card class="card" title="合同行项目">
-        <contract-row-project-form ref="rowproj" :showSubmit="false" />
+      <a-card class="card" :bordered="false">
+        <payment-form ref="contract" :showSubmit="false" />
       </a-card>
-
+      <!-- table -->
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
-        <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
-        <a-divider type="vertical" />
-        <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
+        <a-button type="primary" @click="validate" :loading="loading">提交</a-button>
+        <!-- <a-divider type="vertical" />
+        <a-button type="info" @click="validate" :loading="loading">暂存</a-button>-->
       </footer-tool-bar>
     </div>
   </page-view>
@@ -19,8 +17,7 @@
 
 <script>
 import pick from 'lodash.pick'
-import ContractForm from './modules/form/ContractForm'
-import ContractRowProjectForm from './modules/form/ContractRowProjectForm'
+import PaymentForm from './modules/form/PaymentForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
@@ -32,8 +29,7 @@ export default {
   components: {
     PageView,
     FooterToolBar,
-    ContractRowProjectForm,
-    ContractForm
+    PaymentForm
   },
   data() {
     return {

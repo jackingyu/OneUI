@@ -3,50 +3,58 @@ export const formItems = [
     label: '项目',
     valueKey: 'projectId',
     inputType: 'select',
-    contractType: ''
+    required: true,
+    settlementType: ''
   },
   {
     label: '物料名称',
     valueKey: 'materialId',
     inputType: 'select',
-    contractType: ''
+    required: true,
+    settlementType: ''
   },
   {
     label: '合同内容',
     valueKey: 'contractContent',
     inputType: 'input',
-    contractType: ''
+    required: true,
+    settlementType: ''
   },
   {
     label: '合同',
     valueKey: 'contractId',
     inputType: 'select',
-    contractType: ''
+    required: true,
+    settlementType: ''
   },
   {
     label: '合同行项目',
     valueKey: 'contractItemId',
     inputType: 'select',
-    contractType: ''
+    required: true,
+    settlementType: ''
   },
   {
     label: '数量',
     valueKey: 'quantity',
     inputType: 'input',
-    contractType: '',
+    required: true,
+    settlementType: '',
     suffix: {
       label: '单位',
       valueKey: 'unitCode',
       inputType: 'dict',
+      required: true,
       dict: 'unit',
-      contractType: ''
+      settlementType: ''
     }
   },
   {
     label: '单价',
     valueKey: 'unitPrice',
     inputType: 'input',
-    contractType: '',
+    required: true,
+    settlementType: '',
   },
   {
     label: '合价',
@@ -54,12 +62,10 @@ export const formItems = [
     inputType: 'label',
     readOnly: true,
     justShow: true,
-    contractType: '',
+    settlementType: '',
     evalue: function (unitPrice = 0, quantity = 0) {
       let val = unitPrice * quantity
       return isNaN(val) ? 0 : val.toFixed(2)
     }
-  },
-
-
+  }
 ]
