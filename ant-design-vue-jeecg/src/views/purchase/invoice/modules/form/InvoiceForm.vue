@@ -16,7 +16,7 @@
               @change="handleVendorChange"
             >
               <a-select-option
-                v-for="(vendor, index) in vendors"
+                v-for="(vendor, index) in FormFieldOptions.vendors"
                 :key="index"
                 :value="vendor.id"
               >{{vendor.vendorName}}</a-select-option>
@@ -89,13 +89,9 @@
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="开票金额">
-            <a-input
-              disabled
-              placeholder="请输入付款金额"
-              v-decorator="[
+            <a-input placeholder="请输入付款金额" v-decorator="[
               'amount'
-            ]"
-            />
+            ]" />
           </a-form-item>
         </a-col>
       </a-row>
@@ -128,15 +124,16 @@
 </template>
 <script>
 import pick from 'lodash.pick'
-import JBankSelectTag from '@/components/selector/JBankSelectTag'
-
 import DetailList from '@/components/tools/DetailList'
 import { getVendors, getProjects } from '@/api/api'
 import JDate from '@/components/jeecg/JDate'
+
+import FormFieldMixin from '@/mixins/FormFieldMixin'
+
 export default {
   name: 'InvoiceForm',
+  mixins: [FormFieldMixin],
   components: {
-    JBankSelectTag,
     DetailList,
     JDate
   },
@@ -149,17 +146,14 @@ export default {
   data() {
     return {
       form: this.$form.createForm(this),
-      contractType: 'Null',
-      model: null,
-      banks: [],
-      vendors: [],
-      projects: []
+      model: {},
+      FieldsSet: {
+        vendors: {
+          key: 'vendors',
+          funcName: 'GetVendors'
+        }
+      }
     }
-  },
-  created() {
-    this.fetchVendorList()
-    this.fetchProjectList()
-    // contractTypeCode
   },
   methods: {
     add() {
@@ -170,62 +164,26 @@ export default {
       let that = this
       this.$nextTick(() => {
         that.form.setFieldsValue(
-          pick(
-            record,
-            'id',
-            'vendorCode',
-            'vendorName',
-            'vendorGroupCode',
-            'contactPerson',
-            'contactPhone',
-            'contactPersonId',
-            'socialCreditCode',
-            'taxSubject',
-            'businessLicense',
-            'taxCode'
-          )
+          pick(record, 'id', 'vendorId', 'contractContent', 'invoiceDate', 'amount', 'invoiceNumber', 'taxRate')
         )
       })
     },
     fetchVendorList(word) {
-      getVendors()
-        .then(res => {
-          if (res.success) {
-            this.vendors = res.result.records
-          }
-        })
-        .finally(() => {})
-    },
-    fetchProjectList(word) {
-      getProjects()
-        .then(res => {
-          if (res.success) {
-            this.projects = res.result.records
-          }
-        })
-        .finally(() => {})
-    },
-    contractChange(v) {
-      if (v == 1) {
-        //外包
-        this.contractType = 'subpack'
-      } else if (v == 2) {
-        this.contractType = 'material'
-      } else if (v == 3) {
-        this.contractType = 'st'
-      } else {
-        this.contractType = ''
-      }
-      this.$emit('contractChange', this.contractType)
+      this.request({
+        ...this.FieldsSet.vendors,
+        params: {
+          vendorName: word ? `*${word}*` : ''
+        }
+      })
     },
     handleVendorChange(v) {
-      let vendor = this.vendors.find(item => (item.id = v))
+      let vendor = this.FieldsSet.vendors.find(item => (item.id = v))
       if (vendor) {
-        this.form.setFieldsValue({
-          contactPerson: vendor.contactPerson,
-          contactPhone: vendor.contactPhone,
-          contactPersonId: vendor.contactPersonId
-        })
+        // this.form.setFieldsValue({
+        //   contactPerson: vendor.contactPerson,
+        //   contactPhone: vendor.contactPhone,
+        //   contactPersonId: vendor.contactPersonId
+        // })
       }
     },
     handleSubmit(e) {
@@ -238,13 +196,6 @@ export default {
           })
         }
       })
-    },
-    validate(rule, value, callback) {
-      const regex = /^user-(.*)$/
-      if (!regex.test(value)) {
-        callback('需要以 user- 开头')
-      }
-      callback()
     }
   }
 }

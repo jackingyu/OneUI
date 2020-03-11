@@ -134,6 +134,12 @@ const getSettlement = (id, params) => getAction(sloter(Rest.GET_SETTLEMENT.url, 
 const createSettlement = (params) => postAction(Rest.CREATE_SETTLEMENT.url, params);
 const updateSettlement = (params) => putAction(Rest.UPDATE_SETTLEMENT.url, params);
 
+const getInvoices = (params) => getAction(Rest.GET_VENDORINVOICES.url, params);
+const getInvoice = (id, params) => getAction(sloter(Rest.GET_VENDORINVOICE.url, id), params);
+const createInvoice = (params) => postAction(Rest.CREATE_VENDORINVOICE.url, params);
+const updateInvoice = (params) => putAction(Rest.UPDATE_VENDORINVOICE.url, params);
+const delInvoice = (params) => deleteAction(Rest.DEL_VENDORINVOICE.url, params);
+
 const getCompanies = (params) => getAction(Rest.GET_COMPANIES.url, params);
 
 // ✨ Bussiness END - by Fred
@@ -211,7 +217,12 @@ export {
   getSettlements,
   getSettlement,
   createSettlement,
-  updateSettlement
+  updateSettlement,
+  getInvoices,
+  getInvoice,
+  createInvoice,
+  updateInvoice,
+  delInvoice
   // ✨ Bussiness END - by Fred
 }
 

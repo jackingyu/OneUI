@@ -154,11 +154,11 @@ export default {
     url: '/vendorinvoices',
     method: 'GET'
   },
-  CREATE_VENDORINVOICES: {
+  CREATE_VENDORINVOICE: {
     url: '/vendorinvoices',
     method: 'POST'
   },
-  UPDATE_VENDORINVOICES: {
+  UPDATE_VENDORINVOICE: {
     url: '/vendorinvoices',
     method: 'PUT'
   },

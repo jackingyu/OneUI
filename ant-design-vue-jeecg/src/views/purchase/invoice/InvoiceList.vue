@@ -115,7 +115,7 @@ export default {
           dataIndex: 'invoiceDate'
         },
         {
-          title: '票面金额',
+          title: '开票金额',
           align: 'center',
           dataIndex: 'amount'
         },
@@ -123,6 +123,16 @@ export default {
           title: '税率',
           align: 'center',
           dataIndex: 'taxRate'
+        },
+        {
+          title: '合同内容',
+          align: 'center',
+          dataIndex: 'contractContent'
+        },
+        {
+          title: '供应商名称',
+          align: 'center',
+          dataIndex: 'vendorId'
         },
         {
           title: '操作',
@@ -160,7 +170,7 @@ export default {
       this.$router.push({
         path: '/purchase/invoice',
         query: {
-          ...record
+          id: record.id
         }
       })
     },
