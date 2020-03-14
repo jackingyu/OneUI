@@ -41,22 +41,22 @@
           />
         </a-form-item>
 
-        <a-form-item label="公司" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
-            v-decorator="['companyId']"
-            placeholder="请选择公司"
+            v-decorator="['customer']"
+            placeholder="请选择客户"
             :filterOption="false"
             :showSearch="true"
-            @search="fetchList"
+            @search="fetchCustomerList"
             @change="handleChange"
             :notFoundContent="fetching ? undefined : null"
             :disabled="!!model.id"
           >
             <a-spin v-if="fetching" slot="notFoundContent" size="small" />
             <a-select-option
-              v-for="company in companies"
-              :key="company.companyCode"
-            >{{company.companyName}}</a-select-option>
+              v-for="customer in FormFieldOptions.customers"
+              :key="customer.id"
+            >{{customer.customerName}}</a-select-option>
           </a-select>
         </a-form-item>
 
@@ -104,11 +104,20 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { getAction } from '@/api/manage'
 import { disabledAuthFilter } from '@/utils/authFilter'
 import { createProject, updateProject, getCompanies } from '@/api/api'
+
+import FormFieldMixin from '@/mixins/FormFieldMixin'
 export default {
   name: 'projectModal',
+  mixins: [FormFieldMixin],
   data() {
-    this.fetchList = debounce(this.fetchList, 800)
+    this.fetchCustomerList = debounce(this.fetchCustomerList, 800)
     return {
+      FieldsSet: {
+        vendors: {
+          key: 'customers',
+          funcName: 'GetCustomers'
+        }
+      },
       companies: [],
       companyId: '',
       fetching: false,
@@ -161,25 +170,18 @@ export default {
   created() {
     const token = Vue.ls.get(ACCESS_TOKEN)
     this.headers = { 'X-Access-Token': token }
-    this.fetchList()
   },
   methods: {
     isDisabledAuth(code) {
       return disabledAuthFilter(code)
     },
-    fetchList(word = '') {
-      this.fetching = true
-      let that = this
-      getCompanies({ companyName: word })
-        .then(res => {
-          if (res.success) {
-            let { records = [] } = res.result
-            this.companies = records
-          }
-        })
-        .finally(() => {
-          this.fetching = false
-        })
+    fetchCustomerList(word) {
+      this.request({
+        ...this.FieldsSet.customers,
+        params: {
+          customerName: word ? `*${word}*` : ''
+        }
+      })
     },
     handleChange() {},
     //窗口最大化切换

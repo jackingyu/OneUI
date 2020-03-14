@@ -38,6 +38,9 @@ export default {
         }
       }, resTransformer);
     },
+    _GetCustomers(key = "customers", params = {}, mapper, resTransformer) {
+      this.__baseRequest(API.getCustomers(params), key, mapper, resTransformer);
+    },
     _GetProjects(key = "projects", params = {}, mapper, resTransformer) {
       this.__baseRequest(API.getProjects(params), key, mapper, resTransformer);
     },
