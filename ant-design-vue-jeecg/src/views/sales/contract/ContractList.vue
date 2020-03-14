@@ -137,7 +137,7 @@ export default {
         }
       ],
       url: {
-        list: Rest.GET_CONTRACTS.url
+        list: Rest.GET_SALECONTRACTS.url
       }
     }
   },
@@ -161,14 +161,14 @@ export default {
     },
     handleEdit(record) {
       this.$router.push({
-        path: '/purchase/contract',
+        path: '/sale/contract',
         query: {
           id: record.id
         }
       })
     },
     handleAdd() {
-      this.$router.push({ path: '/purchase/contract' })
+      this.$router.push({ path: '/sale/contract' })
     },
     handleDelete(id) {}
   }

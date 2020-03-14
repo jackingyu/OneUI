@@ -5,17 +5,21 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="合同类型">
+            <a-form-item label="项目名称">
               <j-dict-select-tag
-                v-model="queryParam.contractTypeCode"
-                placeholder="请选择合同类型"
-                dictCode="contract_type"
+                v-model="queryParam.vendorCode"
+                placeholder="请选择材料商或者分包商"
+                dictCode="vendor_group"
               />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="12">
-            <a-form-item label="供应商名称">
-              <j-input placeholder="请输入供应商名称" v-model="queryParam.vendorName"></j-input>
+            <a-form-item label>
+              <a-range-picker
+                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                format="YYYY-MM-DD"
+                :placeholder="['开始时间', '结束时间']"
+              />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -86,7 +90,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
-  name: 'ContractList',
+  name: 'ReceiptList',
   mixins: [JeecgListMixin],
   components: {
     // ProjectModal,
@@ -99,34 +103,31 @@ export default {
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
-        // {
-        //   title: '公司ID',
-        //   align: 'center',
-        //   width: 160,
-        //   dataIndex: 'companyId'
-        // },
         {
-          title: '合同名称',
+          title: '付款单编号',
           align: 'center',
-          dataIndex: 'contractTitle'
+          width: 160,
+          dataIndex: 'id'
         },
         {
-          title: '联络人',
+          title: '付款时间',
           align: 'center',
-          width: 100,
-          dataIndex: 'contactPerson'
+          dataIndex: 'receiptDate'
         },
         {
-          title: '联络人电话',
+          title: '付款金额',
           align: 'center',
-          dataIndex: 'contactPhone'
+          dataIndex: 'amount'
         },
         {
-          title: '合同有效期',
+          title: '付款方式',
           align: 'center',
-          scopedSlots: {
-            customRender: 'date'
-          }
+          dataIndex: 'paymentMethodCode_dictText'
+        },
+        {
+          title: '状态',
+          align: 'center',
+          dataIndex: 'delFlag_dictText'
         },
         {
           title: '操作',
@@ -137,7 +138,7 @@ export default {
         }
       ],
       url: {
-        list: Rest.GET_CONTRACTS.url
+        list: Rest.GET_SALERECEIPTS.url
       }
     }
   },
@@ -160,15 +161,16 @@ export default {
       })
     },
     handleEdit(record) {
-      this.$router.push({
-        path: '/purchase/contract',
-        query: {
-          id: record.id
-        }
-      })
+      // this.$refs.modalForm.edit(record)
+      // this.$router.push({
+      //   path: '/purchase/payment',
+      //   query: {
+      //     ...record
+      //   }
+      // })
     },
     handleAdd() {
-      this.$router.push({ path: '/purchase/contract' })
+      this.$router.push({ path: '/sale/payment' })
     },
     handleDelete(id) {}
   }

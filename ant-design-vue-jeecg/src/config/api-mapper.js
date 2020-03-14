@@ -47,6 +47,10 @@ export default {
     method: 'delete'
   },
   //----- 客户 -- 
+  GET_CUSTOMER: {
+    url: `/masterdata/customers/%@`,
+    method: 'GET'
+  },
   GET_CUSTOMERS: {
     url: `/masterdata/customers`,
     method: 'GET'
@@ -54,6 +58,10 @@ export default {
   CREATE_CUSTOMER: {
     url: `/masterdata/customers`,
     method: 'POST'
+  },
+  UPDATE_CUSTOMER: {
+    url: `/masterdata/customers`,
+    method: 'PUT'
   },
   DEL_CUSTOMER_BANK: {
     url: `/masterdata/customers/bankaccount/%@`,
@@ -154,16 +162,84 @@ export default {
     url: '/vendorinvoices',
     method: 'GET'
   },
-  CREATE_VENDORINVOICES: {
+  CREATE_VENDORINVOICE: {
     url: '/vendorinvoices',
     method: 'POST'
   },
-  UPDATE_VENDORINVOICES: {
+  UPDATE_VENDORINVOICE: {
     url: '/vendorinvoices',
     method: 'PUT'
   },
   DEL_VENDORINVOICE: {
     url: '/vendorinvoices/%@',
     method: 'DELETE'
+  },
+  //---- 销售开票
+  GET_SALEINVOICES: {
+    url: '/salesinvoices',
+    method: 'GET'
+  },
+  GET_SALEINVOICE: {
+    url: '/salesinvoices/%@',
+    method: 'GET'
+  },
+  CREATE_SALEINVOICE: {
+    url: '/salesinvoices',
+    method: 'POST'
+  },
+  UPDATE_SALEINVOICE: {
+    url: '/salesinvoices',
+    method: 'PUT'
+  },
+  //---- 销售收款
+  GET_SALERECEIPTS: {
+    url: '/salesreceipts',
+    method: 'GET'
+  },
+  GET_SALERECEIPT: {
+    url: '/salesreceipts/%@',
+    method: 'GET'
+  },
+  CREATE_SALERECEIPT: {
+    url: '/salesreceipts',
+    method: 'POST'
+  },
+  UPDATE_SALERECEIPT: {
+    url: '/salesreceipts',
+    method: 'PUT'
+  },
+  //----  销售结算
+  GET_SALESETTLEMENT: {
+    url: '/salessettlements/%@',
+    method: 'GET'
+  },
+  GET_SALESETTLEMENTS: {
+    url: '/salessettlements',
+    method: 'GET'
+  },
+  CREATE_SALESETTLEMENT: {
+    url: '/salessettlements',
+    method: 'POST'
+  },
+  UPDATE_SALESETTLEMENT: {
+    url: '/salessettlements',
+    method: 'PUT'
+  },
+  //----  销售合同
+  GET_SALECONTRACT: {
+    url: '/salescontracts/%@',
+    method: 'GET'
+  },
+  GET_SALECONTRACTS: {
+    url: '/salescontracts',
+    method: 'GET'
+  },
+  CREATE_SALECONTRACT: {
+    url: '/salescontracts',
+    method: 'POST'
+  },
+  UPDATE_SALECONTRACT: {
+    url: '/salescontracts',
+    method: 'PUT'
   },
 }

@@ -3,7 +3,8 @@ import * as API from '@/api/api'
 export default {
   data() {
     return {
-      FormFieldOptions: {}
+      FormFieldOptions: {},
+      FieldsSet: {}
     }
   },
   mounted() {
@@ -11,7 +12,7 @@ export default {
   },
   methods: {
     initFields() {
-      return []
+      return Object.values(this.FieldsSet)
     },
     request(item) {
       let func = this[`_${item.funcName}`]
@@ -36,6 +37,9 @@ export default {
           label: item.materialName
         }
       }, resTransformer);
+    },
+    _GetCustomers(key = "customers", params = {}, mapper, resTransformer) {
+      this.__baseRequest(API.getCustomers(params), key, mapper, resTransformer);
     },
     _GetProjects(key = "projects", params = {}, mapper, resTransformer) {
       this.__baseRequest(API.getProjects(params), key, mapper, resTransformer);

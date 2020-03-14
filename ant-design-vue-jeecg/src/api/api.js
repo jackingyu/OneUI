@@ -123,6 +123,11 @@ const getProjects = (params) => getAction(Rest.GET_PROJECTS.url, params);
 const createProject = (params) => postAction(Rest.CREATE_PROJECT.url, params);
 const updateProject = (params) => putAction(Rest.UPDATE_PROJECT.url, params);
 
+const getCustomers = (params) => getAction(Rest.GET_CUSTOMERS.url, params);
+const getCustomer = (id, params) => getAction(sloter(Rest.GET_CUSTOMER.url, id), params);
+const createCustomer = (params) => postAction(Rest.CREATE_CUSTOMER.url, params);
+const updateCustomer = (params) => putAction(Rest.UPDATE_CUSTOMER.url, params);
+
 
 const getVendorPayment = (id, params) => getAction(Rest.GET_VENDORPAYMENT.url, params);
 const getVendorPayments = (params) => getAction(Rest.GET_VENDORPAYMENTS.url, params);
@@ -133,6 +138,22 @@ const getSettlements = (params) => getAction(Rest.GET_SETTLEMENTS.url, params);
 const getSettlement = (id, params) => getAction(sloter(Rest.GET_SETTLEMENT.url, id), params);
 const createSettlement = (params) => postAction(Rest.CREATE_SETTLEMENT.url, params);
 const updateSettlement = (params) => putAction(Rest.UPDATE_SETTLEMENT.url, params);
+
+const getSaleInvoices = (params) => getAction(Rest.GET_SALEINVOICES.url, params);
+const getSaleInvoice = (id, params) => getAction(sloter(Rest.GET_SALEINVOICE.url, id), params);
+const createSaleInvoice = (params) => postAction(Rest.CREATE_SALEINVOICE.url, params);
+const updateSaleInvoice = (params) => putAction(Rest.UPDATE_SALEINVOICE.url, params);
+
+const getSaleReceipts = (params) => getAction(Rest.GET_SALERECEIPTS.url, params);
+const getSaleReceipt = (id, params) => getAction(sloter(Rest.GET_SALERECEIPT.url, id), params);
+const createSaleReceipt = (params) => postAction(Rest.CREATE_SALERECEIPT.url, params);
+const updateSaleReceipt = (params) => putAction(Rest.UPDATE_SALERECEIPT.url, params);
+
+const getInvoices = (params) => getAction(Rest.GET_VENDORINVOICES.url, params);
+const getInvoice = (id, params) => getAction(sloter(Rest.GET_VENDORINVOICE.url, id), params);
+const createInvoice = (params) => postAction(Rest.CREATE_VENDORINVOICE.url, params);
+const updateInvoice = (params) => putAction(Rest.UPDATE_VENDORINVOICE.url, params);
+const delInvoice = (params) => deleteAction(Rest.DEL_VENDORINVOICE.url, params);
 
 const getCompanies = (params) => getAction(Rest.GET_COMPANIES.url, params);
 
@@ -201,6 +222,10 @@ export {
   getContract,
   createContract,
   updateContract,
+  getCustomer,
+  getCustomers,
+  createCustomer,
+  updateCustomer,
   getProjects,
   createProject,
   updateProject,
@@ -211,7 +236,20 @@ export {
   getSettlements,
   getSettlement,
   createSettlement,
-  updateSettlement
+  updateSettlement,
+  getInvoices,
+  getInvoice,
+  createInvoice,
+  updateInvoice,
+  delInvoice,
+  getSaleInvoices,
+  getSaleInvoice,
+  createSaleInvoice,
+  updateSaleInvoice,
+  getSaleReceipts,
+  getSaleReceipt,
+  createSaleReceipt,
+  updateSaleReceipt
   // ✨ Bussiness END - by Fred
 }
 

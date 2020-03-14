@@ -4,9 +4,9 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
-            <a-form-item label="代码名称">
-              <j-input placeholder="材料商或者分包商代码名称" v-model="queryParam.vendorName"></j-input>
+          <a-col :md="8" :sm="12">
+            <a-form-item label="供应商名称">
+              <j-input placeholder="材料商或者分包商名称" v-model="queryParam.vendorName"></j-input>
             </a-form-item>
           </a-col>
 

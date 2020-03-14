@@ -21,7 +21,7 @@ import InvoiceForm from './modules/form/InvoiceForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getInvoices, getInvoice, createInvoice, updateInvoice, delInvoice } from '@/api/api'
+import { getSaleReceipts, getSaleReceipt, createSaleReceipt, updateSaleReceipt } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
@@ -52,7 +52,7 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getInvoice(id).then(res => {
+        getSaleReceipt(id).then(res => {
           if (res.success) {
             this.$refs.invoice.edit(res.result)
           } else {
@@ -67,9 +67,9 @@ export default {
       this.loading = true
       let promises
       if (postData.id) {
-        promises = updateInvoice(postData)
+        promises = updateSaleReceipt(postData)
       } else {
-        promises = createInvoice(postData)
+        promises = createSaleReceipt(postData)
       }
       promises
         .then(res => {
