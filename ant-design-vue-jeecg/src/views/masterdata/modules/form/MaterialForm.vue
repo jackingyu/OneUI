@@ -28,7 +28,7 @@
 
       <a-form-item label="一次性物料" :labelCol="labelCol" :wrapperCol="wrapperCol">
         <j-dict-select-tag
-          v-decorator="['oneTimeFlag', {}]"
+          v-decorator="['oneTimeFlag']"
           placeholder
           :type="'radio'"
           :triggerChange="true"
@@ -129,6 +129,9 @@ export default {
       let that = this
       that.form.resetFields()
       that.visible = true
+      if (record.oneTimeFlag == undefined) {
+        record.oneTimeFlag = 0
+      }
       that.model = Object.assign({}, record)
       that.$nextTick(() => {
         that.form.setFieldsValue(pick(this.model, 'materialName', 'materialCode', 'materialDescription'))

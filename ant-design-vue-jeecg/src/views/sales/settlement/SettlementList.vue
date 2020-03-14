@@ -5,17 +5,34 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="合同类型">
-              <j-dict-select-tag
-                v-model="queryParam.contractTypeCode"
-                placeholder="请选择合同类型"
-                dictCode="contract_type"
-              />
+            <a-form-item label="合同实施内容">
+              <a-input v-model="queryParam.contractContent" placeholder="请填写合同实施内容" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="12">
-            <a-form-item label="供应商名称">
-              <j-input placeholder="请输入供应商名称" v-model="queryParam.vendorName"></j-input>
+            <a-form-item label="供应商">
+              <a-select
+                v-decorator="['vendorId']"
+                placeholder="请选择供应商"
+                :filterOption="false"
+                :showSearch="true"
+                @search="fetchVendorList"
+              >
+                <a-select-option
+                  v-for="(vendor, index) in vendors"
+                  :key="index"
+                  :value="vendor.id"
+                >{{vendor.vendorName}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="12">
+            <a-form-item label>
+              <a-range-picker
+                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                format="YYYY-MM-DD"
+                :placeholder="['开始时间', '结束时间']"
+              />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -51,7 +68,7 @@
         :loading="loading"
         @change="handleTableChange"
       >
-        <span slot="date" slot-scope="text, record">{{record.beginDate + '~' + record.endDate}}</span>
+        <!-- <span slot="date" slot-scope="text, record">{{record.createTime + '~' + record.endDate}}</span> -->
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <!-- <a-divider type="vertical" /> -->
@@ -80,13 +97,13 @@
 import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
 // import ProjectModal from './modules/ProjectModal'
 import { putAction } from '@/api/manage'
-import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
+import { createMaterial, updateMaterial, getVendors } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
-  name: 'ContractList',
+  name: 'SettlementList',
   mixins: [JeecgListMixin],
   components: {
     // ProjectModal,
@@ -98,35 +115,43 @@ export default {
       queryParam: {},
       materialGroups: [],
       oneTimeFlags: [],
+      vendors: [],
       columns: [
-        // {
-        //   title: '公司ID',
-        //   align: 'center',
-        //   width: 160,
-        //   dataIndex: 'companyId'
-        // },
         {
-          title: '合同名称',
+          title: '结算单号',
           align: 'center',
-          dataIndex: 'contractTitle'
+          width: 160,
+          dataIndex: 'contractNumber'
         },
         {
-          title: '联络人',
+          title: '行项目',
           align: 'center',
-          width: 100,
-          dataIndex: 'contactPerson'
+          dataIndex: 'contractItemNo'
         },
         {
-          title: '联络人电话',
+          title: '日期',
           align: 'center',
-          dataIndex: 'contactPhone'
+          dataIndex: 'createTime'
         },
         {
-          title: '合同有效期',
+          title: '单价',
           align: 'center',
-          scopedSlots: {
-            customRender: 'date'
-          }
+          dataIndex: 'unitPrice'
+        },
+        {
+          title: '数量',
+          align: 'center',
+          dataIndex: 'total'
+        },
+        {
+          title: '物料',
+          align: 'center',
+          dataIndex: 'materialId'
+        },
+        {
+          title: '合同实施内容',
+          align: 'center',
+          dataIndex: 'contractContent'
         },
         {
           title: '操作',
@@ -137,7 +162,7 @@ export default {
         }
       ],
       url: {
-        list: Rest.GET_CONTRACTS.url
+        list: Rest.GET_SALESETTLEMENTS.url
       }
     }
   },
@@ -146,7 +171,19 @@ export default {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
     }
   },
+  mounted() {
+    this.fetchVendorList()
+  },
   methods: {
+    fetchVendorList(word) {
+      getVendors({ vendorName: word ? `*${word}*` : '' })
+        .then(res => {
+          if (res.success) {
+            this.vendors = res.result.records
+          }
+        })
+        .finally(() => {})
+    },
     initDictConfig() {
       initDictOptions('material_group').then(res => {
         if (res.success) {
@@ -161,14 +198,14 @@ export default {
     },
     handleEdit(record) {
       this.$router.push({
-        path: '/purchase/contract',
+        path: '/sale/settlement',
         query: {
           id: record.id
         }
       })
     },
     handleAdd() {
-      this.$router.push({ path: '/purchase/contract' })
+      this.$router.push({ path: '/sale/settlement' })
     },
     handleDelete(id) {}
   }

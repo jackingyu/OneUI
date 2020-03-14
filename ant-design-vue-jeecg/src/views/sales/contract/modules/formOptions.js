@@ -67,8 +67,7 @@ export const formItems = [
   {
     label: '约定税率',
     valueKey: 'taxRate',
-    inputType: 'dict',
-    dict: 'tax_rate',
+    inputType: 'input',
     required: true,
     contractType: ''
   },

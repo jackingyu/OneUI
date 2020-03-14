@@ -11,12 +11,7 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-row :gutter="24">
-          <a-col
-            v-for="(item, index) in formItems"
-            :key="index"
-            :xs="24"
-            :md="item.inputType=='textarea'?24: 8"
-          >
+          <a-col v-for="(item, index) in formItems" :key="index" :xs="24" :md="8">
             <a-form-item :label="item.label">
               <template v-if="item.inputType=='select'">
                 <a-select
@@ -74,7 +69,7 @@
                       slot="addonAfter"
                       style="width: 80px"
                       v-if="item.suffix.inputType=='dict'"
-                      v-decorator="[item.suffix.valueKey,{rules: [{ required: item.suffix.required, message: '请选择'+item.label}]}]"
+                      v-decorator="[item.suffix.valueKey]"
                       :triggerChange="true"
                       :disabled="item.suffix.readOnly"
                       :readOnly="item.suffix.readOnly"
@@ -84,7 +79,7 @@
                       :dictCode="item.suffix.dict"
                     />
                     <a-select
-                      v-decorator="[item.suffix.valueKey,{rules: [{ required: item.suffix.required, message: '请选择'+item.label}]}]"
+                      v-decorator="[item.suffix.valueKey]"
                       v-else
                       slot="addonAfter"
                       style="width: 80px"
@@ -102,7 +97,7 @@
               </template>
               <template v-else-if="item.inputType=='textarea'" :disabled="item.readOnly">
                 <a-textarea
-                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required,  message: '请输入'+item.label}]}]"
                   :autosize="{ minRows: 5, maxRows: 10 }"
                   :placeholder="`请输入${item.label}`"
                 />
@@ -138,17 +133,16 @@ import pick from 'lodash.pick'
 import moment from 'moment'
 import { getMaterials } from '@/api/api'
 import { formItems } from './formOptions'
-
 import FormFieldMixin from '@/mixins/FormFieldMixin'
 export default {
   name: 'RowProjectModal',
-  mixins: [FormFieldMixin],
   props: {
     type: {
       type: String,
       default: 'st'
     }
   },
+  mixins: [FormFieldMixin],
   watch: {
     type: function(n, o) {
       this.contractType = n
@@ -159,26 +153,74 @@ export default {
       return formItems.filter(item => !item.contractType || item.contractType == this.contractType)
     }
   },
-  created() {
-    window.M = this
-  },
   data() {
     return {
       title: '操作',
+      FieldsSet: {
+        material: {
+          key: 'materialId',
+          funcName: 'GetMaterials',
+          params: {}
+        },
+        contract: {
+          key: 'contractId',
+          funcName: 'GetContracts',
+          params: {},
+          mapper: item => {
+            return {
+              key: item.id,
+              value: item.id,
+              label: item.contractTitle
+            }
+          }
+        },
+        contractItems: {
+          key: 'contractItemId',
+          funcName: 'GetContractsItems',
+          params: {},
+          mapper: item => {
+            return {
+              key: item.id,
+              value: item.id,
+              label: '[' + item.itemNo + ']' + item.comments
+            }
+          },
+          resTransformer: res => {
+            return res.result.purchaseContractItems
+          }
+        },
+        project: {
+          key: 'projectId',
+          funcName: 'GetProjects',
+          params: {},
+          mapper: item => {
+            return {
+              key: item.id,
+              value: item.id,
+              label: item.projectName
+            }
+          }
+        }
+      },
       visible: false,
       contractType: this.type,
       model: {},
       col: 3,
       confirmLoading: false,
       form: this.$form.createForm(this),
-      validatorRules: {}
+      validatorRules: {},
+      url: {
+        add: '/test/jeecgDemo/add',
+        edit: '/test/jeecgDemo/edit'
+      }
     }
   },
+  created() {
+    window.Z = this
+  },
   methods: {
-    add(num) {
-      this.edit({
-        itemNo: num
-      })
+    add(model) {
+      this.edit(model || {})
     },
     edit(record) {
       this.form.resetFields()
@@ -192,6 +234,7 @@ export default {
             'quantity',
             'itemNo',
             'comments',
+            'taxRate',
             'acceptanceCriteria',
             'contractSchedule',
             'qualityStandard',
@@ -199,15 +242,13 @@ export default {
           )
         )
         this.form.setFieldsValue({
-          taxRate: isNaN(record.taxRate) ? record.taxRate : '' + record.taxRate,
-          materialTypeCode: isNaN(record.materialTypeCode) ? record.materialTypeCode : '' + record.materialTypeCode,
-          unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode,
-          paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
+          materialGroupCode: record.materialGroupCode,
+          unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode
         })
-        if (record.materialCode) {
+        if (record.materialId) {
           this.form.setFieldsValue({
-            materialCode: {
-              key: record.materialCode == undefined ? '' : record.materialCode + '',
+            materialId: {
+              key: record.materialId,
               label: record.materialName
             }
           })
@@ -217,7 +258,7 @@ export default {
       //   unitPrice: '100',
       //   quantity: '33',
       //   itemNo: 10,
-      //   materialTypeCode: '2',
+      //   materialGroupCode: '2',
       //   materialCode: { key: 'M6', label: '测试物料6' },
       //   comments: '合同内容',
       //   unitCode: '1',
@@ -239,12 +280,13 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           this.confirmLoading = true
+          let formData = pick(values, 'unitPrice', 'quantity', 'unitCode', 'contractContent')
           let postData = {
-            ...this.model,
-            ...values,
-            // taxRate: values.taxRate.key,
-            materialCode: values.materialCode.key,
-            materialName: values.materialCode.label
+            ...formData,
+            projectId: values.projectId.key,
+            materialId: values.materialId.key,
+            contractId: values.contractId.key,
+            contractItemId: values.contractItemId.key
           }
           this.$emit('submit', postData)
           this.visible = false
@@ -256,40 +298,58 @@ export default {
       this.close()
     },
     searchWordSelect(word, key) {
-      if (key == 'materialCode') {
-        let code = this.form.getFieldValue('materialTypeCode')
+      if (key == 'materialId') {
+        let code = this.form.getFieldValue('materialGroupCode')
         this.materialList({
           materialGroupCode: code,
           materialName: word ? `*${word}*` : undefined
         })
+      } else if (key == 'projectId') {
+        this.projectList({
+          projectName: word ? `*${word}*` : undefined
+        })
+      } else if (key == 'contractId') {
+        this.contractList({
+          contractName: word ? `*${word}*` : undefined
+        })
       }
     },
     onSelectChangeWithKey(val, key) {
-      if (key == 'materialTypeCode') {
-        this.form.setFieldsValue({ materialCode: {} })
+      if (key == 'materialGroupCode') {
+        this.form.setFieldsValue({ materialId: {} })
         this.materialList({
           materialGroupCode: val
         })
-      } else if (key == 'materialCode') {
-        // this.form.setFieldsValue({ materialCode: {} })
-        // this.materialList({
-        //   materialGroupCode: val
-        // })
+      } else if (key == 'contractId') {
+        this.contractItemsList({
+          id: val.key
+        })
       }
     },
     initFields() {
-      return [
-        {
-          key: 'materialCode',
-          funcName: 'GetMaterials',
-          params: {}
-        }
-      ]
+      return Object.values(this.FieldsSet)
     },
     materialList(params) {
       this.request({
-        key: 'materialCode',
-        funcName: 'GetMaterials',
+        ...this.FieldsSet.material,
+        params
+      })
+    },
+    projectList(params) {
+      this.request({
+        ...this.FieldsSet.project,
+        params
+      })
+    },
+    contractItemsList(params) {
+      this.request({
+        ...this.FieldsSet.contractItems,
+        params
+      })
+    },
+    contractList(params) {
+      this.request({
+        ...this.FieldsSet.contract,
         params
       })
     }

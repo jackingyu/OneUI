@@ -8,6 +8,7 @@
         <a-form-item label="供应商编号">
           <a-input
             placeholder="请输入供应商编号"
+            :disabled="!!model && !!model.id"
             v-decorator="[
               'vendorCode',
               {rules: [{ required: true, message: '请输入供应商编号', whitespace: true}]}
@@ -55,7 +56,7 @@
             placeholder="请输入联系电话"
             v-decorator="[
               'contactPhone',
-              {rules: [{ required: true, message: '请输入联系电话', whitespace: true}]}
+              {rules: [{ required: true, message: '请输入联系电话', whitespace: true},ruleWith('phone')]}
             ]"
           />
         </a-form-item>
@@ -66,7 +67,7 @@
             placeholder="请输入联系人身份证号"
             v-decorator="[
               'contactPersonId',
-              {rules: [{ required: true, message: '请输入联系人身份证号', whitespace: true}]}
+              {rules: [{ required: true, message: '请输入联系人身份证号', whitespace: true},ruleWith('idCard')]}
             ]"
           />
         </a-form-item>
@@ -123,12 +124,12 @@
     <a-row v-if="false" class="form-row" :gutter="16">
       <a-col :lg="6" :md="12" :sm="24">
         <a-form-item label="应付总额">
-          <a-input placeholder="请输入应付总额" v-decorator="['orderNum']" />
+          <a-input placeholder="请输入应付总额" v-decorator="['orderNum',{rules:[ruleWith('money')]}]" />
         </a-form-item>
       </a-col>
       <a-col :xl="{span: 7, offset: 1}" :lg="{span: 8}" :md="{span: 12}" :sm="24">
         <a-form-item label="已付总额">
-          <a-input placeholder="请输入已付总额" v-decorator="[ 'payNum' ]" />
+          <a-input placeholder="请输入已付总额" v-decorator="[ 'payNum',{rules:[ruleWith('money')]} ]" />
         </a-form-item>
       </a-col>
     </a-row>
@@ -140,8 +141,11 @@
 <script>
 import pick from 'lodash.pick'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
+import ValidationMixin from '@/mixins/ValidationMixin'
+
 export default {
   name: 'SupplierForm',
+  mixins: [ValidationMixin],
   components: {
     JBankSelectTag
   },

@@ -20,7 +20,7 @@
             <a-form-item :label="item.label">
               <template v-if="item.inputType=='select'">
                 <a-select
-                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
+                  v-decorator="[`${item.valueKey}`,{rules: [{ required: true, message: '请选择'+item.label}]}]"
                   :placeholder="`请选择${item.label}`"
                   :filterOption="false"
                   :disabled="item.readOnly"
@@ -30,15 +30,16 @@
                   :showSearch="!item.onlySelect"
                 >
                   <a-select-option
-                    v-for="option in (FormFieldOptions[item.valueKey]||[])"
-                    :key="''+option.key"
-                    :value="''+option.key"
+                    v-if="(selectOptions[item.valueKey])"
+                    v-for="option in selectOptions[item.valueKey]"
+                    :key="option.key"
+                    :value="option.key"
                   >{{option.label}}</a-select-option>
                 </a-select>
               </template>
               <template v-else-if="item.inputType=='input'">
                 <a-input
-                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请输入'+item.label}]}]"
                   :disabled="item.readOnly"
                   :placeholder="`请输入${item.label}`"
                 >
@@ -63,7 +64,7 @@
                       style="width: 80px"
                     >
                       <a-select-option
-                        v-for="option in (FormFieldOptions[item.prefix.valueKey]||[])"
+                        v-for="option in (selectOptions[item.prefix.valueKey]||[])"
                         :key="option.key"
                         :value="option.key"
                       >{{option.label}}</a-select-option>
@@ -72,9 +73,10 @@
                   <template v-if="item.suffix">
                     <j-dict-select-tag
                       slot="addonAfter"
+                      defaultValue=".com"
                       style="width: 80px"
                       v-if="item.suffix.inputType=='dict'"
-                      v-decorator="[item.suffix.valueKey,{rules: [{ required: item.suffix.required, message: '请选择'+item.label}]}]"
+                      v-decorator="[item.suffix.valueKey]"
                       :triggerChange="true"
                       :disabled="item.suffix.readOnly"
                       :readOnly="item.suffix.readOnly"
@@ -84,7 +86,7 @@
                       :dictCode="item.suffix.dict"
                     />
                     <a-select
-                      v-decorator="[item.suffix.valueKey,{rules: [{ required: item.suffix.required, message: '请选择'+item.label}]}]"
+                      v-decorator="[item.suffix.valueKey]"
                       v-else
                       slot="addonAfter"
                       style="width: 80px"
@@ -92,7 +94,7 @@
                       :defaultValue="item.suffix.value"
                     >
                       <a-select-option
-                        v-for="option in (FormFieldOptions[item.suffix.valueKey]||[])"
+                        v-for="option in (selectOptions[item.suffix.valueKey]||[])"
                         :key="option.key"
                         :value="option.key"
                       >{{option.label}}</a-select-option>
@@ -102,14 +104,14 @@
               </template>
               <template v-else-if="item.inputType=='textarea'" :disabled="item.readOnly">
                 <a-textarea
-                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请输入'+item.label}]}]"
                   :autosize="{ minRows: 5, maxRows: 10 }"
                   :placeholder="`请输入${item.label}`"
                 />
               </template>
               <template v-else-if="item.inputType=='dict'">
                 <j-dict-select-tag
-                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: true, message: '请选择'+item.label}]}]"
                   :triggerChange="true"
                   :disabled="item.readOnly"
                   :readOnly="item.readOnly"
@@ -120,9 +122,7 @@
                 />
               </template>
               <template v-else>
-                <span
-                  v-text="item.evalue?item.evalue(form.getFieldValue('unitPrice'),form.getFieldValue('quantity')):item.value"
-                ></span>
+                <span v-text="item.evalue?item.evalue(form):item.value"></span>
               </template>
             </a-form-item>
           </a-col>
@@ -138,11 +138,24 @@ import pick from 'lodash.pick'
 import moment from 'moment'
 import { getMaterials } from '@/api/api'
 import { formItems } from './formOptions'
+const demoData = {
+  unitPrice: '100',
+  quantity: '33',
+  contractRowNum: 10,
+  materialGroupCode: '2',
+  materialCode: { key: 'M6', label: '测试物料6' },
+  comments: '合同内容',
+  unitCode: '1',
+  taxRate: { key: 6.25, label: '6.25‰', value: 6.25 },
+  acceptanceCriteria: 'YE',
+  contractSchedule: '180天',
+  qualityStandard: 'ISO9001',
+  paymentMethodCode: '1',
+  paymentTerm: '合同期前'
+}
 
-import FormFieldMixin from '@/mixins/FormFieldMixin'
 export default {
   name: 'RowProjectModal',
-  mixins: [FormFieldMixin],
   props: {
     type: {
       type: String,
@@ -159,76 +172,42 @@ export default {
       return formItems.filter(item => !item.contractType || item.contractType == this.contractType)
     }
   },
-  created() {
-    window.M = this
-  },
   data() {
     return {
       title: '操作',
       visible: false,
       contractType: this.type,
-      model: {},
+      model: demoData,
+      selectOptions: {
+        taxRate: [
+          {
+            key: 6.25,
+            value: '6.25',
+            label: '6.25‰'
+          }
+        ]
+      },
       col: 3,
       confirmLoading: false,
       form: this.$form.createForm(this),
-      validatorRules: {}
+      validatorRules: {},
+      url: {
+        add: '/test/jeecgDemo/add',
+        edit: '/test/jeecgDemo/edit'
+      }
     }
   },
   methods: {
-    add(num) {
-      this.edit({
-        itemNo: num
-      })
+    add() {
+      this.edit({ ...demoData })
     },
     edit(record) {
       this.form.resetFields()
       this.model = Object.assign({}, record)
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue(
-          pick(
-            this.model,
-            'unitPrice',
-            'quantity',
-            'itemNo',
-            'comments',
-            'acceptanceCriteria',
-            'contractSchedule',
-            'qualityStandard',
-            'paymentTerm'
-          )
-        )
-        this.form.setFieldsValue({
-          taxRate: isNaN(record.taxRate) ? record.taxRate : '' + record.taxRate,
-          materialTypeCode: isNaN(record.materialTypeCode) ? record.materialTypeCode : '' + record.materialTypeCode,
-          unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode,
-          paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
-        })
-        if (record.materialCode) {
-          this.form.setFieldsValue({
-            materialCode: {
-              key: record.materialCode == undefined ? '' : record.materialCode + '',
-              label: record.materialName
-            }
-          })
-        }
+        this.form.setFieldsValue(this.model)
       })
-      // const demoData = {
-      //   unitPrice: '100',
-      //   quantity: '33',
-      //   itemNo: 10,
-      //   materialTypeCode: '2',
-      //   materialCode: { key: 'M6', label: '测试物料6' },
-      //   comments: '合同内容',
-      //   unitCode: '1',
-      //   taxRate: '0.225',
-      //   // taxRate: { key: 6.25, label: '6.25‰', value: 6.25 },
-      //   acceptanceCriteria: 'YE',
-      //   contractSchedule: '180天',
-      //   qualityStandard: 'ISO9001',
-      //   paymentMethodCode: '1',
-      //   paymentTerm: '合同期前'
-      // }
     },
     close() {
       this.$emit('close')
@@ -240,9 +219,8 @@ export default {
         if (!err) {
           this.confirmLoading = true
           let postData = {
-            ...this.model,
             ...values,
-            // taxRate: values.taxRate.key,
+            taxRate: values.taxRate.key,
             materialCode: values.materialCode.key,
             materialName: values.materialCode.label
           }
@@ -255,43 +233,37 @@ export default {
     handleCancel() {
       this.close()
     },
-    searchWordSelect(word, key) {
-      if (key == 'materialCode') {
-        let code = this.form.getFieldValue('materialTypeCode')
-        this.materialList({
-          materialGroupCode: code,
-          materialName: word ? `*${word}*` : undefined
-        })
-      }
-    },
+    searchWordSelect(word, key) {},
     onSelectChangeWithKey(val, key) {
-      if (key == 'materialTypeCode') {
-        this.form.setFieldsValue({ materialCode: {} })
-        this.materialList({
-          materialGroupCode: val
-        })
-      } else if (key == 'materialCode') {
-        // this.form.setFieldsValue({ materialCode: {} })
-        // this.materialList({
-        //   materialGroupCode: val
-        // })
+      if (key == 'materialGroupCode') {
+        this.form.setFieldsValue({ materialCode: '' })
+        this.materialList('', val)
       }
     },
-    initFields() {
-      return [
-        {
-          key: 'materialCode',
-          funcName: 'GetMaterials',
-          params: {}
-        }
-      ]
-    },
-    materialList(params) {
-      this.request({
-        key: 'materialCode',
-        funcName: 'GetMaterials',
-        params
+    //
+    materialList(keyWord, code) {
+      let materialGroupCode = code ? code : this.form.getFieldValue('materialGroupCode')
+      if (!materialGroupCode) {
+        return
+      }
+      let that = this
+      getMaterials({
+        materialGroupCode: materialGroupCode,
+        materialName: keyWord || this.model.materialName
       })
+        .then(res => {
+          if (res.success) {
+            that.selectOptions['materialCode'] = res.result.records.map(item => {
+              return {
+                node: item,
+                key: item.materialCode,
+                value: item.materialCode,
+                label: item.materialName
+              }
+            })
+          }
+        })
+        .finally(() => {})
     }
   }
 }

@@ -29,6 +29,12 @@
           <a-input placeholder="请输入项目名称" v-decorator="['projectName', validatorRules.projectName]" />
         </a-form-item>
         <a-form-item label="项目分组" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <!-- <j-dict-select-tag
+            v-model="queryParam.materialGroupCode"
+             v-decorator="['projectGroupCode', validatorRules.projectName]"
+            placeholder="请选择物料组"
+            dictCode="material_group"
+          />-->
           <a-input
             placeholder="请输入项目分组代号"
             v-decorator="['projectGroupCode', validatorRules.projectName]"
@@ -99,7 +105,7 @@ import { getAction } from '@/api/manage'
 import { disabledAuthFilter } from '@/utils/authFilter'
 import { createProject, updateProject, getCompanies } from '@/api/api'
 export default {
-  name: 'materialModal',
+  name: 'projectModal',
   data() {
     this.fetchList = debounce(this.fetchList, 800)
     return {

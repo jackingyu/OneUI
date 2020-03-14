@@ -192,6 +192,7 @@ export default {
             'quantity',
             'itemNo',
             'comments',
+            'taxRate',
             'acceptanceCriteria',
             'contractSchedule',
             'qualityStandard',
@@ -199,7 +200,6 @@ export default {
           )
         )
         this.form.setFieldsValue({
-          taxRate: isNaN(record.taxRate) ? record.taxRate : '' + record.taxRate,
           materialTypeCode: isNaN(record.materialTypeCode) ? record.materialTypeCode : '' + record.materialTypeCode,
           unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode,
           paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
