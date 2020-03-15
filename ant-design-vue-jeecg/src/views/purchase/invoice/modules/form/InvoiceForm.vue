@@ -10,7 +10,6 @@
             <a-select
               v-decorator="['vendorId',{rules: [{ required: true, message: '请选择供应商', whitespace: true}]}]"
               placeholder="请选择供应商"
-              :filterOption="false"
               :showSearch="true"
               @search="fetchVendorList"
               @change="handleVendorChange"
@@ -108,9 +107,12 @@
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="税率">
-            <a-input placeholder="请输入税率" v-decorator="[
-              'taxRate'
-            ]" />
+            <j-dict-select-tag
+              v-decorator="[ 'taxRate', {rules: [{ required: true, message: '请选择税率'}]} ]"
+              :triggerChange="true"
+              placeholder="请选择税率"
+              dictCode="tax_rate"
+            />
           </a-form-item>
         </a-col>
       </a-row>
@@ -160,12 +162,14 @@ export default {
       this.edit({})
     },
     edit(record) {
-      this.model = record
-      let that = this
+      this.model = { ...record }
       this.$nextTick(() => {
-        that.form.setFieldsValue(
-          pick(record, 'id', 'vendorId', 'contractContent', 'invoiceDate', 'amount', 'invoiceNumber', 'taxRate')
+        this.form.setFieldsValue(
+          pick(record, 'id', 'vendorId', 'contractContent', 'invoiceDate', 'amount', 'invoiceNumber')
         )
+        this.form.setFieldsValue({
+          taxRate: isNaN(record.taxRate) ? record.taxRate : '' + record.taxRate
+        })
       })
     },
     fetchVendorList(word) {
