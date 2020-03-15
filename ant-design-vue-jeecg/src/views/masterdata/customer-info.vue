@@ -43,7 +43,6 @@ export default {
             this.model = {
               ...res.result
             }
-            debugger
             this.$refs.customerForm.edit(this.model)
           } else {
             this.$message.warning(res.message)
@@ -53,10 +52,11 @@ export default {
         this.$refs.customerForm.edit(this.$route.query)
       }
     },
-    _submitForm(postData) {
+    _submitForm(postData = {}) {
       this.loading = true
       let promises
-      if (postData.id) {
+      if (this.model.id) {
+        postData.id = this.model.id
         promises = updateCustomer(postData)
       } else {
         promises = createCustomer(postData)

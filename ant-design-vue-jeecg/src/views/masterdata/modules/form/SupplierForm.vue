@@ -157,14 +157,15 @@ export default {
   },
   data() {
     return {
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      model: {}
     }
   },
   methods: {
     add() {
       this.edit({})
     },
-    edit(record) {
+    edit(record = {}) {
       this.model = record
       let that = this
       this.$nextTick(() => {

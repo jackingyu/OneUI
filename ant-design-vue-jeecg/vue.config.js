@@ -4,6 +4,9 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
+const productionGzipExtensions = ['js', 'css', 'png', 'ttf', 'woff', 'woff2', 'eot']
+
 // vue.config.js
 module.exports = {
   /*
@@ -20,6 +23,17 @@ module.exports = {
     //生产环境取消 console.log
     if (process.env.NODE_ENV === 'production') {
       config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
+    }
+    config.resolve.extensions = ['.js', '.less', '.scss', '.vue']
+    if (process.env.NODE_ENV === 'production') {
+      config.plugins.push(
+        new CompressionWebpackPlugin({
+          filename: '[path].gz[query]',
+          algorithm: 'gzip',
+          test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+          threshold: 1024,
+          minRatio: 0.8
+        }))
     }
   },
   chainWebpack: (config) => {

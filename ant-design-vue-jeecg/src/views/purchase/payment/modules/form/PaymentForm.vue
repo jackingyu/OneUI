@@ -71,7 +71,7 @@
             <a-input
               placeholder="请输入付款金额"
               v-decorator="[
-              'paymentAmount'
+              'paymentAmount',{rules:[ruleWith('money')]}
             ]"
             />
           </a-form-item>
@@ -106,6 +106,7 @@
 import pick from 'lodash.pick'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import FormFieldMixin from '@/mixins/FormFieldMixin'
+import ValidationMixin from '@/mixins/ValidationMixin'
 import DetailList from '@/components/tools/DetailList'
 import JDate from '@/components/jeecg/JDate'
 export default {
@@ -115,7 +116,7 @@ export default {
     DetailList,
     JDate
   },
-  mixins: [FormFieldMixin],
+  mixins: [FormFieldMixin, ValidationMixin],
   props: {
     showSubmit: {
       type: Boolean,
