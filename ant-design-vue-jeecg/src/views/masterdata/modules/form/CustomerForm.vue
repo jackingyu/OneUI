@@ -146,20 +146,21 @@ export default {
     },
     edit(record = {}) {
       this.model = {
-        ...record
+        ...record,
+        customerGroupCode: isNaN(record.customerGroupCode) ? record.customerGroupCode : '' + record.customerGroupCode
       }
       this.$nextTick(() => {
         this.form.setFieldsValue(
           pick(
-            record,
+            this.model,
             'id',
             'businessLicense',
+            'customerGroupCode',
             'contactPerson',
             'contactPersonId',
             'contactPhone',
             'createTime',
             'customerCode',
-            'customerGroupCode',
             'customerName',
             'socialCreditCode',
             'taxCode',

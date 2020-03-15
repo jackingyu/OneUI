@@ -129,7 +129,7 @@ const createCustomer = (params) => postAction(Rest.CREATE_CUSTOMER.url, params);
 const updateCustomer = (params) => putAction(Rest.UPDATE_CUSTOMER.url, params);
 
 
-const getVendorPayment = (id, params) => getAction(Rest.GET_VENDORPAYMENT.url, params);
+const getVendorPayment = (id, params) => getAction(sloter(Rest.GET_VENDORPAYMENT.url, id), params);
 const getVendorPayments = (params) => getAction(Rest.GET_VENDORPAYMENTS.url, params);
 const createVendorPayment = (params) => postAction(Rest.CREATE_VENDORPAYMENT.url, params);
 const updateVendorPayment = (params) => putAction(Rest.UPDATE_VENDORPAYMENT.url, params);

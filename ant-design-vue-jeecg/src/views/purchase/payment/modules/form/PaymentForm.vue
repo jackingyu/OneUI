@@ -16,7 +16,7 @@
               @change="handleVendorChange"
             >
               <a-select-option
-                v-for="(vendor, index) in vendors"
+                v-for="(vendor, index) in FormFieldOptions.vendors"
                 :key="index"
                 :value="vendor.id"
               >{{vendor.vendorName}}</a-select-option>
@@ -27,7 +27,6 @@
           <a-form-item label="当前累计欠款">
             <a-input
               placeholder="当前累计欠款"
-              disabled
               v-decorator="[
               'paymentdebtAmount',
               {rules: [{ required: true, message: '请输入当前累计欠款', whitespace: false}]}
@@ -50,7 +49,7 @@
             <j-date
               :trigger-change="true"
               placeholder="付款日期"
-              format="YYYY-MM-DD"
+              format="YYYY-MM-DD HH:mm:ss"
               style="width:100%"
               v-decorator="['paymentDate',{rules: [{ required: true, message: '请选择结算时间'}]}]"
             ></j-date>
@@ -70,7 +69,6 @@
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="付款金额">
             <a-input
-              disabled
               placeholder="请输入付款金额"
               v-decorator="[
               'paymentAmount'
@@ -107,9 +105,8 @@
 <script>
 import pick from 'lodash.pick'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
-
+import FormFieldMixin from '@/mixins/FormFieldMixin'
 import DetailList from '@/components/tools/DetailList'
-import { getVendors, getProjects } from '@/api/api'
 import JDate from '@/components/jeecg/JDate'
 export default {
   name: 'PaymentForm',
@@ -118,6 +115,7 @@ export default {
     DetailList,
     JDate
   },
+  mixins: [FormFieldMixin],
   props: {
     showSubmit: {
       type: Boolean,
@@ -131,70 +129,51 @@ export default {
       model: null,
       banks: [],
       vendors: [],
-      projects: []
+      projects: [],
+      FieldsSet: {
+        vendors: {
+          key: 'vendors',
+          funcName: 'GetVendors'
+        }
+      }
     }
   },
   created() {
     this.fetchVendorList()
-    this.fetchProjectList()
     // contractTypeCode
   },
   methods: {
     add() {
       this.edit({})
     },
-    edit(record) {
-      this.model = record
+    edit(record = {}) {
+      this.model = { ...record }
       let that = this
       this.$nextTick(() => {
-        that.form.setFieldsValue(
-          pick(
+        that.form.setFieldsValue({
+          ...pick(
             record,
             'id',
-            'vendorCode',
-            'vendorName',
-            'vendorGroupCode',
-            'contactPerson',
-            'contactPhone',
-            'contactPersonId',
-            'socialCreditCode',
-            'taxSubject',
-            'businessLicense',
-            'taxCode'
-          )
-        )
+            'vendorId',
+            'paymentdebtAmount',
+            'paymentDate',
+            // 'paymentMethodCode',
+            'paymentAmount',
+            // 'bankId',
+            'bankAccountId'
+          ),
+          bankId: isNaN(record.bankId) ? record.bankId : '' + record.bankId,
+          paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
+        })
       })
     },
     fetchVendorList(word) {
-      getVendors()
-        .then(res => {
-          if (res.success) {
-            this.vendors = res.result.records
-          }
-        })
-        .finally(() => {})
-    },
-    fetchProjectList(word) {
-      getProjects()
-        .then(res => {
-          if (res.success) {
-            this.projects = res.result.records
-          }
-        })
-        .finally(() => {})
-    },
-    contractChange(v) {
-      if (v == 1) {
-        //外包
-        this.contractType = 'subpack'
-      } else if (v == 2) {
-        this.contractType = 'material'
-      } else if (v == 3) {
-        this.contractType = 'st'
-      } else {
-        this.contractType = ''
-      }
-      this.$emit('contractChange', this.contractType)
+      this.request({
+        ...this.FieldsSet.vendors,
+        params: {
+          vendorName: word ? `*${word}*` : ''
+        }
+      })
     },
     handleVendorChange(v) {
       let vendor = this.vendors.find(item => (item.id = v))
@@ -216,13 +195,6 @@ export default {
           })
         }
       })
-    },
-    validate(rule, value, callback) {
-      const regex = /^user-(.*)$/
-      if (!regex.test(value)) {
-        callback('需要以 user- 开头')
-      }
-      callback()
     }
   }
 }

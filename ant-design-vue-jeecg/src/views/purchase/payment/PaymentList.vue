@@ -161,13 +161,12 @@ export default {
       })
     },
     handleEdit(record) {
-      // this.$refs.modalForm.edit(record)
-      // this.$router.push({
-      //   path: '/purchase/payment',
-      //   query: {
-      //     ...record
-      //   }
-      // })
+      this.$router.push({
+        path: '/purchase/payment',
+        query: {
+          id: record.id
+        }
+      })
     },
     handleAdd() {
       this.$router.push({ path: '/purchase/payment' })

@@ -138,21 +138,6 @@ import pick from 'lodash.pick'
 import moment from 'moment'
 import { getMaterials } from '@/api/api'
 import { formItems } from './formOptions'
-const demoData = {
-  unitPrice: '100',
-  quantity: '33',
-  contractRowNum: 10,
-  materialGroupCode: '2',
-  materialCode: { key: 'M6', label: '测试物料6' },
-  comments: '合同内容',
-  unitCode: '1',
-  taxRate: { key: 6.25, label: '6.25‰', value: 6.25 },
-  acceptanceCriteria: 'YE',
-  contractSchedule: '180天',
-  qualityStandard: 'ISO9001',
-  paymentMethodCode: '1',
-  paymentTerm: '合同期前'
-}
 
 export default {
   name: 'RowProjectModal',
@@ -177,7 +162,7 @@ export default {
       title: '操作',
       visible: false,
       contractType: this.type,
-      model: demoData,
+      model: {},
       selectOptions: {
         taxRate: [
           {
@@ -199,7 +184,7 @@ export default {
   },
   methods: {
     add() {
-      this.edit({ ...demoData })
+      this.edit({ })
     },
     edit(record) {
       this.form.resetFields()
