@@ -26,7 +26,9 @@ export default {
           message: `${valid.title}格式不正确`
         }
       }
-
+    },
+    ruleWithDefault(message = "") {
+      return { required: true, message, whitespace: true }
     }
   }
 }

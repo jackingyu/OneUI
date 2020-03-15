@@ -4,7 +4,7 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
+          <a-col :md="8" :sm="12">
             <a-form-item label="项目名称">
               <j-input placeholder="请输入项目名称" v-model="queryParam.projectName"></j-input>
             </a-form-item>
@@ -100,10 +100,10 @@ export default {
             }
           },*/
         {
-          title: '项目代码',
+          title: '项目编码',
           align: 'center',
           width: 160,
-          dataIndex: 'id'
+          dataIndex: 'projectCode'
         },
         {
           title: '项目名称',
@@ -113,7 +113,12 @@ export default {
         {
           title: '客户名称',
           align: 'center',
-          dataIndex: 'company'
+          dataIndex: 'customerId_dictText'
+        },
+        {
+          title: '项目经理',
+          align: 'center',
+          dataIndex: 'projectManagerName'
         },
         {
           title: '操作',

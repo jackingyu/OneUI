@@ -4,7 +4,7 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
+          <a-col :md="8" :sm="12">
             <a-form-item label="客户名称">
               <j-input placeholder="请输入客户名称" v-model="queryParam.customerName"></j-input>
             </a-form-item>
@@ -148,7 +148,7 @@ export default {
       this.$router.push({
         path: '/masterdata/customer-info',
         query: {
-          ...record
+          id: record.id
         }
       })
     },

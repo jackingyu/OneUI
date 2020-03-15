@@ -19,31 +19,37 @@
         </span>
       </div>
     </template>
-
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-form-item label="项目编码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入项目编码" v-decorator="['projectCode', validatorRules.projectName]" />
+          <a-input
+            :disabled="!!model.id"
+            placeholder="请输入项目编码"
+            v-decorator="['projectCode',{rules:[ruleWithDefault('请输入项目编码')]}]"
+          />
         </a-form-item>
         <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入项目名称" v-decorator="['projectName', validatorRules.projectName]" />
+          <a-input
+            placeholder="请输入项目名称"
+            v-decorator="['projectName',{rules:[ruleWithDefault('请输入项目名称')]}]"
+          />
         </a-form-item>
         <a-form-item label="项目分组" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <!-- <j-dict-select-tag
-            v-model="queryParam.materialGroupCode"
-             v-decorator="['projectGroupCode', validatorRules.projectName]"
-            placeholder="请选择物料组"
-            dictCode="material_group"
-          />-->
-          <a-input
+          <j-dict-select-tag
+            v-decorator="['projectGroupCode',{rules:[ruleWithDefault('请选择项目分组')]}]"
+            placeholder="请选择项目分组"
+            :triggerChange="true"
+            dictCode="project_group"
+          />
+          <!-- <a-input
             placeholder="请输入项目分组代号"
             v-decorator="['projectGroupCode', validatorRules.projectName]"
-          />
+          />-->
         </a-form-item>
 
         <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
-            v-decorator="['customer']"
+            v-decorator="['customerId',{rules:[ruleWithDefault('请选择客户')]}]"
             placeholder="请选择客户"
             :filterOption="false"
             :showSearch="true"
@@ -64,8 +70,8 @@
           <a-input
             placeholder="请输入项目经理"
             v-decorator="[
-              'projectPerson',
-              {rules: [{ required: true, message: '请输入项目经理', whitespace: true}]}
+              'projectManagerName',
+              {rules: [ruleWithDefault('请输入项目经理')]}
             ]"
           />
         </a-form-item>
@@ -74,13 +80,13 @@
           <a-input
             placeholder="请输入联系电话"
             v-decorator="[
-              'contactPhone',
-              {rules: [{ required: true, message: '请输入联系电话', whitespace: true}]}
+              'contactNumber',
+              {rules: [ruleWithDefault('请输入联系电话'),ruleWith('phone')]}
             ]"
           />
         </a-form-item>
         <a-form-item label="项目描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-textarea placeholder="请输入项目描述" :rows="4" v-decorator="[ 'comments']" />
+          <a-textarea placeholder="请输入项目描述" :rows="4" v-decorator="[ 'projectDescription']" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -106,9 +112,10 @@ import { disabledAuthFilter } from '@/utils/authFilter'
 import { createProject, updateProject, getCompanies } from '@/api/api'
 
 import FormFieldMixin from '@/mixins/FormFieldMixin'
+import ValidationMixin from '@/mixins/ValidationMixin'
 export default {
   name: 'projectModal',
-  mixins: [FormFieldMixin],
+  mixins: [FormFieldMixin, ValidationMixin],
   data() {
     this.fetchCustomerList = debounce(this.fetchCustomerList, 800)
     return {
@@ -195,19 +202,29 @@ export default {
     },
     add() {
       this.picUrl = ''
-      this.edit({ oneTimeFlag: '0' })
+      this.edit({})
     },
-    edit(record) {
+    edit(record = {}) {
       this.resetScreenSize() // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
       let that = this
       that.form.resetFields()
       that.visible = true
       that.model = Object.assign({}, record)
       that.$nextTick(() => {
-        that.form.setFieldsValue(pick(this.model, 'projectName', 'comments'))
-        that.form.setFieldsValue({
-          companyId: isNaN(this.model.companyId) ? this.model.companyId : '' + this.model.companyId
-        })
+        that.form.setFieldsValue(
+          pick(
+            this.model,
+            // 'companyId',
+            'contactNumber',
+            'customerId',
+            'id',
+            'projectCode',
+            'projectDescription',
+            'projectGroupCode',
+            'projectManagerName',
+            'projectName'
+          )
+        )
       })
     },
     close() {
@@ -221,11 +238,8 @@ export default {
       // 触发表单验证
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log('-😪--values---', values)
           let formData = {
-            projectName: values.projectName,
-            companyId: values.companyId,
-            comments: values.comments
+            ...values
           }
           let obj
           if (!this.model.id) {
