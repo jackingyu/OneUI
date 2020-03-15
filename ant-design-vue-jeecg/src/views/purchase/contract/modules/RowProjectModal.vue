@@ -38,7 +38,7 @@
               </template>
               <template v-else-if="item.inputType=='input'">
                 <a-input
-                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label},{validator:(rule, value, callback)=>validatorFormpsfix(item,rule, value, callback)}]}]"
                   :disabled="item.readOnly"
                   :placeholder="`请输入${item.label}`"
                 >
@@ -74,7 +74,7 @@
                       slot="addonAfter"
                       style="width: 80px"
                       v-if="item.suffix.inputType=='dict'"
-                      v-decorator="[item.suffix.valueKey,{rules: [{ required: item.suffix.required, message: '请选择'+item.label}]}]"
+                      v-decorator="[item.suffix.valueKey,{rules: [{ required: item.suffix.required, message: '请选择'+item.suffix.label}]}]"
                       :triggerChange="true"
                       :disabled="item.suffix.readOnly"
                       :readOnly="item.suffix.readOnly"
@@ -292,6 +292,24 @@ export default {
         funcName: 'GetMaterials',
         params
       })
+    },
+    validatorFormpsfix(item, rule, value, callback) {
+      const form = this.form
+      if (item.suffix && item.suffix.valueKey) {
+        let val = form.getFieldValue(item.suffix.valueKey)
+        if (!val) {
+          callback('请选择' + item.suffix.label)
+          return
+        }
+      }
+      if (item.prefix && item.prefix.valueKey) {
+        let val = form.getFieldValue(item.prefix.valueKey)
+        if (!val) {
+          callback('请选择' + item.prefix.label)
+          return
+        }
+      }
+      callback()
     }
   }
 }

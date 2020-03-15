@@ -37,6 +37,13 @@
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="财务年度">
             <!-- fiscalYear -->
+            <a-input
+              disabled
+              v-decorator="[
+              'fiscalYear',
+              {initialValue:'2020'}
+            ]"
+            />
           </a-form-item>
         </a-col>
       </a-row>

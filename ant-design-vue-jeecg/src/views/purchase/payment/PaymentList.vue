@@ -2,27 +2,33 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-form :form="form" layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="项目名称">
-              <j-dict-select-tag
-                v-model="queryParam.vendorCode"
-                placeholder="请选择材料商或者分包商"
-                dictCode="vendor_group"
-              />
+            <a-form-item label>
+              <a-input v-model="queryParam.vendorName" placeholder="请输入供应商名称" />
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="12">
-            <a-form-item label>
+          <a-col :md="8" :sm="12">
+            <a-form-item label="付款日期">
               <a-range-picker
-                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                v-decorator="['paymentDate',{rules: [{ type: 'array', required: true, message: '请选择付款日期'}]}]"
                 format="YYYY-MM-DD"
                 :placeholder="['开始时间', '结束时间']"
+                @change="paymentDateChange"
               />
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
+          <a-col :md="5" :sm="12">
+            <a-form-item label="付款方式">
+              <j-dict-select-tag
+                v-model="queryParam.paymentMethodCode"
+                placeholder="请选择付款方式"
+                dictCode="payment_method"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :md="5" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button
@@ -88,7 +94,7 @@ import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
-
+import moment from 'moment'
 export default {
   name: 'PaymentList',
   mixins: [JeecgListMixin],
@@ -97,9 +103,15 @@ export default {
     JInput
   },
   data() {
+    let now = moment()
+    let to = now.format('YYYY-MM-DD+HH:mm:ss')
+    let from = now.add(-1, 'year').format('YYYY-MM-DD+HH:mm:ss')
     return {
       description: '',
-      queryParam: {},
+      queryParam: {
+        paymentDate_start: from,
+        paymentDate_end: to
+      },
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
@@ -108,6 +120,11 @@ export default {
           align: 'center',
           width: 160,
           dataIndex: 'id'
+        },
+        {
+          title: '供应商名称',
+          align: 'center',
+          dataIndex: 'vendorId'
         },
         {
           title: '付款时间',
@@ -122,12 +139,12 @@ export default {
         {
           title: '付款方式',
           align: 'center',
-          dataIndex: 'paymentMethodCode'
+          dataIndex: 'paymentMethodCode_dictText'
         },
         {
           title: '状态',
           align: 'center',
-          dataIndex: 'comments'
+          dataIndex: 'delFlag_dictText'
         },
         {
           title: '操作',
@@ -146,6 +163,14 @@ export default {
     importExcelUrl: function() {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
     }
+  },
+  mounted() {
+    window.M = this
+    let to = moment()
+    let from = moment().add(-1, 'year')
+    this.form.setFieldsValue({
+      paymentDate: [from, to]
+    })
   },
   methods: {
     initDictConfig() {
@@ -171,7 +196,17 @@ export default {
     handleAdd() {
       this.$router.push({ path: '/purchase/payment' })
     },
-    handleDelete(id) {}
+    handleDelete(id) {},
+    paymentDateChange(momentArr, strArr) {
+      if (momentArr.length == 0) {
+        this.queryParam.paymentDate_start = ''
+        this.queryParam.paymentDate_end = ''
+      } else {
+        let msArr = momentArr.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
+        this.queryParam.paymentDate_start = msArr[0]
+        this.queryParam.paymentDate_end = msArr[1]
+      }
+    }
   }
 }
 </script>
