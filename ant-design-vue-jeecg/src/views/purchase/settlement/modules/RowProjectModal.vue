@@ -163,13 +163,14 @@ export default {
           params: {}
         },
         contract: {
-          key: 'contractId',
+          key: 'contractNumber',
           funcName: 'GetContracts',
           params: {},
           mapper: item => {
             return {
-              key: item.id,
-              value: item.id,
+              key: item.contractCode,
+              rId: item.id,
+              value: item.contractCode,
               label: item.contractTitle
             }
           }
@@ -285,7 +286,7 @@ export default {
             ...formData,
             projectId: values.projectId.key,
             materialId: values.materialId.key,
-            contractId: values.contractId.key,
+            contractNumber: values.contractNumber.key,
             contractItemId: values.contractItemId.key
           }
           this.$emit('submit', postData)
@@ -308,7 +309,7 @@ export default {
         this.projectList({
           projectName: word ? `*${word}*` : undefined
         })
-      } else if (key == 'contractId') {
+      } else if (key == 'contractNumber') {
         this.contractList({
           contractName: word ? `*${word}*` : undefined
         })
@@ -320,10 +321,13 @@ export default {
         this.materialList({
           materialGroupCode: val
         })
-      } else if (key == 'contractId') {
-        this.contractItemsList({
-          id: val.key
-        })
+      } else if (key == 'contractNumber') {
+        let lv = this.FormFieldOptions[key].find(item => item.key == val.key)
+        if (lv) {
+          this.contractItemsList({
+            id: lv.rId
+          })
+        }
       }
     },
     initFields() {

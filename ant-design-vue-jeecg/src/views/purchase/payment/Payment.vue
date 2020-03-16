@@ -7,6 +7,8 @@
       <!-- table -->
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/purchase/payments')">返回供应商付款列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">提交</a-button>
         <!-- <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>-->
@@ -24,6 +26,8 @@ import PageView from '@comp/layouts/PageView'
 import { getVendorPayment, getVendorPayments, createVendorPayment, updateVendorPayment } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'Payment',
   components: {
@@ -31,19 +35,20 @@ export default {
     FooterToolBar,
     PaymentForm
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       loading: false,
       model: {}
     }
   },
-  // computed: {
-  //   orgCode() {
-  //     return this.userInfo().orgCode
-  //   }
-  // },
   mounted() {
     this.initModel()
+  },
+  updated() {
+    if (this.model.id != this.$route.query.id) {
+      this.initModel()
+    }
   },
   methods: {
     ...mapGetters(['userInfo']),
@@ -79,6 +84,9 @@ export default {
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)

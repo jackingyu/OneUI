@@ -21,6 +21,8 @@
 
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/purchase/settlements')">返回供应商结算列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
         <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
@@ -41,6 +43,7 @@ import PageView from '@comp/layouts/PageView'
 import { getSettlements, getSettlement, createSettlement, updateSettlement } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'Settlement',
   components: {
@@ -51,6 +54,7 @@ export default {
     AttachFilesForm,
     DetailList
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       cType: '',
@@ -70,13 +74,17 @@ export default {
   mounted() {
     this.initModel()
   },
-  created() {},
+  updated() {
+    if (this.model.id != this.$route.query.id) {
+      this.initModel()
+    }
+  },
   methods: {
     ...mapGetters(['userInfo']),
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        // getContract(id).then(res => {
+        // getSettlement(id).then(res => {
         //   if (res.success) {
         //     this.model = {
         //       ...res.result,
@@ -108,6 +116,9 @@ export default {
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)

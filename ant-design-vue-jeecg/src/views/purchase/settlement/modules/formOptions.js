@@ -22,7 +22,7 @@ export const formItems = [
   },
   {
     label: '合同',
-    valueKey: 'contractId',
+    valueKey: 'contractNumber',
     inputType: 'select',
     required: true,
     settlementType: ''
@@ -58,7 +58,7 @@ export const formItems = [
   },
   {
     label: '合价',
-    valueKey: 'total',
+    valueKey: 'totalAmount',
     inputType: 'label',
     readOnly: true,
     justShow: true,

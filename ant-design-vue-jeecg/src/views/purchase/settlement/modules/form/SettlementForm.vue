@@ -2,7 +2,7 @@
   <a-form :form="form" class="form">
     <detail-list title="基础信息">
       <a-row class="form-row" :gutter="16">
-        <a-col :lg="8" :md="12" :sm="24">
+        <!-- <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="项目名称">
             <a-select
               v-decorator="['projectId',{rules: [{ required: true, message: '请选择项目', whitespace: true}]}]"
@@ -18,7 +18,7 @@
               >{{project.projectName}}</a-select-option>
             </a-select>
           </a-form-item>
-        </a-col>
+        </a-col>-->
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="供应商">
             <a-select
@@ -48,19 +48,22 @@
             ></j-date>
           </a-form-item>
         </a-col>
+        <a-col :lg="8" :md="12" :sm="24">
+          <a-form-item label="本次结算总价">
+            <a-input
+              placeholder="请输入本次结算总价"
+              v-decorator="[
+              'totalAmount'
+            ]"
+            />
+          </a-form-item>
+        </a-col>
       </a-row>
       <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="本次结算总价">
-            <a-input placeholder="请输入本次结算总价" v-decorator="[
-              'total'
-            ]" />
-          </a-form-item>
-        </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="财务年度">
             <a-select
-              v-decorator="['annual']"
+              v-decorator="['fiscalYear']"
               placeholder="请选择财务年度"
               :filterOption="false"
               disabled
