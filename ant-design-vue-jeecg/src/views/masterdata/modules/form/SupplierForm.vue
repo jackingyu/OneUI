@@ -67,7 +67,7 @@
             placeholder="请输入联系人身份证号"
             v-decorator="[
               'contactPersonId',
-              {rules: [{ required: true, message: '请输入联系人身份证号', whitespace: true},ruleWith('idCard')]}
+              {rules: [{ required: false, message: '请输入联系人身份证号', whitespace: true},ruleWith('idCard')]}
             ]"
           />
         </a-form-item>
@@ -80,7 +80,7 @@
             placeholder="请输入社会信用代码"
             v-decorator="[
               'socialCreditCode',
-              {rules: [{ required: true, message: '请输入社会信用代码', whitespace: true}]}
+              {rules: [{ required: false, message: '请输入社会信用代码', whitespace: true}]}
             ]"
           />
         </a-form-item>
@@ -91,7 +91,7 @@
             placeholder="请输入纳税人资格"
             v-decorator="[
               'taxSubject',
-              {rules: [{ required: true, message: '请输入纳税人资格', whitespace: true}]}
+              {rules: [{ required: false, message: '请输入纳税人资格', whitespace: true}]}
             ]"
           />
         </a-form-item>
@@ -102,7 +102,7 @@
             placeholder="请输入营业执照号码"
             v-decorator="[
               'businessLicense',
-              {rules: [{ required: true, message: '请输入营业执照号码', whitespace: true}]}
+              {rules: [{ required: false, message: '请输入营业执照号码', whitespace: true}]}
             ]"
           />
         </a-form-item>
@@ -115,21 +115,9 @@
             placeholder="请输入税务登记号"
             v-decorator="[
               'taxCode',
-              {rules: [{ required: true, message: '请输入税务登记号', whitespace: true}]}
+              {rules: [{ required: false, message: '请输入税务登记号', whitespace: true}]}
             ]"
           />
-        </a-form-item>
-      </a-col>
-    </a-row>
-    <a-row v-if="false" class="form-row" :gutter="16">
-      <a-col :lg="6" :md="12" :sm="24">
-        <a-form-item label="应付总额">
-          <a-input placeholder="请输入应付总额" v-decorator="['orderNum',{rules:[ruleWith('money')]}]" />
-        </a-form-item>
-      </a-col>
-      <a-col :xl="{span: 7, offset: 1}" :lg="{span: 8}" :md="{span: 12}" :sm="24">
-        <a-form-item label="已付总额">
-          <a-input placeholder="请输入已付总额" v-decorator="[ 'payNum',{rules:[ruleWith('money')]} ]" />
         </a-form-item>
       </a-col>
     </a-row>

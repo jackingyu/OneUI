@@ -71,7 +71,7 @@
             placeholder="请输入项目经理"
             v-decorator="[
               'projectManagerName',
-              {rules: [ruleWithDefault('请输入项目经理')]}
+              {rules: [ruleWithDefault('请输入项目经理',false)]}
             ]"
           />
         </a-form-item>
@@ -81,7 +81,7 @@
             placeholder="请输入联系电话"
             v-decorator="[
               'contactNumber',
-              {rules: [ruleWithDefault('请输入联系电话'),ruleWith('phone')]}
+              {rules: [ruleWithDefault('请输入联系电话',false),ruleWith('phone')]}
             ]"
           />
         </a-form-item>

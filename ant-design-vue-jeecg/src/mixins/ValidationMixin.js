@@ -27,8 +27,8 @@ export default {
         }
       }
     },
-    ruleWithDefault(message = "") {
-      return { required: true, message, whitespace: true }
+    ruleWithDefault(message = "", required = true) {
+      return { required: required, message, whitespace: true }
     }
   }
 }

@@ -159,9 +159,6 @@ export default {
       return formItems.filter(item => !item.contractType || item.contractType == this.contractType)
     }
   },
-  created() {
-    window.M = this
-  },
   data() {
     return {
       title: '操作',
