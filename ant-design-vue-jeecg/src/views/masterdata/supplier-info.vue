@@ -13,6 +13,8 @@
 
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/masterdata/supplier')">返回供应商列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">提交</a-button>
       </footer-tool-bar>
     </div>
@@ -28,6 +30,7 @@ import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
 import { getBanks, getSuplier, createVendor, updateVendor } from '@/api/api'
 import DetailList from '@/components/tools/DetailList'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'AdvancedForm',
   components: {
@@ -37,13 +40,20 @@ export default {
     SupplierForm,
     DetailList
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
-      loading: false
+      loading: false,
+      model: {}
     }
   },
   mounted() {
     this.initModel()
+  },
+  updated() {
+    if (this.model.id != this.$route.query.id) {
+      this.initModel()
+    }
   },
   methods: {
     initModel() {
@@ -51,9 +61,11 @@ export default {
       if (id) {
         getSuplier(id).then(res => {
           if (res.success) {
+            this.model = res.result
             this.$refs.supplier.edit(res.result)
             this.$refs.bank.edit(res.result.bankAccounts)
           } else {
+            this.model = {}
             this.$message.warning(res.message)
           }
         })
@@ -64,7 +76,8 @@ export default {
     submitSupplier(postData) {
       this.loading = true
       let promises
-      if (postData.id) {
+      if (this.model.id) {
+        postData.id = this.model.id
         promises = updateVendor(postData)
       } else {
         promises = createVendor(postData)
@@ -72,6 +85,9 @@ export default {
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)
@@ -85,11 +101,10 @@ export default {
     validate() {
       let that = this
       that.$refs.supplier.form.validateFields((err, values) => {
-        console.info('supplier', values)
         if (!err) {
           let postData = pick(
             values,
-            'id',
+            // 'id',
             'vendorCode',
             'vendorName',
             'vendorGroupCode',

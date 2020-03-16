@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form :form="form" layout="inline" @keyup.enter.native="searchQuery">
+      <a-form :form="jform" layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
             <a-form-item label>
@@ -165,10 +165,9 @@ export default {
     }
   },
   mounted() {
-    window.M = this
     let to = moment()
     let from = moment().add(-1, 'year')
-    this.form.setFieldsValue({
+    this.jform.setFieldsValue({
       paymentDate: [from, to]
     })
   },

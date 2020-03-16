@@ -15,13 +15,13 @@
               <!-- <a-select v-model="queryParam.materialGroupCode" placeholder="请选择物料组">
                 <a-select-option value>请选择</a-select-option>
                 <a-select-option
-                  v-for="(item, index) in materialGroups"
+                  v-for="(item, index) in vendorGroups"
                   :key="index"
                   :value="item.materialGroupCode"
                 >{{item.materialGroupName}}</a-select-option>
               </a-select>-->
               <j-dict-select-tag
-                v-model="queryParam.vendorCode"
+                v-model="queryParam.vendorGroupCode"
                 placeholder="请选择材料商或者分包商"
                 dictCode="vendor_group"
               />
@@ -104,7 +104,7 @@ export default {
     return {
       description: '这是用户管理页面',
       queryParam: {},
-      materialGroups: [],
+      vendorGroups: [],
       oneTimeFlags: [],
       columns: [
         /*{
@@ -135,7 +135,7 @@ export default {
           dataIndex: 'vendorGroupCode',
           width: 120,
           customRender: text => {
-            return filterDictText(this.materialGroups, text) || text
+            return filterDictText(this.vendorGroups, text) || text
           }
         },
         {
@@ -171,9 +171,9 @@ export default {
   },
   methods: {
     initDictConfig() {
-      initDictOptions('material_group').then(res => {
+      initDictOptions('vendor_group').then(res => {
         if (res.success) {
-          this.materialGroups = res.result
+          this.vendorGroups = res.result
         }
       })
       initDictOptions('material_property').then(res => {

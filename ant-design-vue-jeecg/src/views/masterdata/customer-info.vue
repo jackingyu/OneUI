@@ -6,6 +6,8 @@
       </a-card>
 
       <footer-tool-bar>
+        <a-button type="info" @click="back('/masterdata/customer')">返回客户列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">提交</a-button>
       </footer-tool-bar>
     </div>
@@ -18,6 +20,7 @@ import CustomerForm from './modules/form/CustomerForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import PageView from '@comp/layouts/PageView'
 import { getCustomer, createCustomer, updateCustomer } from '@/api/api'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'AdvancedForm',
   components: {
@@ -25,6 +28,7 @@ export default {
     FooterToolBar,
     CustomerForm
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       loading: false,
@@ -64,6 +68,9 @@ export default {
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)

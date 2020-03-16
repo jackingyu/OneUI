@@ -10,12 +10,12 @@ import { ACCESS_TOKEN } from "@/store/mutation-types"
 
 export const JeecgListMixin = {
   data() {
-    let form = null
+    let jform = null
     if (this.$form) {
-      form = this.$form.createForm(this)
+      jform = this.$form.createForm(this)
     }
     return {
-      form: form,
+      jform: jform,
       //token header
       tokenHeader: { 'X-Access-Token': Vue.ls.get(ACCESS_TOKEN) },
       /* 查询条件-请不要在queryParam中声明非字符串值的属性 */
@@ -130,8 +130,8 @@ export const JeecgListMixin = {
       this.selectionRows = [];
     },
     searchQuery() {
-      if (this.form) {
-        this.form.validateFields((err, values) => {
+      if (this.jform) {
+        this.jform.validateFields((err, values) => {
           if (!err) {
             this.loadData(1);
           }

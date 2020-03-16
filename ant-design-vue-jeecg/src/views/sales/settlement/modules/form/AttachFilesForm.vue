@@ -79,7 +79,7 @@ export default {
   },
   mounted() {
     this.initDictConfig()
-    window.TTTTT = this
+    
   },
   watch: {
     data(n) {

@@ -185,66 +185,20 @@ export default {
       })
     },
     handleEdit(record) {
-      // this.$refs.modalForm.edit(record)
-      this.$router.push({
-        path: '/masterdata/material-info',
-        query: {
-          ...record
-        }
-      })
+      this.$refs.modalForm.edit(record)
+      // this.$router.push({
+      //   path: '/masterdata/material-info',
+      //   query: {
+      //     ...record
+      //   }
+      // })
     },
     handleAdd() {
-      this.$router.push({ path: '/masterdata/material-info' })
+      this.$refs.modalForm.add()
+      // this.$router.push({ path: '/masterdata/material-info' })
     },
     getAvatarView: function(avatar) {
       return this.url.imgerver + '/' + avatar
-    },
-
-    batchFrozen: function(status) {
-      if (this.selectedRowKeys.length <= 0) {
-        this.$message.warning('请选择一条记录！')
-        return false
-      } else {
-        let ids = ''
-        let that = this
-        let isAdmin = false
-        that.selectionRows.forEach(function(row) {
-          if (row.username == 'admin') {
-            isAdmin = true
-          }
-        })
-        if (isAdmin) {
-          that.$message.warning('管理员账号不允许此操作,请重新选择！')
-          return
-        }
-        that.selectedRowKeys.forEach(function(val) {
-          ids += val + ','
-        })
-        that.$confirm({
-          title: '确认操作',
-          content: '是否' + (status == 1 ? '解冻' : '冻结') + '选中账号?',
-          onOk: function() {
-            frozenBatch({ ids: ids, status: status }).then(res => {
-              if (res.success) {
-                that.$message.success(res.message)
-                that.loadData()
-                that.onClearSelected()
-              } else {
-                that.$message.warning(res.message)
-              }
-            })
-          }
-        })
-      }
-    },
-    handleMenuClick(e) {
-      if (e.key == 1) {
-        this.batchDel()
-      } else if (e.key == 2) {
-        this.batchFrozen(2)
-      } else if (e.key == 3) {
-        this.batchFrozen(1)
-      }
     },
     handleDelete(id) {}
   }
