@@ -78,7 +78,7 @@
             <a-input
               placeholder="请输入付款金额"
               v-decorator="[
-              'paymentAmount',{rules:[ruleWith('money')]}
+              'paymentAmount',{rules:[ruleWith('cash')]}
             ]"
             />
           </a-form-item>

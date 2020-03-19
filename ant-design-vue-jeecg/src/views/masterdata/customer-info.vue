@@ -38,6 +38,9 @@ export default {
   mounted() {
     this.initModel()
   },
+  updated() {
+    this.initModel()
+  },
   methods: {
     initModel() {
       let { id = undefined } = this.$route.query

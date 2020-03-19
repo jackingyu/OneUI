@@ -15,6 +15,7 @@ export default {
         rnumber: { title: '数字', value: 'n', pattern: '^\\d+\\.?\\d*$' },
         rinteger: { title: '数量', value: 'n', pattern: '^\\d+$' },
         inte: { title: '整数', value: 'z', pattern: '^-?\\d+$' },
+        cash: { title: '整数', value: 'z', pattern: /^\d+(\.\d{1,2})?$/},
         money: { title: '金额', value: 'money', pattern: '^(([1-9][0-9]*)|([0]\\.\\d{0,2}|[1-9][0-9]*\\.\\d{0,2}))$' },
       }
     }
