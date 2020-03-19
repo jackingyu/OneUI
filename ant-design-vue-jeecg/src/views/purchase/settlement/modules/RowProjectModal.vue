@@ -246,7 +246,7 @@ export default {
       this.form.resetFields()
       this.model = Object.assign({}, record)
       this.visible = true
-      this.currentCRowData = { ...this.model, unitName: this.model.unitCode_dictText }
+      this.currentCRowData = { ...this.model, unitName: this.model.unitName }
       this.$nextTick(() => {
         let quantity = this.model.quantity || 0
         this.form.setFieldsValue({
@@ -256,7 +256,7 @@ export default {
           this.form.setFieldsValue({
             contractNumber: {
               key: record.contractNumber,
-              label: ''
+              label: record.contractName
             }
           })
         }
@@ -323,6 +323,11 @@ export default {
       if (key == 'contractNumber') {
         let lv = this.FormFieldOptions[key].find(item => item.key == val.key)
         if (lv) {
+          this.currentCRowData = {
+            ...this.currentCRowData,
+            contractName: val.label,
+            contractNumber: val.key
+          }
           this.form.setFieldsValue({ contractItemId: {} })
           this.contractItemsList({
             id: lv.rId
@@ -332,7 +337,7 @@ export default {
         let lv = this.FormFieldOptions[key].find(item => item.key == val.key)
         if (lv && lv.node) {
           let { materialName, unitPrice, unitName, materialDescription } = lv.node
-          this.currentCRowData = lv.node
+          this.currentCRowData = { ...this.currentCRowData, ...lv.node }
           this.currentCRowData.contractContent = materialDescription
         }
       }

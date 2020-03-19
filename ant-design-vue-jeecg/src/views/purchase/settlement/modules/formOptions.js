@@ -16,7 +16,7 @@ export const formItems = [
     required: true,
     settlementType: '',
     tableRender: function (rowData = {}) {
-      return rowData.contractTitle
+      return rowData.contractName
     }
   },
   {
