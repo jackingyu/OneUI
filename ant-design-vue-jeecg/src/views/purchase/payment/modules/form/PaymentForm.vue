@@ -87,7 +87,21 @@
       <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="付款银行">
-            <j-bank-select-tag v-decorator="['bankId' ]" placeholder="请选择银行" />
+            <a-select
+              v-decorator="['bankId',{rules: [{ required: true, message: '请选择银行', whitespace: true}]}]"
+              placeholder="请选择银行"
+              clearable
+              :filterOption="false"
+              :showSearch="true"
+              @search="fetchBankList"
+              @change="handleBankChange"
+            >
+              <a-select-option
+                v-for="(bank, index) in FormFieldOptions.banks"
+                :key="index"
+                :value="bank.value"
+              >{{bank.label}}</a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
@@ -95,7 +109,7 @@
             <a-input
               placeholder="请输入付款账号"
               v-decorator="[
-              'bankAccountId'
+              'bankAccountId',{rules: [{ required: true, message: '请输入付款账号', whitespace: false}]}
             ]"
             />
           </a-form-item>
@@ -136,19 +150,23 @@ export default {
       contractType: 'Null',
       model: null,
       banks: [],
-      vendors: [],
       projects: [],
       FieldsSet: {
         vendors: {
           key: 'vendors',
           funcName: 'GetVendors'
+        },
+        banks: {
+          key: 'banks',
+          funcName: 'GetBanks'
         }
       }
     }
   },
   created() {
-    this.fetchVendorList()
+    // this.fetchVendorList()
     // contractTypeCode
+    window.N = this
   },
   methods: {
     add() {
@@ -170,9 +188,17 @@ export default {
             // 'bankId',
             'bankAccountId'
           ),
-          bankId: isNaN(record.bankId) ? record.bankId : '' + record.bankId,
+          bankId: record.bankId,
           paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
         })
+      })
+    },
+    fetchBankList(word) {
+      this.request({
+        ...this.FieldsSet.banks,
+        params: {
+          bankName: word ? `*${word}*` : ''
+        }
       })
     },
     fetchVendorList(word) {
@@ -183,8 +209,11 @@ export default {
         }
       })
     },
+    handleBankChange(v) {
+      // let vendor = this.FormFieldOptions.banks.find(item => item.id == v)
+    },
     handleVendorChange(v) {
-      let vendor = this.vendors.find(item => (item.id = v))
+      let vendor = this.FormFieldOptions.vendors.find(item => item.id == v)
       if (vendor) {
         this.form.setFieldsValue({
           contactPerson: vendor.contactPerson,

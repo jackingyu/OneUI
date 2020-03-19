@@ -228,7 +228,7 @@ export default {
       this.$emit('contractChange', this.contractType)
     },
     handleVendorChange(v) {
-      let vendor = this.FormFieldOptions.vendors.find(item => (item.id = v))
+      let vendor = this.FormFieldOptions.vendors.find(item => (item.id == v))
       if (vendor) {
         this.form.setFieldsValue({
           contactPerson: vendor.contactPerson,

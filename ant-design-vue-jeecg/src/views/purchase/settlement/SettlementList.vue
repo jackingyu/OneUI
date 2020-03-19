@@ -121,7 +121,7 @@ export default {
           title: '结算单号',
           align: 'center',
           width: 160,
-          dataIndex: 'contractNumber'
+          dataIndex: 'vendorSettlementId'
         },
         {
           title: '行项目',
@@ -129,9 +129,9 @@ export default {
           dataIndex: 'contractItemNo'
         },
         {
-          title: '日期',
+          title: '结算时间',
           align: 'center',
-          dataIndex: 'createTime'
+          dataIndex: 'settlementTime'
         },
         {
           title: '单价',
@@ -139,14 +139,24 @@ export default {
           dataIndex: 'unitPrice'
         },
         {
+          title: '单位',
+          align: 'center',
+          dataIndex: 'unitCode_dictText'
+        },
+        {
           title: '数量',
           align: 'center',
-          dataIndex: 'total'
+          dataIndex: 'quantity'
+        },
+        {
+          title: '合价',
+          align: 'center',
+          dataIndex: 'totalAmount'
         },
         {
           title: '物料',
           align: 'center',
-          dataIndex: 'materialId'
+          dataIndex: 'materialId_dictText'
         },
         {
           title: '合同实施内容',
@@ -162,7 +172,7 @@ export default {
         }
       ],
       url: {
-        list: Rest.GET_SETTLEMENTS.url
+        list: Rest.GET_SETTLEMENTS_ITEMS.url
       }
     }
   },
@@ -200,7 +210,7 @@ export default {
       this.$router.push({
         path: '/purchase/settlement',
         query: {
-          id: record.id
+          id: record.vendorSettlementId
         }
       })
     },

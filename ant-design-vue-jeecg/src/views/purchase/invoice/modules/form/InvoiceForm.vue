@@ -181,7 +181,7 @@ export default {
       })
     },
     handleVendorChange(v) {
-      let vendor = this.FieldsSet.vendors.find(item => (item.id = v))
+      let vendor = this.FieldsSet.vendors.find(item => item.id == v)
       if (vendor) {
         // this.form.setFieldsValue({
         //   contactPerson: vendor.contactPerson,

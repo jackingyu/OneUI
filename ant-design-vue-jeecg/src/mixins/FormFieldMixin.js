@@ -26,6 +26,15 @@ export default {
         this.request(item)
       })
     },
+    _GetBanks(key = "banks", params = {},
+      mapper = item => ({
+        label: item.bank_name,
+        key: item.bank_id,
+        value: `${item.bank_id}`
+      }), resTransformer = res => res.result
+    ) {
+      this.__baseRequest(API.getBanks(params), key, mapper, resTransformer);
+    },
     _GetMaterials(key = "materialCode", params = {}, mapper, resTransformer) {
       this.__baseRequest(API.getMaterials(params), key, mapper ? mapper : item => {
         return {

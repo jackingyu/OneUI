@@ -182,6 +182,9 @@ export default {
               }
               arData.map(item => {
                 item.materialId = item.materialCode
+                if (!!that.model.id) {
+                  item.contractId = that.model.id
+                }
                 return item
               })
               postData.purchaseContractItems = arData

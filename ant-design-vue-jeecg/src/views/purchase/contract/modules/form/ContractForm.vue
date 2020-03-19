@@ -9,6 +9,7 @@
           <a-form-item label="合同编号">
             <a-input
               placeholder="请输入合同编号"
+              :disabled="model && !!model.id"
               v-decorator="[
               'contractCode',
               {rules: [{ required: true, message: '请输入合同编号', whitespace: false}]}
@@ -80,12 +81,13 @@
               placeholder="请选择供应商"
               :filterOption="false"
               :showSearch="true"
+              allowClear
               @search="fetchVendorList"
               @change="handleVendorChange"
             >
               <a-select-option
                 v-for="(vendor, index) in (FormFieldOptions.vendors||[])"
-                :key="index"
+                :key="vendor.id"
                 :value="vendor.id"
               >{{vendor.vendorName}}</a-select-option>
             </a-select>
@@ -150,11 +152,23 @@ export default {
     return {
       form: this.$form.createForm(this),
       contractType: 'Null',
-      model: {}
+      model: {},
+      FieldsSet: {
+        project: {
+          key: 'projects',
+          funcName: 'GetProjects',
+          params: {}
+        },
+        vendor: {
+          key: 'vendors',
+          funcName: 'GetVendors',
+          params: {}
+        }
+      }
     }
   },
   mounted() {
-    this.fetchVendorList(this.model.vendorName)
+    window.Z = this
   },
   methods: {
     add() {
@@ -187,19 +201,9 @@ export default {
         }
       })
     },
-    initFields() {
-      return [
-        {
-          key: 'projects',
-          funcName: 'GetProjects',
-          params: {}
-        }
-      ]
-    },
     fetchVendorList(word) {
       this.request({
-        key: 'vendors',
-        funcName: 'GetVendors',
+        ...this.FieldsSet.vendor,
         params: {
           vendorName: word ? `*${word}*` : ''
         }
@@ -207,8 +211,7 @@ export default {
     },
     fetchProjectList(word) {
       this.request({
-        key: 'projects',
-        funcName: 'GetProjects',
+        ...this.FieldsSet.project,
         params: {
           projectName: word ? `*${word}*` : ''
         }
@@ -228,7 +231,7 @@ export default {
       this.$emit('contractChange', this.contractType)
     },
     handleVendorChange(v) {
-      let vendor = this.FormFieldOptions.vendors.find(item => (item.id = v))
+      let vendor = this.FormFieldOptions.vendors.find(item => item.id == v)
       if (vendor) {
         this.form.setFieldsValue({
           contactPerson: vendor.contactPerson,

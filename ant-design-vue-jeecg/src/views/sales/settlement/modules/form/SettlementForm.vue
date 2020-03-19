@@ -174,7 +174,7 @@ export default {
       this.$emit('settlementTypeCodeChange', v)
     },
     handleVendorChange(v) {
-      let vendor = this.vendors.find(item => (item.id = v))
+      let vendor = this.vendors.find(item => (item.id == v))
       if (vendor) {
         this.form.setFieldsValue({
           contactPerson: vendor.contactPerson,

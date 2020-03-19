@@ -4,6 +4,8 @@ export const formItems = [
     valueKey: 'itemNo',
     inputType: 'input',
     readOnly: true,
+    hidden: true,
+    required: false,
     contractType: ''
   },
   {
@@ -24,7 +26,7 @@ export const formItems = [
   },
   {
     label: '合同内容',
-    valueKey: 'comments',
+    valueKey: 'materialDescription',
     inputType: 'textarea',
     required: true,
     contractType: ''

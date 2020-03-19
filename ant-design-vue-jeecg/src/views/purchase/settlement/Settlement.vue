@@ -9,7 +9,7 @@
         />
         <!-- table -->
         <detail-list title="结算行项目">
-          <settlement-row-project-form ref="rowproj" :showSubmit="false" />
+          <settlement-row-project-form @formChange="formChange" ref="rowproj" :showSubmit="false" />
         </detail-list>
         <template v-if="!!model.id">
           <a-divider style="margin-bottom: 32px" />
@@ -84,21 +84,32 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        // getSettlement(id).then(res => {
-        //   if (res.success) {
-        //     this.model = {
-        //       ...res.result,
-        //       id
-        //     }
-        //     this.$refs.contract.edit(this.model)
-        //     this.$refs.rowproj.edit(res.result.purchaseContractItems)
-        //   } else {
-        //     this.$message.warning(res.message)
-        //   }
-        // })
+        getSettlement(id).then(res => {
+          if (res.success) {
+            this.model = {
+              ...res.result,
+              id
+            }
+            this.$refs.settlement.edit(this.model)
+            let items = this.model.vendorSettlementItems.map(item => {
+              return {
+                ...item,
+                key: item.id,
+                materialName: item.materialName
+              }
+            })
+            this.$refs.rowproj.edit(items)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
       } else {
         this.$refs.settlement.add()
       }
+    },
+    formChange(rows) {
+      let totalAmount = rows.map(item => item.totalAmount).reduce((n, p) => Number(n) + Number(p), 0)
+      this.$refs.settlement.totalChange(totalAmount)
     },
     settlementTypeCodeChange(v) {
       this.cType = v
@@ -134,9 +145,9 @@ export default {
       that.$refs.settlement.form.validateFields((err, values) => {
         console.info('settlement', values)
         if (!err) {
-          let postData = pick(values, 'id', 'projectId', 'vendorId', 'settlementTime', 'total', 'settlementTypeCode')
+          let postData = pick(values, 'id', 'vendorId', 'totalAmount', 'settlementTime', 'settlementTypeCode')
           postData.settlementTime = postData.settlementTime + ' 00:00:00'
-          postData.fiscalYear = '0'
+          delete postData.fiscalYear
           that.$refs.rowproj.form.validateFields((err, values) => {
             if (!err) {
               let arData = []

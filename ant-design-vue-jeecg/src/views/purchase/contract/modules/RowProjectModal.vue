@@ -188,11 +188,13 @@ export default {
             'unitPrice',
             'quantity',
             'itemNo',
-            'comments',
+            'materialDescription',
             'acceptanceCriteria',
             'contractSchedule',
             'qualityStandard',
-            'paymentTerm'
+            'paymentTerm',
+            'warranty',
+            'warrantyAgreement'
           )
         )
         this.form.setFieldsValue({
@@ -202,12 +204,16 @@ export default {
           paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
         })
         if (record.materialCode) {
-          this.form.setFieldsValue({
-            materialCode: {
-              key: record.materialCode == undefined ? '' : record.materialCode + '',
-              label: record.materialName
-            }
-          })
+          if (record.materialCode instanceof Object) {
+            this.form.setFieldsValue({ materialCode: record.materialCode })
+          } else {
+            this.form.setFieldsValue({
+              materialCode: {
+                key: record.materialCode == undefined ? '' : record.materialCode + '',
+                label: record.materialName
+              }
+            })
+          }
         }
       })
       // const demoData = {
@@ -268,6 +274,13 @@ export default {
           materialGroupCode: val
         })
       } else if (key == 'materialCode') {
+        // if (!this.form.getFieldValue('materialDescription')) {
+        let findMaterial = this.FormFieldOptions.materialCode.find(item => item.key == val.key)
+        if (findMaterial && findMaterial.node && findMaterial.node.materialDescription) {
+          this.form.setFieldsValue({ materialDescription: findMaterial.node.materialDescription || '' })
+        }
+        // }
+        // materialDescription
         // this.form.setFieldsValue({ materialCode: {} })
         // this.materialList({
         //   materialGroupCode: val

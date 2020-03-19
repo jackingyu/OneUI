@@ -5,6 +5,7 @@
         <a-form-item label="客户编号">
           <a-input
             placeholder="请输入客户编号"
+            :disabled="!!model.id"
             v-decorator="[
               'customerCode',
               {rules: [{ required: true, message: '请输入客户编号', whitespace: true}]}
@@ -137,7 +138,8 @@ export default {
   },
   data() {
     return {
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      model: {}
     }
   },
   methods: {

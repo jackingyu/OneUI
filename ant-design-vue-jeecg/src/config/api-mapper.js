@@ -128,6 +128,10 @@ export default {
     url: '/vendorsettlements',
     method: 'GET'
   },
+  GET_SETTLEMENTS_ITEMS: {
+    url: '/vendorsettlementitems',
+    method: 'GET'
+  },
   CREATE_SETTLEMENT: {
     url: '/vendorsettlements',
     method: 'POST'
