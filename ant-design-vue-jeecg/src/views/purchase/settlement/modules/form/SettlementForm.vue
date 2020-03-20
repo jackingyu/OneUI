@@ -121,7 +121,6 @@ export default {
   created() {
     this.fetchVendorList()
     this.fetchProjectList()
-    window.F = this.form
   },
   methods: {
     add() {

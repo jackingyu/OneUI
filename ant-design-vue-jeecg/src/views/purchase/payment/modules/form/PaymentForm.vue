@@ -27,11 +27,12 @@
           <a-form-item label="当前累计欠款">
             <a-input
               placeholder="当前累计欠款"
+              hidden
               v-decorator="[
-              'paymentdebtAmount',
-              {rules: [{ required: true, message: '请输入当前累计欠款', whitespace: false}]}
+              'paymentdebtAmount'
             ]"
             />
+            {{this.form.getFieldValue('paymentdebtAmount')}}
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">

@@ -272,7 +272,7 @@ export default {
           this.form.setFieldsValue({
             projectId: {
               key: record.projectId,
-              label: record.projectName
+              label: record.projectTitle
             }
           })
         }
@@ -337,8 +337,13 @@ export default {
         let lv = this.FormFieldOptions[key].find(item => item.key == val.key)
         if (lv && lv.node) {
           let { materialName, unitPrice, unitName, materialDescription } = lv.node
-          this.currentCRowData = { ...this.currentCRowData, ...lv.node }
-          this.currentCRowData.contractContent = materialDescription
+          let node = { ...lv.node }
+          delete node.id
+          this.currentCRowData = {
+            ...this.currentCRowData,
+            ...node,
+            contractContent: materialDescription
+          }
         }
       }
     },

@@ -16,7 +16,7 @@ export const formItems = [
     required: true,
     settlementType: '',
     tableRender: function (rowData = {}) {
-      return rowData.contractName
+      return rowData.contractName || rowData.contractTitle
     }
   },
   {
@@ -24,7 +24,10 @@ export const formItems = [
     valueKey: 'contractItemId',
     inputType: 'select',
     required: true,
-    settlementType: ''
+    settlementType: '',
+    tableRender: function (rowData = {}) {
+      return rowData.contractName || rowData.contractTitle
+    }
   },
   // {
   //   inputType: 'space',

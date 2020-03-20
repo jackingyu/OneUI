@@ -76,6 +76,9 @@ export default {
     ...mapGetters(['userInfo']),
     initModel() {
       let { id = undefined } = this.$route.query
+      this.$loadData(id)
+    },
+    $loadData(id) {
       if (id) {
         getContract(id).then(res => {
           if (res.success) {
@@ -111,6 +114,7 @@ export default {
             if (res.result.id && !this.model.id) {
               this.closePathFreshDetail(res.result.id)
             }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)
