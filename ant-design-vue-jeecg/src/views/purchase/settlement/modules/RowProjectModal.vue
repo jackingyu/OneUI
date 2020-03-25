@@ -226,7 +226,7 @@ export default {
     }
   },
   created() {
-    window.Z = this
+    window.TH = this
   },
   methods: {
     validatorRulesFor(ruleKey) {
@@ -262,17 +262,20 @@ export default {
         }
         if (record.contractItemId) {
           this.form.setFieldsValue({
-            contractItemId: this.FieldsSet.contractItems.mapper(record)
+            contractItemId: this.FieldsSet.contractItems.mapper({
+              ...record,
+              id: record.contractItemId
+            })
           })
           this.contractItemsList({
-            id: record.contractItemId
+            id: record.contractId
           })
         }
         if (record.projectId) {
           this.form.setFieldsValue({
             projectId: {
               key: record.projectId,
-              label: record.projectTitle
+              label: record.projectName
             }
           })
         }
@@ -328,7 +331,8 @@ export default {
             contractName: val.label,
             contractNumber: val.key
           }
-          this.form.setFieldsValue({ contractItemId: {} })
+          this.form.clearField('contractItemId')
+          // this.form.setFieldsValue({ contractItemId: {} })
           this.contractItemsList({
             id: lv.rId
           })
@@ -338,6 +342,8 @@ export default {
         if (lv && lv.node) {
           let { materialName, unitPrice, unitName, materialDescription } = lv.node
           let node = { ...lv.node }
+          node.contractItemNo = node.itemNo
+          delete node.itemNo
           delete node.id
           this.currentCRowData = {
             ...this.currentCRowData,

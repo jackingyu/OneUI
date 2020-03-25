@@ -119,8 +119,11 @@ export default {
     submitSettlement(postData) {
       this.loading = true
       let promises
-      if (postData.id) {
-        promises = updateSettlement(postData)
+      if (this.model.id) {
+        promises = updateSettlement({
+          ...postData,
+          id: this.model.id
+        })
       } else {
         promises = createSettlement(postData)
       }

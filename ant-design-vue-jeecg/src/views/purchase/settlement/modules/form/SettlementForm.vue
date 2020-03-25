@@ -1,7 +1,7 @@
 <template>
-  <a-form :form="form" class="form">
+  <a-form :form="form" class="form" :label-col="labelCol" :wrapper-col="wrapperCol">
     <detail-list title="基础信息">
-      <a-row class="form-row" :gutter="16">
+      <a-row class="form-row" :gutter="24">
         <!-- <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="项目名称">
             <a-select
@@ -19,6 +19,9 @@
             </a-select>
           </a-form-item>
         </a-col>-->
+        <a-col :lg="8" :md="12" :sm="24" v-if="!!this.model.id">
+          <a-form-item label="结算单号">{{this.model.id}}</a-form-item>
+        </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="供应商">
             <a-select
@@ -54,8 +57,6 @@
             <span>{{this.form.getFieldValue('totalAmount')||0}}</span>
           </a-form-item>
         </a-col>
-      </a-row>
-      <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="财务年度">
             <!-- <a-select
@@ -115,7 +116,15 @@ export default {
       contractType: 'Null',
       model: {},
       vendors: [],
-      projects: []
+      projects: [],
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 }
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 }
+      }
     }
   },
   created() {

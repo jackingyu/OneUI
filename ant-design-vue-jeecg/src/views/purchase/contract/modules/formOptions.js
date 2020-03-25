@@ -9,8 +9,8 @@ export const formItems = [
     contractType: ''
   },
   {
-    label: '物料类型',
-    valueKey: 'materialTypeCode',
+    label: '物料分组',
+    valueKey: 'materialGroupCode',
     inputType: 'dict',
     dict: 'material_group',
     noTable: true,
@@ -19,7 +19,7 @@ export const formItems = [
   },
   {
     label: '物料',
-    valueKey: 'materialCode',
+    valueKey: 'materialId',
     inputType: 'select',
     required: true,
     contractType: ''

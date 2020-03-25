@@ -104,7 +104,7 @@ export default {
   watch: {
     '$store.state.app.closedCmdTabkey': function(n) {
       if (n) {
-        this.remove(n)
+        this.remove(n, true)
         this.$store.state.app.closedCmdTabkey = undefined
       }
     },
@@ -148,14 +148,16 @@ export default {
     editPage(key, action) {
       this[action](key)
     },
-    remove(key) {
-      if (key == indexKey) {
-        this.$message.warning('首页不能关闭!')
-        return
-      }
-      if (this.pageList.length === 1) {
-        this.$message.warning('这是最后一页，不能再关闭了啦')
-        return
+    remove(key, forced = false) {
+      if (!forced) {
+        if (key == indexKey) {
+          this.$message.warning('首页不能关闭!')
+          return
+        }
+        if (this.pageList.length === 1) {
+          this.$message.warning('这是最后一页，不能再关闭了啦')
+          return
+        }
       }
       this.pageList = this.pageList.filter(item => item.fullPath !== key)
       let index = this.linkList.indexOf(key)

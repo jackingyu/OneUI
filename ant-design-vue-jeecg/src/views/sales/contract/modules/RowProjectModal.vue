@@ -197,7 +197,7 @@ export default {
           )
         )
         this.form.setFieldsValue({
-          materialTypeCode: isNaN(record.materialTypeCode) ? record.materialTypeCode : '' + record.materialTypeCode,
+          materialGroupCode: isNaN(record.materialGroupCode) ? record.materialGroupCode : '' + record.materialGroupCode,
           unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode,
           paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
         })
@@ -214,7 +214,7 @@ export default {
       //   unitPrice: '100',
       //   quantity: '33',
       //   itemNo: 10,
-      //   materialTypeCode: '2',
+      //   materialGroupCode: '2',
       //   materialCode: { key: 'M6', label: '测试物料6' },
       //   comments: '合同内容',
       //   unitCode: '1',
@@ -254,7 +254,7 @@ export default {
     },
     searchWordSelect(word, key) {
       if (key == 'materialCode') {
-        let code = this.form.getFieldValue('materialTypeCode')
+        let code = this.form.getFieldValue('materialGroupCode')
         this.materialList({
           materialGroupCode: code,
           materialName: word ? `*${word}*` : undefined
@@ -262,7 +262,7 @@ export default {
       }
     },
     onSelectChangeWithKey(val, key) {
-      if (key == 'materialTypeCode') {
+      if (key == 'materialGroupCode') {
         this.form.setFieldsValue({ materialCode: {} })
         this.materialList({
           materialGroupCode: val

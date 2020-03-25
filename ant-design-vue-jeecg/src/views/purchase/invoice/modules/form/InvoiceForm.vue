@@ -2,6 +2,11 @@
   <a-form :form="form" class="form">
     <detail-list title="基础信息">
       <a-row class="form-row" :gutter="16">
+        <a-col v-show="!!this.model.id" :lg="8" :md="12" :sm="24">
+          <a-form-item label="发票号码">
+            <span>{{this.model.invoiceNumber}}</span>
+          </a-form-item>
+        </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item style="display:none">
             <a-input v-decorator="['id']" />
@@ -98,9 +103,7 @@
             />
           </a-form-item>
         </a-col>
-      </a-row>
-      <a-row class="form-row" :gutter="16">
-        <a-col :lg="8" :md="12" :sm="24">
+        <a-col v-show="!this.model.id" :lg="8" :md="12" :sm="24">
           <a-form-item label="发票号码">
             <a-input
               placeholder="请输入发票号码"

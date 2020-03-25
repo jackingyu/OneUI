@@ -32,7 +32,7 @@
               'paymentdebtAmount'
             ]"
             />
-            {{this.form.getFieldValue('paymentdebtAmount')}}
+            <div style="min-height:3rem">{{this.form.getFieldValue('paymentdebtAmount')}}</div>
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
@@ -117,8 +117,6 @@
         </a-col>
       </a-row>
     </detail-list>
-    <a-divider style="margin-bottom: 32px" />
-    <detail-list title="附件"></detail-list>
     <a-form-item v-if="showSubmit">
       <a-button htmlType="submit">Submit</a-button>
     </a-form-item>

@@ -184,8 +184,9 @@ export default {
                   return
                 }
               }
+              debugger
               arData.map(item => {
-                item.materialId = item.materialCode
+                // item.materialId = item.materialCode
                 if (!!that.model.id) {
                   item.contractId = that.model.id
                 }

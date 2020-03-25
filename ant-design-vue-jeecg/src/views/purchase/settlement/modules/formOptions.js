@@ -6,7 +6,7 @@ export const formItems = [
     required: true,
     settlementType: '',
     tableRender: function (rowData = {}) {
-      return rowData.projectName
+      return rowData.projectId_dictText
     }
   },
   {
@@ -26,7 +26,7 @@ export const formItems = [
     required: true,
     settlementType: '',
     tableRender: function (rowData = {}) {
-      return rowData.contractName || rowData.contractTitle
+      return rowData.contractItemId
     }
   },
   // {
@@ -53,8 +53,11 @@ export const formItems = [
     readOnly: true,
     justShow: true,
     settlementType: '',
+    tableRender: function (rowData = {}) {
+      return rowData.materialId_dictText
+    },
     evalue: function (currentCRowData = {}) {
-      return currentCRowData.materialName || ''
+      return currentCRowData.materialId_dictText || ''
     }
   },
   {
@@ -75,7 +78,7 @@ export const formItems = [
     settlementType: '',
     evalue: function (currentCRowData = {}) {
       if (currentCRowData.unitPrice) {
-        return currentCRowData.unitPrice + ' / ' + currentCRowData.unitName
+        return currentCRowData.unitPrice + ' / ' + currentCRowData.unitCode_dictText
       }
       return ''
     }

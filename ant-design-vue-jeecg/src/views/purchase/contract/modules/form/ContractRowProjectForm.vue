@@ -49,7 +49,7 @@ let getColumns = thiz => {
         customRender = text => {
           return filterDictText(thiz.dicts[item.dict] || [], text) || text
         }
-      } else if (item.valueKey == 'materialCode') {
+      } else if (item.valueKey == 'materialId') {
         customRender = (text, record) => {
           return record.materialName
         }
