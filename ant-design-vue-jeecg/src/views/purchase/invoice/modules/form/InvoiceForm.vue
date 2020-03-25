@@ -2,6 +2,11 @@
   <a-form :form="form" class="form">
     <detail-list title="基础信息">
       <a-row class="form-row" :gutter="16">
+        <a-col v-show="!!this.model.id" :lg="8" :md="12" :sm="24">
+          <a-form-item label="发票号码">
+            <span>{{this.model.invoiceNumber}}</span>
+          </a-form-item>
+        </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item style="display:none">
             <a-input v-decorator="['id']" />
@@ -25,6 +30,8 @@
 
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="财务年度">
+            <a-input hidden v-decorator="['fiscalYear']" />
+            {{this.form.getFieldValue('fiscalYear')}}
             <!-- fiscalYear -->
           </a-form-item>
         </a-col>
@@ -70,7 +77,7 @@
             <a-input
               placeholder="请输入合同实施内容"
               v-decorator="[
-              'contractContent'
+              'contractContent',{rules:[{ required: true, message: '请输入合同实施内容'}]}
             ]"
             />
           </a-form-item>
@@ -88,19 +95,20 @@
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="开票金额">
-            <a-input placeholder="请输入付款金额" v-decorator="[
-              'amount'
-            ]" />
+            <a-input
+              placeholder="请输入付款金额"
+              v-decorator="[
+              'amount',{rules:[{ required: true, message: '请输入付款金额'},ruleWith('cash')]}
+            ]"
+            />
           </a-form-item>
         </a-col>
-      </a-row>
-      <a-row class="form-row" :gutter="16">
-        <a-col :lg="8" :md="12" :sm="24">
+        <a-col v-show="!this.model.id" :lg="8" :md="12" :sm="24">
           <a-form-item label="发票号码">
             <a-input
               placeholder="请输入发票号码"
               v-decorator="[
-              'invoiceNumber'
+              'invoiceNumber', {rules: [{ required: true, message: '请输入发票号码'}]} 
             ]"
             />
           </a-form-item>
@@ -131,10 +139,11 @@ import { getVendors, getProjects } from '@/api/api'
 import JDate from '@/components/jeecg/JDate'
 
 import FormFieldMixin from '@/mixins/FormFieldMixin'
+import ValidationMixin from '@/mixins/ValidationMixin'
 
 export default {
   name: 'InvoiceForm',
-  mixins: [FormFieldMixin],
+  mixins: [FormFieldMixin, ValidationMixin],
   components: {
     DetailList,
     JDate
@@ -181,7 +190,7 @@ export default {
       })
     },
     handleVendorChange(v) {
-      let vendor = this.FieldsSet.vendors.find(item => (item.id = v))
+      let vendor = this.FormFieldOptions.vendors.find(item => item.id == v)
       if (vendor) {
         // this.form.setFieldsValue({
         //   contactPerson: vendor.contactPerson,

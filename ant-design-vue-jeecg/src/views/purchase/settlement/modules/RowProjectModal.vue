@@ -11,8 +11,14 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-row :gutter="24">
-          <a-col v-for="(item, index) in formItems" :key="index" :xs="24" :md="8">
-            <a-form-item :label="item.label">
+          <a-col
+            v-for="(item, index) in formItems"
+            :key="index"
+            :xs="24"
+            :md="item.inputType=='space'?24:8"
+          >
+            <template v-if="item.inputType=='space'"></template>
+            <a-form-item v-else :label="item.label">
               <template v-if="item.inputType=='select'">
                 <a-select
                   v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
@@ -25,6 +31,7 @@
                   :showSearch="!item.onlySelect"
                 >
                   <a-select-option
+                    class="override"
                     v-for="option in (FormFieldOptions[item.valueKey]||[])"
                     :key="''+option.key"
                     :value="''+option.key"
@@ -33,7 +40,7 @@
               </template>
               <template v-else-if="item.inputType=='input'">
                 <a-input
-                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label}]}]"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label},ruleWith(item.ruleKey)]}]"
                   :disabled="item.readOnly"
                   :placeholder="`请输入${item.label}`"
                 >
@@ -115,9 +122,17 @@
                 />
               </template>
               <template v-else>
-                <span
-                  v-text="item.evalue?item.evalue(form.getFieldValue('unitPrice'),form.getFieldValue('quantity')):item.value"
-                ></span>
+                <div v-if="item.valueKey=='totalAmount'">
+                  <input hidden v-decorator="[item.valueKey,{initialValue:autoCalculate()}]" />
+                  {{autoCalculate()}}&nbsp;
+                </div>
+                <div v-else>
+                  <input
+                    hidden
+                    v-decorator="[item.valueKey,{initialValue:item.evalue?item.evalue(currentCRowData):item.value}]"
+                  />
+                  {{item.evalue?item.evalue(currentCRowData):item.value}}&nbsp;
+                </div>
               </template>
             </a-form-item>
           </a-col>
@@ -134,6 +149,7 @@ import moment from 'moment'
 import { getMaterials } from '@/api/api'
 import { formItems } from './formOptions'
 import FormFieldMixin from '@/mixins/FormFieldMixin'
+import ValidationMixin from '@/mixins/ValidationMixin'
 export default {
   name: 'RowProjectModal',
   props: {
@@ -142,10 +158,10 @@ export default {
       default: 'st'
     }
   },
-  mixins: [FormFieldMixin],
+  mixins: [FormFieldMixin, ValidationMixin],
   watch: {
     type: function(n, o) {
-      this.contractType = n
+      this.contractType = n + ''
     }
   },
   computed: {
@@ -157,19 +173,15 @@ export default {
     return {
       title: '操作',
       FieldsSet: {
-        material: {
-          key: 'materialId',
-          funcName: 'GetMaterials',
-          params: {}
-        },
         contract: {
-          key: 'contractId',
+          key: 'contractNumber',
           funcName: 'GetContracts',
           params: {},
           mapper: item => {
             return {
-              key: item.id,
-              value: item.id,
+              key: item.contractCode,
+              rId: item.id,
+              value: item.contractCode,
               label: item.contractTitle
             }
           }
@@ -180,9 +192,10 @@ export default {
           params: {},
           mapper: item => {
             return {
+              node: item,
               key: item.id,
               value: item.id,
-              label: '[' + item.itemNo + ']' + item.comments
+              label: `【${item.itemNo || item.contractItemNo}】` + item.materialName
             }
           },
           resTransformer: res => {
@@ -202,74 +215,71 @@ export default {
           }
         }
       },
+      currentCRowData: {},
       visible: false,
       contractType: this.type,
       model: {},
       col: 3,
       confirmLoading: false,
       form: this.$form.createForm(this),
-      validatorRules: {},
-      url: {
-        add: '/test/jeecgDemo/add',
-        edit: '/test/jeecgDemo/edit'
-      }
+      validatorRules: {}
     }
   },
   created() {
-    window.Z = this
+    window.TH = this
   },
   methods: {
-    add(model) {
-      this.edit(model || {})
+    validatorRulesFor(ruleKey) {
+      if (ruleKey) {
+        return [this.ruleWith(ruleKey)]
+      }
+      return []
     },
-    edit(record) {
+    autoCalculate() {
+      let val = (this.currentCRowData.unitPrice || 0) * (this.form.getFieldValue('quantity') || 0)
+      return isNaN(val) ? 0 : val.toFixed(2)
+    },
+    add(model = {}) {
+      this.edit(model)
+    },
+    edit(record = {}) {
       this.form.resetFields()
       this.model = Object.assign({}, record)
       this.visible = true
+      this.currentCRowData = { ...this.model, unitName: this.model.unitName }
       this.$nextTick(() => {
-        this.form.setFieldsValue(
-          pick(
-            this.model,
-            'unitPrice',
-            'quantity',
-            'itemNo',
-            'comments',
-            'taxRate',
-            'acceptanceCriteria',
-            'contractSchedule',
-            'qualityStandard',
-            'paymentTerm'
-          )
-        )
+        let quantity = this.model.quantity || 0
         this.form.setFieldsValue({
-          materialGroupCode: record.materialGroupCode,
-          unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode
+          quantity: quantity + ''
         })
-        if (record.materialId) {
+        if (record.contractNumber) {
           this.form.setFieldsValue({
-            materialId: {
-              key: record.materialId,
-              label: record.materialName
+            contractNumber: {
+              key: record.contractNumber,
+              label: record.contractName
+            }
+          })
+        }
+        if (record.contractItemId) {
+          this.form.setFieldsValue({
+            contractItemId: this.FieldsSet.contractItems.mapper({
+              ...record,
+              id: record.contractItemId
+            })
+          })
+          this.contractItemsList({
+            id: record.contractId
+          })
+        }
+        if (record.projectId) {
+          this.form.setFieldsValue({
+            projectId: {
+              key: record.projectId,
+              label: record.projectName
             }
           })
         }
       })
-      // const demoData = {
-      //   unitPrice: '100',
-      //   quantity: '33',
-      //   itemNo: 10,
-      //   materialGroupCode: '2',
-      //   materialCode: { key: 'M6', label: '测试物料6' },
-      //   comments: '合同内容',
-      //   unitCode: '1',
-      //   taxRate: '0.225',
-      //   // taxRate: { key: 6.25, label: '6.25‰', value: 6.25 },
-      //   acceptanceCriteria: 'YE',
-      //   contractSchedule: '180天',
-      //   qualityStandard: 'ISO9001',
-      //   paymentMethodCode: '1',
-      //   paymentTerm: '合同期前'
-      // }
     },
     close() {
       this.$emit('close')
@@ -280,13 +290,17 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           this.confirmLoading = true
-          let formData = pick(values, 'unitPrice', 'quantity', 'unitCode', 'contractContent')
           let postData = {
-            ...formData,
+            ...this.model,
+            ...this.currentCRowData,
+            totalAmount: values.totalAmount,
+            quantity: values.quantity,
             projectId: values.projectId.key,
-            materialId: values.materialId.key,
-            contractId: values.contractId.key,
-            contractItemId: values.contractItemId.key
+            projectName: values.projectId.label,
+            contractNumber: values.contractNumber.key,
+            contractName: values.contractNumber.label,
+            contractItemId: values.contractItemId.key,
+            contractItemName: values.contractItemId.label
           }
           this.$emit('submit', postData)
           this.visible = false
@@ -298,32 +312,45 @@ export default {
       this.close()
     },
     searchWordSelect(word, key) {
-      if (key == 'materialId') {
-        let code = this.form.getFieldValue('materialGroupCode')
-        this.materialList({
-          materialGroupCode: code,
-          materialName: word ? `*${word}*` : undefined
-        })
-      } else if (key == 'projectId') {
+      if (key == 'projectId') {
         this.projectList({
           projectName: word ? `*${word}*` : undefined
         })
-      } else if (key == 'contractId') {
+      } else if (key == 'contractNumber') {
         this.contractList({
           contractName: word ? `*${word}*` : undefined
         })
       }
     },
     onSelectChangeWithKey(val, key) {
-      if (key == 'materialGroupCode') {
-        this.form.setFieldsValue({ materialId: {} })
-        this.materialList({
-          materialGroupCode: val
-        })
-      } else if (key == 'contractId') {
-        this.contractItemsList({
-          id: val.key
-        })
+      if (key == 'contractNumber') {
+        let lv = this.FormFieldOptions[key].find(item => item.key == val.key)
+        if (lv) {
+          this.currentCRowData = {
+            ...this.currentCRowData,
+            contractName: val.label,
+            contractNumber: val.key
+          }
+          this.form.clearField('contractItemId')
+          // this.form.setFieldsValue({ contractItemId: {} })
+          this.contractItemsList({
+            id: lv.rId
+          })
+        }
+      } else if (key == 'contractItemId') {
+        let lv = this.FormFieldOptions[key].find(item => item.key == val.key)
+        if (lv && lv.node) {
+          let { materialName, unitPrice, unitName, materialDescription } = lv.node
+          let node = { ...lv.node }
+          node.contractItemNo = node.itemNo
+          delete node.itemNo
+          delete node.id
+          this.currentCRowData = {
+            ...this.currentCRowData,
+            ...node,
+            contractContent: materialDescription
+          }
+        }
       }
     },
     initFields() {
@@ -357,5 +384,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+.override.ant-select-dropdown-menu-item {
+  white-space: pre-line;
+}
 </style>

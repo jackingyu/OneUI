@@ -9,7 +9,7 @@
         />
         <!-- table -->
         <detail-list title="结算行项目">
-          <settlement-row-project-form ref="rowproj" :showSubmit="false" />
+          <settlement-row-project-form @formChange="formChange" ref="rowproj" :showSubmit="false" />
         </detail-list>
         <template v-if="!!model.id">
           <a-divider style="margin-bottom: 32px" />
@@ -21,6 +21,8 @@
 
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/purchase/settlements')">返回供应商结算列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
         <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
@@ -41,6 +43,7 @@ import PageView from '@comp/layouts/PageView'
 import { getSettlements, getSettlement, createSettlement, updateSettlement } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'Settlement',
   components: {
@@ -51,6 +54,7 @@ export default {
     AttachFilesForm,
     DetailList
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       cType: '',
@@ -70,27 +74,42 @@ export default {
   mounted() {
     this.initModel()
   },
-  created() {},
+  updated() {
+    if (this.model.id != this.$route.query.id) {
+      this.initModel()
+    }
+  },
   methods: {
     ...mapGetters(['userInfo']),
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        // getContract(id).then(res => {
-        //   if (res.success) {
-        //     this.model = {
-        //       ...res.result,
-        //       id
-        //     }
-        //     this.$refs.contract.edit(this.model)
-        //     this.$refs.rowproj.edit(res.result.purchaseContractItems)
-        //   } else {
-        //     this.$message.warning(res.message)
-        //   }
-        // })
+        getSettlement(id).then(res => {
+          if (res.success) {
+            this.model = {
+              ...res.result,
+              id
+            }
+            this.$refs.settlement.edit(this.model)
+            let items = this.model.vendorSettlementItems.map(item => {
+              return {
+                ...item,
+                key: item.id,
+                materialName: item.materialName
+              }
+            })
+            this.$refs.rowproj.edit(items)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
       } else {
         this.$refs.settlement.add()
       }
+    },
+    formChange(rows) {
+      let totalAmount = rows.map(item => item.totalAmount).reduce((n, p) => Number(n) + Number(p), 0)
+      this.$refs.settlement.totalChange(totalAmount)
     },
     settlementTypeCodeChange(v) {
       this.cType = v
@@ -100,14 +119,20 @@ export default {
     submitSettlement(postData) {
       this.loading = true
       let promises
-      if (postData.id) {
-        promises = updateSettlement(postData)
+      if (this.model.id) {
+        promises = updateSettlement({
+          ...postData,
+          id: this.model.id
+        })
       } else {
         promises = createSettlement(postData)
       }
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)
@@ -123,9 +148,9 @@ export default {
       that.$refs.settlement.form.validateFields((err, values) => {
         console.info('settlement', values)
         if (!err) {
-          let postData = pick(values, 'id', 'projectId', 'vendorId', 'settlementTime', 'total', 'settlementTypeCode')
+          let postData = pick(values, 'id', 'vendorId', 'totalAmount', 'settlementTime', 'settlementTypeCode')
           postData.settlementTime = postData.settlementTime + ' 00:00:00'
-          postData.fiscalYear = '0'
+          delete postData.fiscalYear
           that.$refs.rowproj.form.validateFields((err, values) => {
             if (!err) {
               let arData = []

@@ -159,9 +159,6 @@ export default {
       return formItems.filter(item => !item.contractType || item.contractType == this.contractType)
     }
   },
-  created() {
-    window.M = this
-  },
   data() {
     return {
       title: '操作',
@@ -191,44 +188,34 @@ export default {
             'unitPrice',
             'quantity',
             'itemNo',
-            'comments',
+            'materialDescription',
             'acceptanceCriteria',
             'contractSchedule',
             'qualityStandard',
-            'paymentTerm'
+            'paymentTerm',
+            'warranty',
+            'warrantyAgreement'
           )
         )
         this.form.setFieldsValue({
           taxRate: isNaN(record.taxRate) ? record.taxRate : '' + record.taxRate,
-          materialTypeCode: isNaN(record.materialTypeCode) ? record.materialTypeCode : '' + record.materialTypeCode,
+          materialGroupCode: isNaN(record.materialGroupCode) ? record.materialGroupCode : '' + record.materialGroupCode,
           unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode,
           paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
         })
-        if (record.materialCode) {
-          this.form.setFieldsValue({
-            materialCode: {
-              key: record.materialCode == undefined ? '' : record.materialCode + '',
-              label: record.materialName
-            }
-          })
+        if (record.materialId) {
+          if (record.materialId instanceof Object) {
+            this.form.setFieldsValue({ materialId: record.materialId })
+          } else {
+            this.form.setFieldsValue({
+              materialId: {
+                key: record.materialId == undefined ? '' : record.materialId + '',
+                label: record.materialName
+              }
+            })
+          }
         }
       })
-      // const demoData = {
-      //   unitPrice: '100',
-      //   quantity: '33',
-      //   itemNo: 10,
-      //   materialTypeCode: '2',
-      //   materialCode: { key: 'M6', label: '测试物料6' },
-      //   comments: '合同内容',
-      //   unitCode: '1',
-      //   taxRate: '0.225',
-      //   // taxRate: { key: 6.25, label: '6.25‰', value: 6.25 },
-      //   acceptanceCriteria: 'YE',
-      //   contractSchedule: '180天',
-      //   qualityStandard: 'ISO9001',
-      //   paymentMethodCode: '1',
-      //   paymentTerm: '合同期前'
-      // }
     },
     close() {
       this.$emit('close')
@@ -243,8 +230,8 @@ export default {
             ...this.model,
             ...values,
             // taxRate: values.taxRate.key,
-            materialCode: values.materialCode.key,
-            materialName: values.materialCode.label
+            materialId: values.materialId.key,
+            materialName: values.materialId.label
           }
           this.$emit('submit', postData)
           this.visible = false
@@ -256,8 +243,8 @@ export default {
       this.close()
     },
     searchWordSelect(word, key) {
-      if (key == 'materialCode') {
-        let code = this.form.getFieldValue('materialTypeCode')
+      if (key == 'materialId') {
+        let code = this.form.getFieldValue('materialGroupCode')
         this.materialList({
           materialGroupCode: code,
           materialName: word ? `*${word}*` : undefined
@@ -265,22 +252,24 @@ export default {
       }
     },
     onSelectChangeWithKey(val, key) {
-      if (key == 'materialTypeCode') {
-        this.form.setFieldsValue({ materialCode: {} })
+      if (key == 'materialGroupCode') {
+        this.form.setFieldsValue({ materialId: {} })
         this.materialList({
           materialGroupCode: val
         })
-      } else if (key == 'materialCode') {
-        // this.form.setFieldsValue({ materialCode: {} })
-        // this.materialList({
-        //   materialGroupCode: val
-        // })
+      } else if (key == 'materialId') {
+        // if (!this.form.getFieldValue('materialDescription')) {
+        let findMaterial = this.FormFieldOptions.materialId.find(item => item.key == val.key)
+        if (findMaterial && findMaterial.node && findMaterial.node.materialDescription) {
+          this.form.setFieldsValue({ materialDescription: findMaterial.node.materialDescription || '' })
+        }
+        // }
       }
     },
     initFields() {
       return [
         {
-          key: 'materialCode',
+          key: 'materialId',
           funcName: 'GetMaterials',
           params: {}
         }
@@ -288,7 +277,7 @@ export default {
     },
     materialList(params) {
       this.request({
-        key: 'materialCode',
+        key: 'materialId',
         funcName: 'GetMaterials',
         params
       })

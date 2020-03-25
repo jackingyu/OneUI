@@ -53,16 +53,16 @@
             placeholder="请输入物料描述"
             :rows="4"
             v-decorator="[ 'materialDescription']"
-            :readOnly="!!model.id"
           />
         </a-form-item>
 
         <a-form-item label="一次性物料" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-dict-select-tag
-            v-decorator="['oneTimeFlag', {}]"
+            v-decorator="['oneTimeFlag']"
             placeholder
             :type="'radio'"
             :triggerChange="true"
+            :disabled="!!model.id"
             dictCode="material_property"
           />
         </a-form-item>

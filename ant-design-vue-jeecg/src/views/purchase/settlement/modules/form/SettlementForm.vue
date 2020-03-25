@@ -1,8 +1,8 @@
 <template>
-  <a-form :form="form" class="form">
+  <a-form :form="form" class="form" :label-col="labelCol" :wrapper-col="wrapperCol">
     <detail-list title="基础信息">
-      <a-row class="form-row" :gutter="16">
-        <a-col :lg="8" :md="12" :sm="24">
+      <a-row class="form-row" :gutter="24">
+        <!-- <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="项目名称">
             <a-select
               v-decorator="['projectId',{rules: [{ required: true, message: '请选择项目', whitespace: true}]}]"
@@ -18,6 +18,9 @@
               >{{project.projectName}}</a-select-option>
             </a-select>
           </a-form-item>
+        </a-col>-->
+        <a-col :lg="8" :md="12" :sm="24" v-if="!!this.model.id">
+          <a-form-item label="结算单号">{{this.model.id}}</a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="供应商">
@@ -48,24 +51,23 @@
             ></j-date>
           </a-form-item>
         </a-col>
-      </a-row>
-      <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="本次结算总价">
-            <a-input placeholder="请输入本次结算总价" v-decorator="[
-              'total'
-            ]" />
+            <a-input hidden placeholder="请输入本次结算总价" v-decorator="['totalAmount']" />
+            <span>{{this.form.getFieldValue('totalAmount')||0}}</span>
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="财务年度">
-            <a-select
-              v-decorator="['annual']"
+            <!-- <a-select
+              v-decorator="['fiscalYear']"
               placeholder="请选择财务年度"
               :filterOption="false"
               disabled
               :showSearch="true"
-            ></a-select>
+            ></a-select>-->
+            <a-input hidden placeholder="请输入财务年度" v-decorator="['fiscalYear']" />
+            <span>{{this.form.getFieldValue('fiscalYear')}}</span>
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
@@ -114,42 +116,46 @@ export default {
       contractType: 'Null',
       model: {},
       vendors: [],
-      projects: []
+      projects: [],
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 }
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 }
+      }
     }
   },
   created() {
     this.fetchVendorList()
     this.fetchProjectList()
-    window.F = this.form
   },
   methods: {
     add() {
-      this.edit({})
+      this.edit({ fiscalYear: '2020' })
     },
     edit(record) {
       this.model = record || {}
+      if (!record.settlementTime) {
+        record.settlementTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      }
       let that = this
       this.$nextTick(() => {
-        that.form.setFieldsValue(pick(this.model, 'id', 'contractCode', 'contractTitle', 'projectId'))
+        that.form.setFieldsValue(pick(this.model, 'id', 'vendorId', 'fiscalYear', 'totalAmount', 'settlementTime'))
         if (this.model.settlementTypeCode) {
           that.form.setFieldsValue({
-            settlementTypeCode: '' + this.model.settlementTypeCode
+            settlementTypeCode: isNaN(this.model.settlementTypeCode)
+              ? this.model.settlementTypeCode
+              : this.model.settlementTypeCode + ''
           })
           that.settlementTypeCodeChange(this.model.settlementTypeCode)
         }
-        let vendor = this.model.vendor
-        if (vendor) {
-          that.form.setFieldsValue({
-            contactPhone: vendor.contactPhone,
-            contactPerson: vendor.contactPerson,
-            vendorId: vendor.id != undefined ? '' + vendor.id : ''
-          })
-        }
-        if (this.model.beginDate) {
-          that.form.setFieldsValue({
-            dateSpan: [moment(this.model.beginDate), moment(this.model.endDate)]
-          })
-        }
+      })
+    },
+    totalChange(totalAmount) {
+      this.form.setFieldsValue({
+        totalAmount: totalAmount
       })
     },
     fetchVendorList(word) {
@@ -174,7 +180,7 @@ export default {
       this.$emit('settlementTypeCodeChange', v)
     },
     handleVendorChange(v) {
-      let vendor = this.vendors.find(item => (item.id = v))
+      let vendor = this.vendors.find(item => item.id == v)
       if (vendor) {
         this.form.setFieldsValue({
           contactPerson: vendor.contactPerson,

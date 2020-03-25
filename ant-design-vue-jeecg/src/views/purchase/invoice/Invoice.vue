@@ -7,6 +7,8 @@
       <!-- table -->
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/purchase/invoices')">返回供应商发票列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">{{$t('actions.submit')}}</a-button>
         <!-- <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>-->
@@ -24,6 +26,7 @@ import PageView from '@comp/layouts/PageView'
 import { getInvoices, getInvoice, createInvoice, updateInvoice, delInvoice } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'Invoice',
   components: {
@@ -31,10 +34,12 @@ export default {
     FooterToolBar,
     InvoiceForm
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       cType: '',
       loading: false,
+      model: {},
       rowFields: []
     }
   },
@@ -46,7 +51,11 @@ export default {
   mounted() {
     this.initModel()
   },
-  created() {},
+  updated() {
+    if (this.model.id != this.$route.query.id) {
+      this.initModel()
+    }
+  },
   methods: {
     ...mapGetters(['userInfo']),
     initModel() {
@@ -54,6 +63,7 @@ export default {
       if (id) {
         getInvoice(id).then(res => {
           if (res.success) {
+            this.model = res.result
             this.$refs.invoice.edit(res.result)
           } else {
             this.$message.warning(res.message)
@@ -74,6 +84,9 @@ export default {
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)

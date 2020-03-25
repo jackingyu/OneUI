@@ -3,10 +3,18 @@
     <div slot="route-view">
       <a-card class="card" :bordered="false">
         <payment-form ref="payform" :showSubmit="false" />
+        <a-divider style="margin-bottom: 32px" />
+        <!-- <detail-list title="银行账号">
+          <bank-form ref="bank" single :showSubmit="false" />
+        </detail-list>-->
+        <!-- <a-divider style="margin-bottom: 32px" /> -->
+        <detail-list title="附件"></detail-list>
       </a-card>
       <!-- table -->
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/purchase/payments')">返回供应商付款列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">提交</a-button>
         <!-- <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>-->
@@ -17,6 +25,7 @@
 
 <script>
 import pick from 'lodash.pick'
+import DetailList from '@/components/tools/DetailList'
 import PaymentForm from './modules/form/PaymentForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
@@ -24,26 +33,31 @@ import PageView from '@comp/layouts/PageView'
 import { getVendorPayment, getVendorPayments, createVendorPayment, updateVendorPayment } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import BankForm from './modules/form/BankForm'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'Payment',
   components: {
     PageView,
     FooterToolBar,
-    PaymentForm
+    DetailList,
+    PaymentForm,
+    BankForm
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       loading: false,
       model: {}
     }
   },
-  // computed: {
-  //   orgCode() {
-  //     return this.userInfo().orgCode
-  //   }
-  // },
   mounted() {
     this.initModel()
+  },
+  updated() {
+    if (this.model.id != this.$route.query.id) {
+      this.initModel()
+    }
   },
   methods: {
     ...mapGetters(['userInfo']),
@@ -54,6 +68,11 @@ export default {
           if (res.success) {
             this.model = res.result
             this.$refs.payform.edit(res.result)
+            // let bankModel = pick(res.result, 'bankId', 'bankName', 'bankAccountId', 'subBranchId')
+            // bankModel.bankAccount = bankModel.bankAccountId
+            // bankModel.key = -new Date()
+            // delete bankModel.bankAccountId
+            // this.$refs.bank.edit([bankModel])
           } else {
             this.$message.warning(res.message)
           }
@@ -79,6 +98,9 @@ export default {
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)
@@ -99,6 +121,27 @@ export default {
             paymentDate: values.paymentDate + ' 00:00:00'
           }
           this.submitPayment(postData)
+          // this.$refs.bank.form.validateFields((err2, {data}) => {
+          //   let banks
+          //   if (data instanceof Array) {
+          //     banks = data
+          //   } else {
+          //     banks = JSON.parse(data)
+          //   }
+          //   if (banks.length > 0) {
+          //     let bankModel = banks[0]
+          //     debugger
+          //     delete bankModel.key
+          //     postData = {
+          //       ...postData,
+          //       ...bankModel,
+          //       bankAccountId: bankModel.bankAccount
+          //     }
+          //     this.submitPayment(postData)
+          //   } else {
+          //     this.$message.warning('请填写完整的账号信息')
+          //   }
+          // })
         }
       })
     }

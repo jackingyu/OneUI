@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-form :form="jform" layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
             <a-form-item label="合同实施内容">
@@ -12,7 +12,7 @@
           <a-col :md="6" :sm="12">
             <a-form-item label="供应商">
               <a-select
-                v-decorator="['vendorId']"
+                v-model="queryParam.vendorId"
                 placeholder="请选择供应商"
                 :filterOption="false"
                 :showSearch="true"
@@ -29,8 +29,9 @@
           <a-col :md="6" :sm="12">
             <a-form-item label>
               <a-range-picker
-                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                v-decorator="['settlementTime',{rules: [{ required: true, message: '请选择生效日期'}]}]"
                 format="YYYY-MM-DD"
+                @change="settlementTimeChange"
                 :placeholder="['开始时间', '结束时间']"
               />
             </a-form-item>
@@ -101,7 +102,7 @@ import { createMaterial, updateMaterial, getVendors } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
-
+import moment from 'moment'
 export default {
   name: 'SettlementList',
   mixins: [JeecgListMixin],
@@ -110,18 +111,25 @@ export default {
     JInput
   },
   data() {
+    let now = moment()
+    let to = now.format('YYYY-MM-DD+HH:mm:ss')
+    let from = now.add(-1, 'year').format('YYYY-MM-DD+HH:mm:ss')
     return {
       description: '',
       queryParam: {},
       materialGroups: [],
       oneTimeFlags: [],
       vendors: [],
+      queryParam: {
+        settlementTime_start: from,
+        settlementTime_end: to
+      },
       columns: [
         {
           title: '结算单号',
           align: 'center',
           width: 160,
-          dataIndex: 'contractNumber'
+          dataIndex: 'vendorSettlementId'
         },
         {
           title: '行项目',
@@ -129,9 +137,9 @@ export default {
           dataIndex: 'contractItemNo'
         },
         {
-          title: '日期',
+          title: '结算时间',
           align: 'center',
-          dataIndex: 'createTime'
+          dataIndex: 'settlementTime'
         },
         {
           title: '单价',
@@ -139,14 +147,24 @@ export default {
           dataIndex: 'unitPrice'
         },
         {
+          title: '单位',
+          align: 'center',
+          dataIndex: 'unitCode_dictText'
+        },
+        {
           title: '数量',
           align: 'center',
-          dataIndex: 'total'
+          dataIndex: 'quantity'
+        },
+        {
+          title: '合价',
+          align: 'center',
+          dataIndex: 'totalAmount'
         },
         {
           title: '物料',
           align: 'center',
-          dataIndex: 'materialId'
+          dataIndex: 'materialId_dictText'
         },
         {
           title: '合同实施内容',
@@ -162,7 +180,7 @@ export default {
         }
       ],
       url: {
-        list: Rest.GET_SETTLEMENTS.url
+        list: Rest.GET_SETTLEMENTS_ITEMS.url
       }
     }
   },
@@ -173,6 +191,11 @@ export default {
   },
   mounted() {
     this.fetchVendorList()
+    let to = moment()
+    let from = moment().add(-1, 'year')
+    this.jform.setFieldsValue({
+      settlementTime: [from, to]
+    })
   },
   methods: {
     fetchVendorList(word) {
@@ -196,11 +219,21 @@ export default {
         }
       })
     },
+    settlementTimeChange(momentArr, strArr) {
+      if (momentArr.length == 0) {
+        this.queryParam.settlementTime_start = ''
+        this.queryParam.settlementTime_end = ''
+      } else {
+        let msArr = momentArr.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
+        this.queryParam.settlementTime_start = msArr[0]
+        this.queryParam.settlementTime_end = msArr[1]
+      }
+    },
     handleEdit(record) {
       this.$router.push({
         path: '/purchase/settlement',
         query: {
-          id: record.id
+          id: record.vendorSettlementId
         }
       })
     },

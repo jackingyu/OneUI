@@ -42,13 +42,12 @@ let getColumns = thiz => {
         customRender = text => {
           return filterDictText(thiz.dicts[item.dict] || [], text) || text
         }
-      } else if (item.valueKey == 'materialCode') {
+      } else {
         customRender = (text, record) => {
-          return record.materialName
-        }
-      } else if (item.evalue) {
-        customRender = (text, record) => {
-          return item.evalue(record.unitPrice, record.quantity)
+          if (item.tableRender) {
+            return item.tableRender(record)
+          }
+          return text
         }
       }
       return {
@@ -84,7 +83,6 @@ export default {
   },
   mounted() {
     this.initDictConfig()
-    window.TTTTT = this
   },
   watch: {
     data(n) {
@@ -114,13 +112,13 @@ export default {
       // })
     },
     settlementType(v) {
-      this.settlementTypeCode = v
+      this.settlementTypeCode = v + ''
     },
     edit(rows) {
       this.data = rows.map(item => {
         return {
           ...item,
-          key: item.itemNo || `${+new Date()}`
+          key: item.id || `${-new Date()}`
         }
       })
       this.setForm(this.data)
@@ -128,6 +126,7 @@ export default {
     setForm(val) {
       this.$nextTick(() => {
         this.form.setFieldsValue({ data: JSON.stringify(val) })
+        this.$emit('formChange', val)
       })
     },
     defaultOptions(item) {
@@ -150,7 +149,6 @@ export default {
         this.data = newData
       } else {
         this.data.push({
-          key: row.itemNo || `${-new Date()}`,
           ...row
         })
       }
@@ -162,6 +160,7 @@ export default {
       }
       this.$refs.projectModal.add({
         ...this.model,
+        key: `${-new Date()}`,
         settlementTypeCode: this.settlementTypeCode
       })
     },
@@ -172,18 +171,9 @@ export default {
     },
     editRow(key) {
       let target = this.data.filter(item => item.key === key)[0] || {}
-      target = {
-        ...target,
-        materialCode: {
-          key: target.materialCode,
-          label: target.materialName
-        }
-        // taxRate: {
-        //   key: target.taxRate,
-        //   label: target.taxRate
-        // }
-      }
-      this.$refs.projectModal.edit(target)
+      this.$refs.projectModal.edit({
+        ...target
+      })
     }
     // handleChange(value, key, column) {
     //   const newData = [...this.data]

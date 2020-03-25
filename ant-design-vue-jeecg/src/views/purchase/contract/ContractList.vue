@@ -51,7 +51,10 @@
         :loading="loading"
         @change="handleTableChange"
       >
-        <span slot="date" slot-scope="text, record">{{record.beginDate + '~' + record.endDate}}</span>
+        <span
+          slot="date"
+          slot-scope="text, record"
+        >{{record.beginDate.split(' ')[0] + '~' + record.endDate.split(' ')[0]}}</span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <!-- <a-divider type="vertical" /> -->

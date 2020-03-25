@@ -8,7 +8,7 @@ export const formItems = [
   },
   {
     label: '物料类型',
-    valueKey: 'materialTypeCode',
+    valueKey: 'materialGroupCode',
     inputType: 'dict',
     dict: 'material_group',
     noTable: true,

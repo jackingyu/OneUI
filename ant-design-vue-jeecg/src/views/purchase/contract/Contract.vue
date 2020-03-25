@@ -17,6 +17,8 @@
 
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/purchase/contracts')">返回采购合同列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
         <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
@@ -37,6 +39,7 @@ import PageView from '@comp/layouts/PageView'
 import { getContract, getContracts, createContract, updateContract } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'Contract',
   components: {
@@ -47,6 +50,7 @@ export default {
     AttachFilesForm,
     DetailList
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       cType: '',
@@ -63,11 +67,18 @@ export default {
   mounted() {
     this.initModel()
   },
-  created() {},
+  updated() {
+    if (this.model.id != this.$route.query.id) {
+      this.initModel()
+    }
+  },
   methods: {
     ...mapGetters(['userInfo']),
     initModel() {
       let { id = undefined } = this.$route.query
+      this.$loadData(id)
+    },
+    $loadData(id) {
       if (id) {
         getContract(id).then(res => {
           if (res.success) {
@@ -100,6 +111,10 @@ export default {
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)
@@ -169,8 +184,12 @@ export default {
                   return
                 }
               }
+              debugger
               arData.map(item => {
-                item.materialId = item.materialCode
+                // item.materialId = item.materialCode
+                if (!!that.model.id) {
+                  item.contractId = that.model.id
+                }
                 return item
               })
               postData.purchaseContractItems = arData

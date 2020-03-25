@@ -5,12 +5,27 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="项目名称">
+            <!-- <a-form-item label="项目名称">
               <j-dict-select-tag
                 v-model="queryParam.vendorCode"
                 placeholder="请选择材料商或者分包商"
                 dictCode="vendor_group"
               />
+            </a-form-item>-->
+            <a-form-item label="供应商">
+              <a-select
+                v-model="queryParam.vendorId"
+                placeholder="请选择供应商"
+                :filterOption="false"
+                :showSearch="true"
+                @search="fetchVendorList"
+              >
+                <a-select-option
+                  v-for="(vendor, index) in FormFieldOptions.vendors"
+                  :key="index"
+                  :value="vendor.id"
+                >{{vendor.vendorName}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="12">
@@ -87,11 +102,12 @@ import { putAction } from '@/api/manage'
 import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+import FormFieldMixin from '@/mixins/FormFieldMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
   name: 'InvoiceList',
-  mixins: [JeecgListMixin],
+  mixins: [JeecgListMixin, FormFieldMixin],
   components: {
     // ProjectModal,
     JInput
@@ -142,6 +158,12 @@ export default {
           width: 170
         }
       ],
+      FieldsSet: {
+        vendors: {
+          key: 'vendors',
+          funcName: 'GetVendors'
+        }
+      },
       url: {
         list: Rest.GET_VENDORINVOICES.url
       }
@@ -162,6 +184,14 @@ export default {
       initDictOptions('material_property').then(res => {
         if (res.success) {
           this.oneTimeFlags = res.result
+        }
+      })
+    },
+    fetchVendorList(word) {
+      this.request({
+        ...this.FieldsSet.vendors,
+        params: {
+          vendorName: word ? `*${word}*` : ''
         }
       })
     },

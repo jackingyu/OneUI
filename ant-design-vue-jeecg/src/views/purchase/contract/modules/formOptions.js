@@ -4,11 +4,13 @@ export const formItems = [
     valueKey: 'itemNo',
     inputType: 'input',
     readOnly: true,
+    hidden: true,
+    required: false,
     contractType: ''
   },
   {
-    label: '物料类型',
-    valueKey: 'materialTypeCode',
+    label: '物料分组',
+    valueKey: 'materialGroupCode',
     inputType: 'dict',
     dict: 'material_group',
     noTable: true,
@@ -17,14 +19,14 @@ export const formItems = [
   },
   {
     label: '物料',
-    valueKey: 'materialCode',
+    valueKey: 'materialId',
     inputType: 'select',
     required: true,
     contractType: ''
   },
   {
     label: '合同内容',
-    valueKey: 'comments',
+    valueKey: 'materialDescription',
     inputType: 'textarea',
     required: true,
     contractType: ''
