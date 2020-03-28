@@ -2,7 +2,11 @@
   <page-view>
     <div slot="route-view">
       <a-card class="card" :bordered="false">
-        <payment-form ref="contract" :showSubmit="false" />
+        <receipt-form ref="contract" :showSubmit="false" />
+        <a-divider style="margin-bottom: 32px" />
+        <detail-list title="银行账号">
+          <bank-form ref="bank" single :showSubmit="false" />
+        </detail-list>
       </a-card>
       <!-- table -->
       <!-- fixed footer toolbar -->
@@ -17,7 +21,10 @@
 
 <script>
 import pick from 'lodash.pick'
-import PaymentForm from './modules/form/PaymentForm'
+
+import BankForm from './modules/form/BankForm'
+import DetailList from '@/components/tools/DetailList'
+import ReceiptForm from './modules/form/ReceiptForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
@@ -29,7 +36,9 @@ export default {
   components: {
     PageView,
     FooterToolBar,
-    PaymentForm
+    ReceiptForm,
+    BankForm,
+    DetailList
   },
   data() {
     return {

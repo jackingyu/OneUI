@@ -100,6 +100,7 @@ const loadCategoryData = (params) => getAction("/sys/category/loadAllData", para
 // ✨ Bussiness Start - by Fred
 import Rest, { sloter } from '@/config/api-mapper.js'
 
+const getFiscalyear = (params) => getAction(Rest.GET_FISCALYEAR.url, params);
 const getMaterials = (params) => getAction(Rest.GET_MATERIALS.url, params);
 const createMaterial = (params) => postAction(Rest.CREATE_MATERIAL.url, params);
 const updateMaterial = (params) => putAction(Rest.UPDATE_MATERIAL.url, params);
@@ -108,6 +109,8 @@ const getContracts = (params) => getAction(Rest.GET_CONTRACTS.url, params);
 const getContract = (id, params) => getAction(sloter(Rest.GET_CONTRACT.url, id), params);
 const createContract = (params) => postAction(Rest.CREATE_CONTRACT.url, params);
 const updateContract = (params) => putAction(Rest.UPDATE_CONTRACT.url, params);
+
+const getBankAccounts = (params) => getAction(Rest.GET_BANK_ACCOUNTS.url, params);
 
 const getBanks = (params) => getAction(Rest.GET_BANKS.url, params);
 const getSubBanks = (bankId, params) => getAction(sloter(Rest.GET_SUBANKS.url, bankId), params);
@@ -208,6 +211,7 @@ export {
   getSystemSubmenu,
   loadCategoryData,
   // ✨ Bussiness Start - by Fred
+  getFiscalyear,
   getMaterials,
   createMaterial,
   updateMaterial,
@@ -249,7 +253,8 @@ export {
   getSaleReceipts,
   getSaleReceipt,
   createSaleReceipt,
-  updateSaleReceipt
+  updateSaleReceipt,
+  getBankAccounts
   // ✨ Bussiness END - by Fred
 }
 

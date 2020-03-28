@@ -6,6 +6,21 @@
           <a-form-item style="display:none">
             <a-input v-decorator="['id']" />
           </a-form-item>
+          <a-form-item label="客户">
+            <a-select
+              v-decorator="['customerId',{rules:[ruleWithDefault('请选择客户')]}]"
+              placeholder="请选择客户"
+              :filterOption="false"
+              :showSearch="true"
+              @search="fetchCustomerList"
+              :disabled="!!model.id"
+            >
+              <a-select-option
+                v-for="customer in FormFieldOptions.customers"
+                :key="customer.id"
+              >{{customer.customerName}}</a-select-option>
+            </a-select>
+          </a-form-item>
           <a-form-item label="供应商">
             <a-select
               v-decorator="['vendorId',{rules: [{ required: true, message: '请选择供应商', whitespace: true}]}]"
@@ -43,13 +58,13 @@
       </a-row>
     </detail-list>
     <a-divider style="margin-bottom: 32px" />
-    <detail-list title="付款信息">
+    <detail-list title="收款信息">
       <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="付款日期">
+          <a-form-item label="收款日期">
             <j-date
               :trigger-change="true"
-              placeholder="付款日期"
+              placeholder="收款日期"
               format="YYYY-MM-DD"
               style="width:100%"
               v-decorator="['paymentDate',{rules: [{ required: true, message: '请选择结算时间'}]}]"
@@ -57,21 +72,21 @@
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="付款方式">
+          <a-form-item label="收款方式">
             <j-dict-select-tag
-              v-decorator="['paymentMethodCode',{rules: [{ required: true, message: '请选择付款方式'}]}]"
+              v-decorator="['paymentMethodCode',{rules: [{ required: true, message: '请选择收款方式'}]}]"
               :triggerChange="true"
-              :placeholder="`请选择付款方式`"
+              :placeholder="`请选择收款方式`"
               :type="'select'"
               dictCode="payment_method"
             />
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="付款金额">
+          <a-form-item label="收款金额">
             <a-input
               disabled
-              placeholder="请输入付款金额"
+              placeholder="请输入收款金额"
               v-decorator="[
               'paymentAmount'
             ]"
@@ -81,14 +96,14 @@
       </a-row>
       <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="付款银行">
+          <a-form-item label="收款银行">
             <j-bank-select-tag v-decorator="['bankId' ]" placeholder="请选择银行" />
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="付款账号">
+          <a-form-item label="收款账号">
             <a-input
-              placeholder="请输入付款账号"
+              placeholder="请输入收款账号"
               v-decorator="[
               'bankAccountId'
             ]"
@@ -111,13 +126,16 @@ import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import DetailList from '@/components/tools/DetailList'
 import { getVendors, getProjects } from '@/api/api'
 import JDate from '@/components/jeecg/JDate'
+import FormFieldMixin from '@/mixins/FormFieldMixin'
+import ValidationMixin from '@/mixins/ValidationMixin'
 export default {
-  name: 'PaymentForm',
+  name: 'ReceiptForm',
   components: {
     JBankSelectTag,
     DetailList,
     JDate
   },
+  mixins: [FormFieldMixin, ValidationMixin],
   props: {
     showSubmit: {
       type: Boolean,
@@ -128,10 +146,16 @@ export default {
     return {
       form: this.$form.createForm(this),
       contractType: 'Null',
-      model: null,
+      model: {},
       banks: [],
       vendors: [],
-      projects: []
+      projects: [],
+      FieldsSet: {
+        customers: {
+          key: 'customers',
+          funcName: 'GetCustomers'
+        }
+      }
     }
   },
   created() {
@@ -163,6 +187,14 @@ export default {
             'taxCode'
           )
         )
+      })
+    },
+    fetchCustomerList(word) {
+      this.request({
+        ...this.FieldsSet.customers,
+        params: {
+          customerName: word ? `*${word}*` : ''
+        }
       })
     },
     fetchVendorList(word) {
@@ -197,7 +229,7 @@ export default {
       this.$emit('contractChange', this.contractType)
     },
     handleVendorChange(v) {
-      let vendor = this.vendors.find(item => (item.id == v))
+      let vendor = this.vendors.find(item => item.id == v)
       if (vendor) {
         this.form.setFieldsValue({
           contactPerson: vendor.contactPerson,

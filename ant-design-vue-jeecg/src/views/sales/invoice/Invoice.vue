@@ -21,9 +21,11 @@ import InvoiceForm from './modules/form/InvoiceForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getSaleReceipts, getSaleReceipt, createSaleReceipt, updateSaleReceipt } from '@/api/api'
+import { getSaleInvoices, getSaleInvoice, createSaleInvoice, updateSaleInvoice } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'Invoice',
   components: {
@@ -31,11 +33,13 @@ export default {
     FooterToolBar,
     InvoiceForm
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       cType: '',
       loading: false,
-      rowFields: []
+      rowFields: [],
+      model: {}
     }
   },
   computed: {
@@ -51,9 +55,15 @@ export default {
     ...mapGetters(['userInfo']),
     initModel() {
       let { id = undefined } = this.$route.query
+      this.$loadData(id)
+    },
+    $loadData(id) {
       if (id) {
-        getSaleReceipt(id).then(res => {
+        getSaleInvoice(id).then(res => {
           if (res.success) {
+            this.model = {
+              ...res.result
+            }
             this.$refs.invoice.edit(res.result)
           } else {
             this.$message.warning(res.message)
@@ -67,13 +77,17 @@ export default {
       this.loading = true
       let promises
       if (postData.id) {
-        promises = updateSaleReceipt(postData)
+        promises = updateSaleInvoice(postData)
       } else {
-        promises = createSaleReceipt(postData)
+        promises = createSaleInvoice(postData)
       }
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)
@@ -89,17 +103,7 @@ export default {
       that.$refs.invoice.form.validateFields((err, values) => {
         console.info('invoice', values)
         if (!err) {
-          let postData = pick(
-            values,
-            'id',
-            'vendorId',
-            'contractContent',
-            'invoiceDate',
-            'amount',
-            'invoiceNumber',
-            'taxRate'
-          )
-          postData.invoiceDate = postData.invoiceDate + ' 00:00:00'
+          let postData = values
           that.submitInvoice(postData)
         }
       })

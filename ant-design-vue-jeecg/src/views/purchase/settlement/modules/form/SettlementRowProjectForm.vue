@@ -3,7 +3,7 @@
     <a-form-item v-show="false">
       <a-input v-decorator="['data']" />
     </a-form-item>
-    <a-table :columns="columns" :dataSource="data" :pagination="true">
+    <a-table :columns="columns" :dataSource="data" :pagination="false">
       <span slot="text" slot-scope="text, record, index">{{ text }}</span>
       <template slot="operation" slot-scope="text, record, index">
         <span>
