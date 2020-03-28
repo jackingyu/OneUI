@@ -79,16 +79,34 @@
             <a-input
               placeholder="请输入付款金额"
               v-decorator="[
-              'paymentAmount',{rules:[ruleWith('cash')]}
+              'paymentAmount',{rules:[{ required: true, message: '请输入付款金额'},ruleWith('cash')]}
             ]"
             />
           </a-form-item>
         </a-col>
-      </a-row>
-      <a-row class="form-row" :gutter="16">
         <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="付款银行">
+          <a-form-item label="付款账户">
             <a-select
+              v-decorator="['accounts',{rules: [{ required: true, message: '请选择付款账户', whitespace: true}]}]"
+              placeholder="请选择银行"
+              clearable
+              :filterOption="true"
+              :showSearch="false"
+              @search="fetchBankAccountList"
+              @change="handleBankAccountChange"
+            >
+              <a-select-option
+                v-for="(bank, index) in FormFieldOptions.bankAccounts"
+                :key="index"
+                :value="bank.id"
+              >{{`${bank.bankName} ${bank.bankAccountName}(${bank.bankAccount})`}}</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col v-show="false" :lg="8" :md="12" :sm="24">
+          <a-form-item label="付款银行">
+            <a-input disabled v-decorator="['bankName']" />
+            <!-- <a-select
               v-decorator="['bankId',{rules: [{ required: true, message: '请选择银行', whitespace: true}]}]"
               placeholder="请选择银行"
               clearable
@@ -102,17 +120,18 @@
                 :key="index"
                 :value="bank.value"
               >{{bank.label}}</a-select-option>
-            </a-select>
+            </a-select>-->
           </a-form-item>
         </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
+        <a-col v-show="false" :lg="8" :md="12" :sm="24">
           <a-form-item label="付款账号">
-            <a-input
+            <a-input disabled v-decorator="['bankAccountId']" placeholder="请输入付款账号" />
+            <!-- <a-input
               placeholder="请输入付款账号"
               v-decorator="[
               'bankAccountId',{rules: [{ required: true, message: '请输入付款账号', whitespace: false}]}
-            ]"
-            />
+            ]" 
+            />-->
           </a-form-item>
         </a-col>
       </a-row>
@@ -158,6 +177,10 @@ export default {
         banks: {
           key: 'banks',
           funcName: 'GetBanks'
+        },
+        bankAccounts: {
+          key: 'bankAccounts',
+          funcName: 'GetBankAccounts'
         }
       }
     }
@@ -187,9 +210,14 @@ export default {
             // 'bankId',
             'bankAccountId'
           ),
-          bankId: record.bankId,
+          // bankId: record.bankId,
           paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
         })
+        if (record.bankAccountId) {
+          this.form.setFieldsValue({
+            accounts: record.bankAccountId
+          })
+        }
       })
     },
     fetchBankList(word) {
@@ -197,6 +225,14 @@ export default {
         ...this.FieldsSet.banks,
         params: {
           bankName: word ? `*${word}*` : ''
+        }
+      })
+    },
+    fetchBankAccountList(word) {
+      this.request({
+        ...this.FieldsSet.bankAccounts,
+        params: {
+          accountName: word ? `*${word}*` : ''
         }
       })
     },
@@ -210,6 +246,15 @@ export default {
     },
     handleBankChange(v) {
       // let vendor = this.FormFieldOptions.banks.find(item => item.id == v)
+    },
+    handleBankAccountChange(v) {
+      let bankAccount = this.FormFieldOptions.bankAccounts.find(item => item.id == v)
+      if (bankAccount) {
+        this.form.setFieldsValue({
+          bankName: bankAccount.bankName,
+          bankAccountId: bankAccount.id
+        })
+      }
     },
     handleVendorChange(v) {
       let vendor = this.FormFieldOptions.vendors.find(item => item.id == v)

@@ -120,6 +120,7 @@ export default {
             ...values,
             paymentDate: values.paymentDate + ' 00:00:00'
           }
+          delete postData.accounts
           this.submitPayment(postData)
           // this.$refs.bank.form.validateFields((err2, {data}) => {
           //   let banks

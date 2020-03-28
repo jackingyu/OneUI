@@ -26,6 +26,11 @@ export default {
         this.request(item)
       })
     },
+    _GetBankAccounts(key = "bankAccounts", params = {},
+      mapper, resTransformer = res => res.result
+    ) {
+      this.__baseRequest(API.getBankAccounts(params), key, mapper, resTransformer);
+    },
     _GetBanks(key = "banks", params = {},
       mapper = item => ({
         label: item.bank_name,

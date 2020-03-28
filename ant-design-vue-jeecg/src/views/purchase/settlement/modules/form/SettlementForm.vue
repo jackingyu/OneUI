@@ -94,7 +94,7 @@ import pick from 'lodash.pick'
 import moment from 'moment'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import DetailList from '@/components/tools/DetailList'
-import { getVendors, getProjects } from '@/api/api'
+import { getVendors, getProjects ,getFiscalyear} from '@/api/api'
 
 import JDate from '@/components/jeecg/JDate'
 export default {
@@ -130,6 +130,7 @@ export default {
   created() {
     this.fetchVendorList()
     this.fetchProjectList()
+    this.getFiscalyear()
   },
   methods: {
     add() {
@@ -157,6 +158,15 @@ export default {
       this.form.setFieldsValue({
         totalAmount: totalAmount
       })
+    },
+    getFiscalyear() {
+      getFiscalyear()
+        .then(res => {
+          if (res.success) {
+            debugger
+          }
+        })
+        .finally(() => {})
     },
     fetchVendorList(word) {
       getVendors()

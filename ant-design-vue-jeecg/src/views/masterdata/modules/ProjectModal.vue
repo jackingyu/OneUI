@@ -120,7 +120,7 @@ export default {
     this.fetchCustomerList = debounce(this.fetchCustomerList, 800)
     return {
       FieldsSet: {
-        vendors: {
+        customers: {
           key: 'customers',
           funcName: 'GetCustomers'
         }

@@ -4,21 +4,23 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
-            <a-form-item label="项目名称">
-              <j-dict-select-tag
-                v-model="queryParam.vendorCode"
-                placeholder="请选择材料商或者分包商"
+          <a-col :md="8" :sm="12">
+            <a-form-item label="客户名称">
+              <j-input
+                v-model="queryParam.customerName"
+                placeholder="请填写客户名称"
                 dictCode="vendor_group"
               />
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="12">
+          <a-col :md="8" :sm="12">
             <a-form-item label>
               <a-range-picker
-                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择开票日期'}]}]"
                 format="YYYY-MM-DD"
+                :allowClear="false"
                 :placeholder="['开始时间', '结束时间']"
+                @change="invoiceDateChange"
               />
             </a-form-item>
           </a-col>
@@ -88,7 +90,7 @@ import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
-
+import moment from 'moment'
 export default {
   name: 'InvoiceList',
   mixins: [JeecgListMixin],
@@ -97,9 +99,15 @@ export default {
     JInput
   },
   data() {
+    // let now = moment()
+    // let to = now.format('YYYY-MM-DD+HH:mm:ss')
+    // let from = now.add(-1, 'year').format('YYYY-MM-DD+HH:mm:ss')
     return {
       description: '',
-      queryParam: {},
+      queryParam: {
+        invoiceDate_start: '',
+        invoiceDate_end: ''
+      },
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
@@ -108,6 +116,12 @@ export default {
           align: 'center',
           width: 160,
           dataIndex: 'invoiceNumber'
+        },
+        {
+          title: '客户名称',
+          align: 'center',
+          width: 160,
+          dataIndex: 'customerId_dictText'
         },
         {
           title: '开票日期',
@@ -125,9 +139,9 @@ export default {
           dataIndex: 'taxRate'
         },
         {
-          title: '合同内容',
+          title: '物料描述',
           align: 'center',
-          dataIndex: 'contractContent'
+          dataIndex: 'materialDescription'
         },
         {
           title: '操作',
@@ -160,10 +174,20 @@ export default {
         }
       })
     },
+    invoiceDateChange(momentArr, strArr) {
+      if (momentArr.length == 0) {
+        this.queryParam.invoiceDate_start = ''
+        this.queryParam.invoiceDate_end = ''
+      } else {
+        let msArr = momentArr.map(item => item.format('YYYY-MM-DD'))
+        this.queryParam.invoiceDate_start = msArr[0]
+        this.queryParam.invoiceDate_end = msArr[1]
+      }
+    },
     handleEdit(record) {
       // this.$refs.modalForm.edit(record)
       this.$router.push({
-        path: '/sale/invoice',
+        path: '/sales/invoice',
         query: {
           id: record.id
         }
@@ -171,7 +195,7 @@ export default {
     },
     handleAdd() {
       // this.$refs.modalForm.add()
-      this.$router.push({ path: '/sale/invoice' })
+      this.$router.push({ path: '/sales/invoice' })
     },
     handleDelete(id) {}
   }

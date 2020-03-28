@@ -12,6 +12,10 @@ export function sloter(literal, ...substitutions) {
 }
 
 export default {
+  GET_FISCALYEAR: {
+    url: `/finance/fiscalyear`,
+    method: 'get'
+  },
   CREATE_MATERIAL: {
     url: `/masterdata/materials`,
     method: 'POST'
@@ -45,6 +49,11 @@ export default {
   DEL_SUPPLIER_BANK: {
     url: `/masterdata/vendors/bankaccount/%@`,
     method: 'delete'
+  },
+  //----- 银行账户 --
+  GET_BANK_ACCOUNTS: {
+    url: `/masterdata/bankaccounts`,
+    method: 'GET'
   },
   //----- 客户 -- 
   GET_CUSTOMER: {
