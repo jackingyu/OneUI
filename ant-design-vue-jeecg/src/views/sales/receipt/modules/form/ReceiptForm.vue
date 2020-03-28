@@ -21,38 +21,18 @@
               >{{customer.customerName}}</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="供应商">
-            <a-select
-              v-decorator="['vendorId',{rules: [{ required: true, message: '请选择供应商', whitespace: true}]}]"
-              placeholder="请选择供应商"
-              :filterOption="false"
-              :showSearch="true"
-              @search="fetchVendorList"
-              @change="handleVendorChange"
-            >
-              <a-select-option
-                v-for="(vendor, index) in vendors"
-                :key="index"
-                :value="vendor.id"
-              >{{vendor.vendorName}}</a-select-option>
-            </a-select>
-          </a-form-item>
         </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="当前累计欠款">
-            <a-input
-              placeholder="当前累计欠款"
-              disabled
-              v-decorator="[
-              'paymentdebtAmount',
-              {rules: [{ required: true, message: '请输入当前累计欠款', whitespace: false}]}
-            ]"
-            />
-          </a-form-item>
-        </a-col>
+
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="财务年度">
             <!-- fiscalYear -->
+            <a-input
+              disabled
+              v-decorator="[
+              'fiscalYear',
+              {initialValue:'2020'}
+            ]"
+            />
           </a-form-item>
         </a-col>
       </a-row>
@@ -67,7 +47,7 @@
               placeholder="收款日期"
               format="YYYY-MM-DD"
               style="width:100%"
-              v-decorator="['paymentDate',{rules: [{ required: true, message: '请选择结算时间'}]}]"
+              v-decorator="['receiptDate',{rules: [{ required: true, message: '请选择结算时间'}]}]"
             ></j-date>
           </a-form-item>
         </a-col>
@@ -82,30 +62,35 @@
             />
           </a-form-item>
         </a-col>
+
+        <a-col :lg="8" :md="12" :sm="24">
+          <a-form-item label="收款账户">
+            <a-select
+              v-decorator="['accounts',{rules: [{ required: true, message: '请选择付款账户', whitespace: true}]}]"
+              placeholder="请选择付款账户"
+              clearable
+              :filterOption="true"
+              :showSearch="false"
+              @search="fetchBankAccountList"
+              @change="handleBankAccountChange"
+            >
+              <a-select-option
+                v-for="(bank, index) in FormFieldOptions.bankAccounts"
+                :key="index"
+                :value="bank.id"
+              >{{`${bank.bankName} ${bank.bankAccountName}(${bank.bankAccount})`}}</a-select-option>
+            </a-select>
+            <a-input hidden v-decorator="['bankName']" />
+            <a-input hidden v-decorator="['bankAccountId']" />
+          </a-form-item>
+        </a-col>
+
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="收款金额">
             <a-input
-              disabled
               placeholder="请输入收款金额"
               v-decorator="[
-              'paymentAmount'
-            ]"
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row class="form-row" :gutter="16">
-        <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="收款银行">
-            <j-bank-select-tag v-decorator="['bankId' ]" placeholder="请选择银行" />
-          </a-form-item>
-        </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
-          <a-form-item label="收款账号">
-            <a-input
-              placeholder="请输入收款账号"
-              v-decorator="[
-              'bankAccountId'
+              'amount',{rules:[{ required: true, message: '请输入付款金额'},ruleWith('cash')]}
             ]"
             />
           </a-form-item>
@@ -154,6 +139,10 @@ export default {
         customers: {
           key: 'customers',
           funcName: 'GetCustomers'
+        },
+        bankAccounts: {
+          key: 'bankAccounts',
+          funcName: 'GetBankAccounts'
         }
       }
     }
@@ -161,7 +150,6 @@ export default {
   created() {
     this.fetchVendorList()
     this.fetchProjectList()
-    // contractTypeCode
   },
   methods: {
     add() {
@@ -171,22 +159,23 @@ export default {
       this.model = record
       let that = this
       this.$nextTick(() => {
-        that.form.setFieldsValue(
-          pick(
+        that.form.setFieldsValue({
+          ...pick(
             record,
             'id',
-            'vendorCode',
-            'vendorName',
-            'vendorGroupCode',
-            'contactPerson',
-            'contactPhone',
-            'contactPersonId',
-            'socialCreditCode',
-            'taxSubject',
-            'businessLicense',
-            'taxCode'
-          )
-        )
+            'customerId',
+            'receiptDate',
+            'amount',
+            // 'bankId',
+            'bankAccountId'
+          ),
+          paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
+        })
+        if (record.bankAccountId) {
+          this.form.setFieldsValue({
+            accounts: record.bankAccountId
+          })
+        }
       })
     },
     fetchCustomerList(word) {
@@ -196,6 +185,23 @@ export default {
           customerName: word ? `*${word}*` : ''
         }
       })
+    },
+    fetchBankAccountList(word) {
+      this.request({
+        ...this.FieldsSet.bankAccounts,
+        params: {
+          accountName: word ? `*${word}*` : ''
+        }
+      })
+    },
+    handleBankAccountChange(v) {
+      let bankAccount = this.FormFieldOptions.bankAccounts.find(item => item.id == v)
+      if (bankAccount) {
+        this.form.setFieldsValue({
+          bankName: bankAccount.bankName,
+          bankAccountId: bankAccount.id
+        })
+      }
     },
     fetchVendorList(word) {
       getVendors()

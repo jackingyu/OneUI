@@ -127,7 +127,7 @@ export default {
             'contactPerson',
             'contactPhone'
           )
-          let spans = values.dateSpan.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
+          let spans = values.dateSpan.map(item => item.format('YYYY-MM-DD'))
           postData.beginDate = spans[0]
           postData.endDate = spans[1]
           that.$refs.rowproj.form.validateFields((err, values) => {

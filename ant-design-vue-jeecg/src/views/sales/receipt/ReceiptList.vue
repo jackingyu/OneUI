@@ -14,13 +14,13 @@
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="12">
-            <a-form-item label>
+            <a-form-item label="付款时间">
               <a-range-picker
                 v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择开票日期'}]}]"
                 format="YYYY-MM-DD"
-                :allowClear="false"
+                :allowClear="true"
                 :placeholder="['开始时间', '结束时间']"
-                @change="invoiceDateChange"
+                @change="receiptDateChange"
               />
             </a-form-item>
           </a-col>
@@ -168,12 +168,12 @@ export default {
         }
       })
     },
-    invoiceDateChange(momentArr, strArr) {
+    receiptDateChange(momentArr, strArr) {
       if (momentArr.length == 0) {
         this.queryParam.invoiceDate_start = ''
         this.queryParam.invoiceDate_end = ''
       } else {
-        let msArr = momentArr.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
+        let msArr = momentArr.map(item => item.format('YYYY-MM-DD'))
         this.queryParam.invoiceDate_start = msArr[0]
         this.queryParam.invoiceDate_end = msArr[1]
       }

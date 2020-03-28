@@ -88,7 +88,7 @@
           <a-form-item label="付款账户">
             <a-select
               v-decorator="['accounts',{rules: [{ required: true, message: '请选择付款账户', whitespace: true}]}]"
-              placeholder="请选择银行"
+              placeholder="请选择付款账户"
               clearable
               :filterOption="true"
               :showSearch="false"
@@ -188,7 +188,6 @@ export default {
   created() {
     // this.fetchVendorList()
     // contractTypeCode
-    window.N = this
   },
   methods: {
     add() {
