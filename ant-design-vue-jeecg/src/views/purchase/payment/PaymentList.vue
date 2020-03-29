@@ -12,7 +12,7 @@
           <a-col :md="8" :sm="12">
             <a-form-item label="付款日期">
               <a-range-picker
-                v-decorator="['paymentDate',{rules: [{ type: 'array', required: true, message: '请选择付款日期'}]}]"
+                v-decorator="['paymentDate',{rules: [{ type: 'array', required: false, message: '请选择付款日期'}]}]"
                 format="YYYY-MM-DD"
                 :placeholder="['开始时间', '结束时间']"
                 @change="paymentDateChange"

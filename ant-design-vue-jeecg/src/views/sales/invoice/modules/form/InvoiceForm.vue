@@ -110,7 +110,7 @@
               showTime
               :trigger-change="true"
               placeholder="开票日期"
-              dateFormat="YYYY-MM-DD HH:mm:ss"
+              dateFormat="YYYY-MM-DD"
               style="width:100%"
               v-decorator="['invoiceDate',{rules: [{ required: true, message: '请选择结算时间'}]}]"
             />

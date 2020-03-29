@@ -27,9 +27,9 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="12">
-            <a-form-item label>
+            <a-form-item label="结算日期">
               <a-range-picker
-                v-decorator="['settlementTime',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                v-decorator="['settlementTime',{rules: [{ required: false, message: '请选择结算日期'}]}]"
                 format="YYYY-MM-DD"
                 @change="settlementTimeChange"
                 :placeholder="['开始时间', '结束时间']"
@@ -132,8 +132,9 @@ export default {
           dataIndex: 'vendorSettlementId'
         },
         {
-          title: '行项目',
+          title: '合同行号',
           align: 'center',
+          width: 100,
           dataIndex: 'contractItemNo'
         },
         {
@@ -143,7 +144,7 @@ export default {
           dataIndex: 'settlementTime',
           customRender(h) {
             return moment(h).format('YYYY-MM-DD')
-          },
+          }
         },
         {
           title: '单价',
@@ -153,6 +154,7 @@ export default {
         {
           title: '单位',
           align: 'center',
+           width: 60,
           dataIndex: 'unitCode_dictText'
         },
         {
@@ -180,7 +182,7 @@ export default {
           dataIndex: 'action',
           scopedSlots: { customRender: 'action' },
           align: 'center',
-          width: 120
+          width: 100
         }
       ],
       url: {

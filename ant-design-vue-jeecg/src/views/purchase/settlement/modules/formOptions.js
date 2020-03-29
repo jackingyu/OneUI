@@ -22,7 +22,7 @@ export const formItems = [
     }
   },
   {
-    label: '行项目号',
+    label: '合同行项目号',
     valueKey: 'contractItemId',
     inputType: 'select',
     required: true,

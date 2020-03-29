@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-form :form="jform" layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
             <!-- <a-form-item label="项目名称">
@@ -13,7 +13,7 @@
               />
             </a-form-item>-->
             <a-form-item label="供应商">
-              <a-select
+              <!-- <a-select
                 v-model="queryParam.vendorId"
                 placeholder="请选择供应商"
                 :filterOption="false"
@@ -25,13 +25,14 @@
                   :key="index"
                   :value="vendor.id"
                 >{{vendor.vendorName}}</a-select-option>
-              </a-select>
+              </a-select>-->
+              <a-input v-model="queryParam.vendorName" placeholder="请输入供应商名称" />
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="12">
             <a-form-item label="开票日期">
               <a-range-picker
-                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                v-decorator="['dateSpan',{rules: [{ required: false, message: '请选择生效日期'}]}]"
                 format="YYYY-MM-DD"
                 :placeholder="['开始时间', '结束时间']"
                 @change="invoiceDateChange"
@@ -116,10 +117,6 @@ export default {
   data() {
     return {
       description: '',
-      queryParam: {
-        invoiceDate_begin: '',
-        invoiceDate_end: ''
-      },
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
@@ -209,6 +206,7 @@ export default {
         }
       })
     },
+    onReset() {},
     handleEdit(record) {
       // this.$refs.modalForm.edit(record)
       this.$router.push({
