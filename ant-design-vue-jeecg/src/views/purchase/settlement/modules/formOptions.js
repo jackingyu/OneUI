@@ -5,8 +5,9 @@ export const formItems = [
     inputType: 'select',
     required: true,
     settlementType: '',
+    order: 4,
     tableRender: function (rowData = {}) {
-      return rowData.projectId_dictText
+      return rowData.projectName || rowData.projectId_dictText
     }
   },
   {
@@ -15,18 +16,20 @@ export const formItems = [
     inputType: 'select',
     required: true,
     settlementType: '',
+    noTable: true,
     tableRender: function (rowData = {}) {
-      return rowData.contractName || rowData.contractTitle
+      return rowData.contractTitle
     }
   },
   {
-    label: '合同行项目',
+    label: '行项目号',
     valueKey: 'contractItemId',
     inputType: 'select',
     required: true,
     settlementType: '',
+    order: 0,
     tableRender: function (rowData = {}) {
-      return rowData.contractItemId
+      return rowData.contractItemNo
     }
   },
   // {
@@ -39,6 +42,7 @@ export const formItems = [
     readOnly: true,
     justShow: true,
     settlementType: '',
+    order: 1,
     tableRender: function (rowData = {}) {
       return rowData.contractNumber
     },
@@ -53,11 +57,12 @@ export const formItems = [
     readOnly: true,
     justShow: true,
     settlementType: '',
+    order: 2,
     tableRender: function (rowData = {}) {
-      return rowData.materialId_dictText
+      return rowData.materialName || rowData.materialId_dictText
     },
-    evalue: function (currentCRowData = {}) {
-      return currentCRowData.materialId_dictText || ''
+    evalue: function (rowData = {}) {
+      return rowData.materialName || rowData.materialId_dictText
     }
   },
   {
@@ -66,6 +71,7 @@ export const formItems = [
     inputType: 'label',
     readOnly: true,
     settlementType: '',
+    order: 3,
     evalue: function (currentCRowData = {}) {
       return currentCRowData.contractContent || currentCRowData.materialDescription || ''
     }
@@ -76,6 +82,7 @@ export const formItems = [
     inputType: 'label',
     required: true,
     settlementType: '',
+    order: 4,
     evalue: function (currentCRowData = {}) {
       if (currentCRowData.unitPrice) {
         return currentCRowData.unitPrice + ' / ' + currentCRowData.unitCode_dictText
@@ -89,6 +96,7 @@ export const formItems = [
     inputType: 'input',
     required: true,
     ruleKey: 'rnumber',
+    order: 5,
     settlementType: '',
   },
   {
@@ -97,6 +105,7 @@ export const formItems = [
     inputType: 'label',
     readOnly: true,
     justShow: true,
+    order: 6,
     settlementType: ''
 
   }

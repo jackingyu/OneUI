@@ -28,12 +28,13 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="12">
-            <a-form-item label>
+          <a-col :md="8" :sm="12">
+            <a-form-item label="开票日期">
               <a-range-picker
                 v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
                 format="YYYY-MM-DD"
                 :placeholder="['开始时间', '结束时间']"
+                @change="invoiceDateChange"
               />
             </a-form-item>
           </a-col>
@@ -104,7 +105,7 @@ import Rest from '@/config/api-mapper.js'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import FormFieldMixin from '@/mixins/FormFieldMixin'
 import JInput from '@/components/jeecg/JInput'
-
+import moment from 'moment'
 export default {
   name: 'InvoiceList',
   mixins: [JeecgListMixin, FormFieldMixin],
@@ -115,7 +116,10 @@ export default {
   data() {
     return {
       description: '',
-      queryParam: {},
+      queryParam: {
+        invoiceDate_begin: '',
+        invoiceDate_end: ''
+      },
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
@@ -148,7 +152,7 @@ export default {
         {
           title: '供应商名称',
           align: 'center',
-          dataIndex: 'vendorId'
+          dataIndex: 'vendorName'
         },
         {
           title: '操作',
@@ -186,6 +190,16 @@ export default {
           this.oneTimeFlags = res.result
         }
       })
+    },
+    invoiceDateChange(momentArr, strArr) {
+      if (momentArr.length == 0) {
+        this.queryParam.invoiceDate_begin = ''
+        this.queryParam.invoiceDate_end = ''
+      } else {
+        let msArr = momentArr.map(item => item.format('YYYY-MM-DD'))
+        this.queryParam.invoiceDate_begin = msArr[0]
+        this.queryParam.invoiceDate_end = msArr[1]
+      }
     },
     fetchVendorList(word) {
       this.request({

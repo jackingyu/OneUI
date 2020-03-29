@@ -135,7 +135,7 @@
 <script>
 import pick from 'lodash.pick'
 import DetailList from '@/components/tools/DetailList'
-import { getVendors, getProjects } from '@/api/api'
+import { getVendors, getFiscalyear, getProjects } from '@/api/api'
 import JDate from '@/components/jeecg/JDate'
 
 import FormFieldMixin from '@/mixins/FormFieldMixin'
@@ -166,6 +166,9 @@ export default {
       }
     }
   },
+  mounted() {
+    this.getFiscalyear()
+  },
   methods: {
     add() {
       this.edit({})
@@ -180,6 +183,17 @@ export default {
           taxRate: isNaN(record.taxRate) ? record.taxRate : '' + record.taxRate
         })
       })
+    },
+    getFiscalyear() {
+      getFiscalyear()
+        .then(res => {
+          if (res.success) {
+            this.form.setFieldsValue({
+              fiscalYear: res.result.fiscalYear
+            })
+          }
+        })
+        .finally(() => {})
     },
     fetchVendorList(word) {
       this.request({

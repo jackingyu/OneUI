@@ -29,8 +29,7 @@
             <a-input
               disabled
               v-decorator="[
-              'fiscalYear',
-              {initialValue:'2020'}
+              'fiscalYear'
             ]"
             />
           </a-form-item>
@@ -109,7 +108,7 @@ import pick from 'lodash.pick'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 
 import DetailList from '@/components/tools/DetailList'
-import { getVendors, getProjects } from '@/api/api'
+import { getVendors, getProjects, getFiscalyear } from '@/api/api'
 import JDate from '@/components/jeecg/JDate'
 import FormFieldMixin from '@/mixins/FormFieldMixin'
 import ValidationMixin from '@/mixins/ValidationMixin'
@@ -150,6 +149,7 @@ export default {
   created() {
     this.fetchVendorList()
     this.fetchProjectList()
+    this.getFiscalyear()
   },
   methods: {
     add() {
@@ -177,6 +177,17 @@ export default {
           })
         }
       })
+    },
+    getFiscalyear() {
+      getFiscalyear()
+        .then(res => {
+          if (res.success) {
+            this.form.setFieldsValue({
+              fiscalYear: res.result.fiscalYear
+            })
+          }
+        })
+        .finally(() => {})
     },
     fetchCustomerList(word) {
       this.request({

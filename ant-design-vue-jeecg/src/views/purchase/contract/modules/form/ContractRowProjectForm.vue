@@ -195,8 +195,8 @@ export default {
       let target = this.data.filter(item => item.key === key)[0] || {}
       target = {
         ...target,
-        materialCode: {
-          key: target.materialCode,
+        materialObj: {
+          key: target.materialId,
           label: target.materialName
         }
         // taxRate: {

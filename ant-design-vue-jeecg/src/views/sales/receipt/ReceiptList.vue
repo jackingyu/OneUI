@@ -100,12 +100,12 @@ export default {
   },
   data() {
     // let now = moment()
-    // let to = now.format('YYYY-MM-DD+HH:mm:ss')
-    // let from = now.add(-1, 'year').format('YYYY-MM-DD+HH:mm:ss')
+    // let to = now.format('YYYY-MM-DD')
+    // let from = now.add(-1, 'year').format('YYYY-MM-DD')
     return {
       description: '',
       queryParam: {
-        invoiceDate_start: '',
+        invoiceDate_begin: '',
         invoiceDate_end: ''
       },
       materialGroups: [],
@@ -132,11 +132,11 @@ export default {
           align: 'center',
           dataIndex: 'paymentMethodCode_dictText'
         },
-        {
-          title: '状态',
-          align: 'center',
-          dataIndex: 'delFlag_dictText'
-        },
+        // {
+        //   title: '状态',
+        //   align: 'center',
+        //   dataIndex: 'delFlag_dictText'
+        // },
         {
           title: '操作',
           dataIndex: 'action',
@@ -170,12 +170,12 @@ export default {
     },
     receiptDateChange(momentArr, strArr) {
       if (momentArr.length == 0) {
-        this.queryParam.invoiceDate_start = ''
-        this.queryParam.invoiceDate_end = ''
+        this.queryParam.receiptDate_begin = ''
+        this.queryParam.receiptDate_end = ''
       } else {
         let msArr = momentArr.map(item => item.format('YYYY-MM-DD'))
-        this.queryParam.invoiceDate_start = msArr[0]
-        this.queryParam.invoiceDate_end = msArr[1]
+        this.queryParam.receiptDate_begin = msArr[0]
+        this.queryParam.receiptDate_end = msArr[1]
       }
     },
     handleEdit(record) {

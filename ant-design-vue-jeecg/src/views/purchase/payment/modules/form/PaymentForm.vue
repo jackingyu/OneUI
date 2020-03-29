@@ -37,14 +37,8 @@
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="财务年度">
-            <!-- fiscalYear -->
-            <a-input
-              disabled
-              v-decorator="[
-              'fiscalYear',
-              {initialValue:'2020'}
-            ]"
-            />
+            <a-input hidden v-decorator="['fiscalYear']" />
+            {{this.form.getFieldValue('fiscalYear')}}
           </a-form-item>
         </a-col>
       </a-row>
@@ -148,6 +142,7 @@ import FormFieldMixin from '@/mixins/FormFieldMixin'
 import ValidationMixin from '@/mixins/ValidationMixin'
 import DetailList from '@/components/tools/DetailList'
 import JDate from '@/components/jeecg/JDate'
+import { getFiscalyear } from '@/api/api'
 export default {
   name: 'PaymentForm',
   components: {
@@ -161,6 +156,9 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  mounted() {
+    this.getFiscalyear()
   },
   data() {
     return {
@@ -218,6 +216,17 @@ export default {
           })
         }
       })
+    },
+    getFiscalyear() {
+      getFiscalyear()
+        .then(res => {
+          if (res.success) {
+            this.form.setFieldsValue({
+              fiscalYear: res.result.fiscalYear
+            })
+          }
+        })
+        .finally(() => {})
     },
     fetchBankList(word) {
       this.request({
