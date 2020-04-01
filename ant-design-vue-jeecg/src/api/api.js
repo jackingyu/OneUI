@@ -110,6 +110,13 @@ const getContract = (id, params) => getAction(sloter(Rest.GET_CONTRACT.url, id),
 const createContract = (params) => postAction(Rest.CREATE_CONTRACT.url, params);
 const updateContract = (params) => putAction(Rest.UPDATE_CONTRACT.url, params);
 
+const getSaleContracts = (params) => getAction(Rest.GET_SALECONTRACTS.url, params);
+const getSaleContract = (id, params) => getAction(sloter(Rest.GET_SALECONTRACT.url, id), params);
+const createSaleContract = (params) => postAction(Rest.CREATE_SALECONTRACT.url, params);
+const updateSaleContract = (params) => putAction(Rest.UPDATE_SALECONTRACT.url, params);
+
+
+
 const getBankAccounts = (params) => getAction(Rest.GET_BANK_ACCOUNTS.url, params);
 
 const getBanks = (params) => getAction(Rest.GET_BANKS.url, params);
@@ -254,7 +261,11 @@ export {
   getSaleReceipt,
   createSaleReceipt,
   updateSaleReceipt,
-  getBankAccounts
+  getBankAccounts,
+  getSaleContracts,
+  getSaleContract,
+  createSaleContract,
+  updateSaleContract
   // ✨ Bussiness END - by Fred
 }
 

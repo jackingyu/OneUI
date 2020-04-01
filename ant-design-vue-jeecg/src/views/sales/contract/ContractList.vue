@@ -161,14 +161,14 @@ export default {
     },
     handleEdit(record) {
       this.$router.push({
-        path: '/sale/contract',
+        path: '/sales/contract',
         query: {
           id: record.id
         }
       })
     },
     handleAdd() {
-      this.$router.push({ path: '/sale/contract' })
+      this.$router.push({ path: '/sales/contract' })
     },
     handleDelete(id) {}
   }
