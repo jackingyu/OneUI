@@ -223,19 +223,19 @@ export default {
   },
   //----  销售结算
   GET_SALESETTLEMENT: {
-    url: '/salessettlements/%@',
+    url: '/salesbillingdocuments/%@',
     method: 'GET'
   },
   GET_SALESETTLEMENTS: {
-    url: '/salessettlements',
+    url: '/salesbillingdocuments',
     method: 'GET'
   },
   CREATE_SALESETTLEMENT: {
-    url: '/salessettlements',
+    url: '/salesbillingdocuments',
     method: 'POST'
   },
   UPDATE_SALESETTLEMENT: {
-    url: '/salessettlements',
+    url: '/salesbillingdocuments',
     method: 'PUT'
   },
   //----  销售合同

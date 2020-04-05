@@ -4,16 +4,18 @@
       <a-card class="card">
         <form-composer ref="contract" />
         <!-- table -->
-        <template v-if="!!model.id">
+        <!-- <template v-if="!!model.id">
           <a-divider style="margin-bottom: 32px" />
           <detail-list title="合同附件">
             <attach-files-form ref="rowfiles" :showSubmit="false" />
           </detail-list>
-        </template>
+        </template> -->
       </a-card>
 
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/sales/contracts')">返回销售合同列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
         <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
@@ -43,7 +45,7 @@ export default {
     DetailList,
     'form-composer': FormComposer
   },
-  mixins:[FormPageActionMixin],
+  mixins: [FormPageActionMixin],
   data() {
     return {
       cType: '',
@@ -65,14 +67,16 @@ export default {
     ...mapGetters(['userInfo']),
     initModel() {
       let { id = undefined } = this.$route.query
+      this.$loadData(id)
+    },
+    $loadData(id) {
       if (id) {
-        getContract(id).then(res => {
+        getSaleContract(id).then(res => {
           if (res.success) {
             this.model = {
               ...res.result
             }
             this.$refs.contract.edit(this.model)
-            this.$refs.rowproj.edit(res.result.purchaseContractItems)
           } else {
             this.$message.warning(res.message)
           }
@@ -81,18 +85,14 @@ export default {
         this.$refs.contract.add()
       }
     },
-    contractChange(v) {
-      this.cType = v
-      this.rowFields = formItems.filter(item => !item.contractType || item.contractType == v)
-      this.$refs.rowproj.contract(v)
-    },
     submitContract(postData) {
       this.loading = true
       let promises
-      if (postData.id) {
-        promises = updateContract(postData)
+      if (this.model.id) {
+        postData.id = this.model.id
+        promises = updateSaleContract(postData)
       } else {
-        promises = createContract(postData)
+        promises = createSaleContract(postData)
       }
       promises
         .then(res => {
@@ -116,7 +116,7 @@ export default {
       that.$refs.contract.form.validateFields((err, values) => {
         console.info('contract', values)
         if (!err) {
-            that.submitContract(values)
+          that.submitContract(values)
         }
       })
     }

@@ -17,7 +17,7 @@
                     v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
                     :placeholder="`请选择${item.label}`"
                     :filterOption="false"
-                    :disabled="item.readOnly"
+                    :disabled="item.readOnly || diabledFunction(item) "
                     @search="word=>searchWordSelect(word,item.valueKey)"
                     @change="v=>onSelectChangeWithKey(v,item.valueKey)"
                     :showSearch="!item.onlySelect"
@@ -32,7 +32,7 @@
                 <template v-else-if="item.inputType=='input'">
                   <a-input
                     v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label},ruleWith(item.ruleKey),{validator:(rule, value, callback)=>validatorFormpsfix(item,rule, value, callback)}]}]"
-                    :disabled="item.readOnly"
+                    :disabled="item.readOnly || diabledFunction(item)"
                     :placeholder="`请输入${item.label}`"
                   >
                     <template v-if="item.prefix">
@@ -93,7 +93,10 @@
                     </template>
                   </a-input>
                 </template>
-                <template v-else-if="item.inputType=='textarea'" :disabled="item.readOnly">
+                <template
+                  v-else-if="item.inputType=='textarea'"
+                  :disabled="item.readOnly || diabledFunction(item)"
+                >
                   <a-textarea
                     v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请输入'+item.label}]}]"
                     :autosize="{ minRows: 5, maxRows: 10 }"
@@ -104,8 +107,8 @@
                   <j-dict-select-tag
                     v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
                     :triggerChange="true"
-                    :disabled="item.readOnly"
-                    :readOnly="item.readOnly"
+                    :disabled="item.readOnly || diabledFunction(item)"
+                    :readOnly="item.readOnly || diabledFunction(item)"
                     :placeholder="`请选择${item.label}`"
                     :type="'select'"
                     @change="v=>onSelectChangeWithKey(v,item.valueKey)"
@@ -190,7 +193,7 @@ export default {
           }
         },
         project: {
-          key: 'projectName',
+          key: 'projectId',
           funcName: 'GetProjects',
           params: {},
           mapper: item => {
@@ -218,41 +221,24 @@ export default {
       this.form.resetFields()
       this.model = Object.assign({}, record)
       this.visible = true
-      this.$nextTick(() => {
-        this.form.setFieldsValue(
-          pick(
-            this.model,
-            'unitPrice',
-            'quantity',
-            'itemNo',
-            'materialDescription',
-            'acceptanceCriteria',
-            'contractSchedule',
-            'qualityStandard',
-            'paymentTerm',
-            'warranty',
-            'warrantyAgreement'
-          )
-        )
-        this.form.setFieldsValue({
-          taxRate: isNaN(record.taxRate) ? record.taxRate : '' + record.taxRate,
-          materialGroupCode: isNaN(record.materialGroupCode) ? record.materialGroupCode : '' + record.materialGroupCode,
-          unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode,
-          paymentMethodCode: isNaN(record.paymentMethodCode) ? record.paymentMethodCode : '' + record.paymentMethodCode
-        })
-        if (record.materialId) {
-          if (record.materialId instanceof Object) {
-            this.form.setFieldsValue({ materialId: record.materialId })
-          } else {
-            this.form.setFieldsValue({
-              materialId: {
-                key: record.materialId == undefined ? '' : record.materialId + '',
-                label: record.materialName
-              }
-            })
-          }
+      if (!isNaN(this.model.contractTypeCode)) {
+        this.formContractType = this.model.contractTypeCode == 2 ? 'st' : 'js'
+      }
+      for (let key in this.model) {
+        let va = this.model[key]
+        if (!isNaN(va) && va != null) {
+          this.model[key] = `${va}`
         }
+      }
+      this.$nextTick(() => {
+        this.form.setFieldsValue(this.model)
       })
+    },
+    diabledFunction({ valueKey }) {
+      if (this.model.id) {
+        return ['salesContractCode','contractTypeCode'].indexOf(valueKey) != -1
+      }
+      return false
     },
     close() {
       this.$emit('close')
@@ -290,7 +276,7 @@ export default {
     },
     onSelectChangeWithKey(val, key) {
       if (key == 'contractTypeCode') {
-        this.formContractType = val == 3 ? 'st' : 'js'
+        this.formContractType = val == 2 ? 'st' : 'js'
       } else if (key == 'customerId') {
         let customer = this.FormFieldOptions[key].find(item => item.key == val)
         if (customer && customer.node) {

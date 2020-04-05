@@ -17,7 +17,7 @@ export const formItems = [
   },
   {
     label: '项目名称',
-    valueKey: 'projectName',
+    valueKey: 'projectId',
     inputType: 'select',
     required: false,
     baseField: true,
@@ -29,7 +29,7 @@ export const formItems = [
     inputType: 'dict',
     required: true,
     baseField: true,
-    dict: 'contract_type',
+    dict: 'sales_settlement_type',
     contractType: '',
   },
   {

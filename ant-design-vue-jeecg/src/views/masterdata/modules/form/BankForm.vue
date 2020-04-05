@@ -147,7 +147,14 @@ export default {
       })
     },
     setForm(val) {
-      this.form.setFieldsValue({ data: JSON.stringify(val) })
+      let filterData = (val || []).filter(
+        item => item.bankId && item.subBranchId && item.bankAccount && item.bankAccountName
+      )
+      if (filterData.length > 0) {
+        this.form.setFieldsValue({ data: JSON.stringify(filterData) })
+      } else {
+        this.form.clearField('data')
+      }
     },
     defaultSearchWord(record) {
       if (record) {
@@ -211,9 +218,13 @@ export default {
     },
     saveRow(key) {
       let target = this.data.filter(item => item.key === key)[0]
-      target.editable = false
-      target.isNew = false
-      this.setForm(this.data)
+      if (target.bankId && target.subBranchId && target.bankAccount && target.bankAccountName) {
+        target.editable = false
+        target.isNew = false
+        this.setForm(this.data)
+      } else {
+        this.$message.warning("存在未填写的项")
+      }
     },
     toggle(key) {
       let target = this.data.filter(item => item.key === key)[0]
