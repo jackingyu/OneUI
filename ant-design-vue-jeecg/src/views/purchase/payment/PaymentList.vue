@@ -12,7 +12,7 @@
           <a-col :md="8" :sm="12">
             <a-form-item label="付款日期">
               <a-range-picker
-                v-decorator="['paymentDate',{rules: [{ type: 'array', required: true, message: '请选择付款日期'}]}]"
+                v-decorator="['paymentDate',{rules: [{ type: 'array', required: false, message: '请选择付款日期'}]}]"
                 format="YYYY-MM-DD"
                 :placeholder="['开始时间', '结束时间']"
                 @change="paymentDateChange"
@@ -104,12 +104,12 @@ export default {
   },
   data() {
     let now = moment()
-    let to = now.format('YYYY-MM-DD+HH:mm:ss')
-    let from = now.add(-1, 'year').format('YYYY-MM-DD+HH:mm:ss')
+    let to = now.format('YYYY-MM-DD')
+    let from = now.add(-1, 'year').format('YYYY-MM-DD')
     return {
       description: '',
       queryParam: {
-        paymentDate_start: from,
+        paymentDate_begin: from,
         paymentDate_end: to
       },
       materialGroups: [],
@@ -124,7 +124,7 @@ export default {
         {
           title: '供应商名称',
           align: 'center',
-          dataIndex: 'vendorId'
+          dataIndex: 'vendorId_dictText'
         },
         {
           title: '付款时间',
@@ -141,11 +141,11 @@ export default {
           align: 'center',
           dataIndex: 'paymentMethodCode_dictText'
         },
-        {
-          title: '状态',
-          align: 'center',
-          dataIndex: 'delFlag_dictText'
-        },
+        // {
+        //   title: '状态',
+        //   align: 'center',
+        //   dataIndex: 'delFlag_dictText'
+        // },
         {
           title: '操作',
           dataIndex: 'action',
@@ -198,11 +198,11 @@ export default {
     handleDelete(id) {},
     paymentDateChange(momentArr, strArr) {
       if (momentArr.length == 0) {
-        this.queryParam.paymentDate_start = ''
+        this.queryParam.paymentDate_begin = ''
         this.queryParam.paymentDate_end = ''
       } else {
-        let msArr = momentArr.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
-        this.queryParam.paymentDate_start = msArr[0]
+        let msArr = momentArr.map(item => item.format('YYYY-MM-DD'))
+        this.queryParam.paymentDate_begin = msArr[0]
         this.queryParam.paymentDate_end = msArr[1]
       }
     }

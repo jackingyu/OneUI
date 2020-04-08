@@ -4,18 +4,9 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
-            <a-form-item label="供应商名称">
-              <j-input placeholder="请输入供应商名称" v-model="queryParam.vendorName"></j-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="12">
-            <a-form-item label="合同类型">
-              <j-dict-select-tag
-                v-model="queryParam.contractTypeCode"
-                placeholder="请选择合同类型"
-                dictCode="sales_settlement_type"
-              />
+          <a-col :md="8" :sm="12">
+            <a-form-item label="公司名称">
+              <j-input placeholder="请输入公司名称" v-model="queryParam.companyName"></j-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -51,7 +42,6 @@
         :loading="loading"
         @change="handleTableChange"
       >
-        <span slot="date" slot-scope="text, record">{{record.beginDate + '~' + record.endDate}}</span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <!-- <a-divider type="vertical" /> -->
@@ -72,13 +62,11 @@
       </a-table>
     </div>
     <!-- table区域-end -->
-    <!-- <project-modal ref="modalForm" @ok="modalFormOk"></project-modal> -->
   </a-card>
 </template>
 
 <script>
 import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
-// import ProjectModal from './modules/ProjectModal'
 import { putAction } from '@/api/manage'
 import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
@@ -86,10 +74,9 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
-  name: 'ContractList',
+  name: 'Customer',
   mixins: [JeecgListMixin],
   components: {
-    // ProjectModal,
     JInput
   },
   data() {
@@ -100,36 +87,39 @@ export default {
       oneTimeFlags: [],
       columns: [
         {
-          title: '项目名称',
-          align: 'center',
-          dataIndex: 'projectId_dictText'
-        },
-        {
-          title: '客户名称',
+          title: '公司代码',
           align: 'center',
           width: 100,
-          dataIndex: 'customerId_dictText'
+          dataIndex: 'companyCode'
         },
         {
-          title: '中标总价',
+          title: '公司名称',
           align: 'center',
-          dataIndex: 'bidAmount'
+          width: 100,
+          dataIndex: 'companyName'
         },
         {
-          title: '合同金额',
+          title: '部门代码',
           align: 'center',
-          dataIndex: 'contractAmount'
+          dataIndex: 'orgCode',
+          width: 120
         },
         {
-          title: '操作',
-          dataIndex: 'action',
-          scopedSlots: { customRender: 'action' },
+          title: '创建时间',
           align: 'center',
-          width: 170
+          dataIndex: 'createTime',
+          width: 120
         }
+        // {
+        //   title: '操作',
+        //   dataIndex: 'action',
+        //   scopedSlots: { customRender: 'action' },
+        //   align: 'center',
+        //   width: 170
+        // }
       ],
       url: {
-        list: Rest.GET_SALECONTRACTS.url
+        list: Rest.GET_COMPANIES.url
       }
     }
   },
@@ -153,14 +143,14 @@ export default {
     },
     handleEdit(record) {
       this.$router.push({
-        path: '/sales/contract',
+        path: '/masterdata/customer-info',
         query: {
           id: record.id
         }
       })
     },
     handleAdd() {
-      this.$router.push({ path: '/sales/contract' })
+      this.$router.push({ path: '/masterdata/customer-info' })
     },
     handleDelete(id) {}
   }

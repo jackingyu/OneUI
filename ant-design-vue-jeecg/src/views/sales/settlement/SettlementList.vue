@@ -2,36 +2,25 @@
   <a-card :bordered="false">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-form :form="jform" layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="合同实施内容">
-              <a-input v-model="queryParam.contractContent" placeholder="请填写合同实施内容" />
+            <a-form-item label="客户名称">
+              <a-input v-model="queryParam.customerName" placeholder="请填写客户名称" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="12">
-            <a-form-item label="供应商">
-              <a-select
-                v-decorator="['vendorId']"
-                placeholder="请选择供应商"
-                :filterOption="false"
-                :showSearch="true"
-                @search="fetchVendorList"
-              >
-                <a-select-option
-                  v-for="(vendor, index) in vendors"
-                  :key="index"
-                  :value="vendor.id"
-                >{{vendor.vendorName}}</a-select-option>
-              </a-select>
+            <a-form-item label="项目名">
+              <a-input v-model="queryParam.projectName" placeholder="请填写项目名" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="12">
-            <a-form-item label>
+            <a-form-item label="结算时间">
               <a-range-picker
-                v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                v-decorator="['dateSpan']"
                 format="YYYY-MM-DD"
                 :placeholder="['开始时间', '结束时间']"
+                @change="settleTimeDateChange"
               />
             </a-form-item>
           </a-col>
@@ -101,7 +90,7 @@ import { createMaterial, updateMaterial, getVendors } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
-
+import moment from 'moment'
 export default {
   name: 'SettlementList',
   mixins: [JeecgListMixin],
@@ -113,45 +102,43 @@ export default {
     return {
       description: '',
       queryParam: {},
-      materialGroups: [],
-      oneTimeFlags: [],
       vendors: [],
       columns: [
         {
           title: '结算单号',
           align: 'center',
           width: 160,
-          dataIndex: 'contractNumber'
+          dataIndex: 'id'
         },
         {
-          title: '行项目',
+          title: '客户名称',
           align: 'center',
-          dataIndex: 'contractItemNo'
+          dataIndex: 'customerId_dictText'
         },
         {
-          title: '日期',
+          title: '结算类型',
           align: 'center',
-          dataIndex: 'createTime'
+          dataIndex: 'settlementTypeCode'
         },
         {
-          title: '单价',
+          title: '结算总价',
           align: 'center',
-          dataIndex: 'unitPrice'
+          dataIndex: 'amount'
         },
         {
-          title: '数量',
+          title: '结算日期',
           align: 'center',
-          dataIndex: 'total'
+          dataIndex: 'settlementTime'
         },
         {
-          title: '物料',
+          title: '中标价',
           align: 'center',
-          dataIndex: 'materialId'
+          dataIndex: 'bidAmount'
         },
         {
-          title: '合同实施内容',
+          title: '滞纳金',
           align: 'center',
-          dataIndex: 'contractContent'
+          dataIndex: 'lateFee'
         },
         {
           title: '操作',
@@ -185,27 +172,32 @@ export default {
         .finally(() => {})
     },
     initDictConfig() {
-      initDictOptions('material_group').then(res => {
-        if (res.success) {
-          this.materialGroups = res.result
-        }
-      })
-      initDictOptions('material_property').then(res => {
-        if (res.success) {
-          this.oneTimeFlags = res.result
-        }
-      })
+      // initDictOptions('material_group').then(res => {
+      //   if (res.success) {
+      //     this.materialGroups = res.result
+      //   }
+      // })
+    },
+    settleTimeDateChange(momentArr, strArr) {
+      if (momentArr.length == 0) {
+        this.queryParam.settlementTime_begin = ''
+        this.queryParam.settlementTime_end = ''
+      } else {
+        let msArr = momentArr.map(item => item.format('YYYY-MM-DD'))
+        this.queryParam.settlementTime_begin = msArr[0]
+        this.queryParam.settlementTime_end = msArr[1]
+      }
     },
     handleEdit(record) {
       this.$router.push({
-        path: '/sale/settlement',
+        path: '/sales/settlement',
         query: {
           id: record.id
         }
       })
     },
     handleAdd() {
-      this.$router.push({ path: '/sale/settlement' })
+      this.$router.push({ path: '/sales/settlement' })
     },
     handleDelete(id) {}
   }

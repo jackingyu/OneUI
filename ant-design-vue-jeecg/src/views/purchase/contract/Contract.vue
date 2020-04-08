@@ -185,14 +185,12 @@ export default {
                 }
               }
               arData.map(item => {
-                // item.materialId = item.materialCode
                 if (!!that.model.id) {
                   item.contractId = that.model.id
                 }
-                delete item.materialCode
+                delete item.materialObj
                 return item
               })
-              // debugger
               postData.purchaseContractItems = arData
               that.submitContract(postData)
             }

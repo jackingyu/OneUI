@@ -33,31 +33,32 @@ import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUt
 
 let getColumns = thiz => {
   let settlementTypeCode = thiz.settlementTypeCode
-  return formItems
+  let raItems = formItems
     .filter(item => !item.settlementType || item.settlementType == settlementTypeCode)
     .filter(item => !item.noTable)
-    .map(item => {
-      let customRender = null
-      if (item.dict) {
-        customRender = text => {
-          return filterDictText(thiz.dicts[item.dict] || [], text) || text
-        }
-      } else {
-        customRender = (text, record) => {
-          if (item.tableRender) {
-            return item.tableRender(record)
-          }
-          return text
-        }
+  raItems = raItems.sort((n, p) => n.order - p.order)
+  return raItems.map(item => {
+    let customRender = null
+    if (item.dict) {
+      customRender = text => {
+        return filterDictText(thiz.dicts[item.dict] || [], text) || text
       }
-      return {
-        title: item.label,
-        dataIndex: item.valueKey,
-        key: item.valueKey,
-        // scopedSlots: { customRender: 'text' },
-        customRender
+    } else {
+      customRender = (text, record) => {
+        if (item.tableRender) {
+          return item.tableRender(record)
+        }
+        return text
       }
-    })
+    }
+    return {
+      title: item.label,
+      dataIndex: item.valueKey,
+      key: item.valueKey,
+      // scopedSlots: { customRender: 'text' },
+      customRender
+    }
+  })
 }
 
 export default {

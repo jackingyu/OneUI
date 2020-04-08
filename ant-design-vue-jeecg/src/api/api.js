@@ -110,6 +110,11 @@ const getContract = (id, params) => getAction(sloter(Rest.GET_CONTRACT.url, id),
 const createContract = (params) => postAction(Rest.CREATE_CONTRACT.url, params);
 const updateContract = (params) => putAction(Rest.UPDATE_CONTRACT.url, params);
 
+const getSaleContracts = (params) => getAction(Rest.GET_SALECONTRACTS.url, params);
+const getSaleContract = (id, params) => getAction(sloter(Rest.GET_SALECONTRACT.url, id), params);
+const createSaleContract = (params) => postAction(Rest.CREATE_SALECONTRACT.url, params);
+const updateSaleContract = (params) => putAction(Rest.UPDATE_SALECONTRACT.url, params);
+
 const getBankAccounts = (params) => getAction(Rest.GET_BANK_ACCOUNTS.url, params);
 
 const getBanks = (params) => getAction(Rest.GET_BANKS.url, params);
@@ -157,6 +162,14 @@ const getInvoice = (id, params) => getAction(sloter(Rest.GET_VENDORINVOICE.url, 
 const createInvoice = (params) => postAction(Rest.CREATE_VENDORINVOICE.url, params);
 const updateInvoice = (params) => putAction(Rest.UPDATE_VENDORINVOICE.url, params);
 const delInvoice = (params) => deleteAction(Rest.DEL_VENDORINVOICE.url, params);
+
+
+const getSaleSettlements = (params) => getAction(Rest.GET_SALESETTLEMENTS.url, params);
+const getSaleSettlement = (id, params) => getAction(sloter(Rest.GET_SALESETTLEMENT.url, id), params);
+const createSaleSettlement = (params) => postAction(Rest.CREATE_SALESETTLEMENT.url, params);
+const updateSaleSettlement = (params) => putAction(Rest.UPDATE_SALESETTLEMENT.url, params);
+
+
 
 const getCompanies = (params) => getAction(Rest.GET_COMPANIES.url, params);
 
@@ -254,7 +267,15 @@ export {
   getSaleReceipt,
   createSaleReceipt,
   updateSaleReceipt,
-  getBankAccounts
+  getBankAccounts,
+  getSaleContracts,
+  getSaleContract,
+  createSaleContract,
+  updateSaleContract,
+  getSaleSettlements,
+  getSaleSettlement,
+  createSaleSettlement,
+  updateSaleSettlement
   // ✨ Bussiness END - by Fred
 }
 

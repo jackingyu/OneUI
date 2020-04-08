@@ -8,7 +8,7 @@
           :showSubmit="false"
         />
         <!-- table -->
-        <detail-list title="结算行项目">
+        <detail-list title="结算行项目" v-show="hasRowItems">
           <settlement-row-project-form ref="rowproj" :showSubmit="false" />
         </detail-list>
         <template v-if="!!model.id">
@@ -21,6 +21,8 @@
 
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/sales/settlements')">返回销售结算列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
         <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
@@ -38,7 +40,7 @@ import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getSettlements, getSettlement, createSettlement, updateSettlement } from '@/api/api'
+import { getSaleSettlements, getSaleSettlement, createSaleSettlement, updateSaleSettlement } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
@@ -60,8 +62,11 @@ export default {
     }
   },
   computed: {
+    hasRowItems() {
+      return this.cType == '2'
+    },
     pageTitle() {
-      return this.model.id ? '编辑供应商结算' : '新建供应商结算'
+      return this.model.id ? '编辑销售结算' : '新建销售结算'
     },
     orgCode() {
       return this.userInfo().orgCode
@@ -76,34 +81,34 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        // getContract(id).then(res => {
-        //   if (res.success) {
-        //     this.model = {
-        //       ...res.result,
-        //       id
-        //     }
-        //     this.$refs.contract.edit(this.model)
-        //     this.$refs.rowproj.edit(res.result.purchaseContractItems)
-        //   } else {
-        //     this.$message.warning(res.message)
-        //   }
-        // })
+        getSaleSettlement(id).then(res => {
+          if (res.success) {
+            this.model = {
+              ...res.result,
+              id
+            }
+            this.$refs.settlement.edit(this.model)
+            this.$refs.rowproj.edit(res.result.salesBillingDocumentItems)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
       } else {
         this.$refs.settlement.add()
       }
     },
     settlementTypeCodeChange(v) {
       this.cType = v
-      this.rowFields = formItems.filter(item => !item.settlementTypeCode || item.settlementTypeCode == v)
+      this.rowFields = formItems.filter(item => !item.settlementType || item.settlementType == v)
       this.$refs.rowproj.settlementType(v)
     },
     submitSettlement(postData) {
       this.loading = true
       let promises
       if (postData.id) {
-        promises = updateSettlement(postData)
+        promises = updateSaleSettlement(postData)
       } else {
-        promises = createSettlement(postData)
+        promises = createSaleSettlement(postData)
       }
       promises
         .then(res => {
@@ -121,11 +126,10 @@ export default {
     validate() {
       let that = this
       that.$refs.settlement.form.validateFields((err, values) => {
-        console.info('settlement', values)
         if (!err) {
-          let postData = pick(values, 'id', 'projectId', 'vendorId', 'settlementTime', 'total', 'settlementTypeCode')
-          postData.settlementTime = postData.settlementTime + ' 00:00:00'
-          postData.fiscalYear = '0'
+          let postData = {
+            ...values
+          }
           that.$refs.rowproj.form.validateFields((err, values) => {
             if (!err) {
               let arData = []
@@ -155,7 +159,7 @@ export default {
                   return
                 }
               }
-              postData.vendorSettlementItems = arData
+              postData.salesBillingDocumentItems = arData
               that.submitSettlement(postData)
             }
           })

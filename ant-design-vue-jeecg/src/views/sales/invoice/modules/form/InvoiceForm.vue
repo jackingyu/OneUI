@@ -2,12 +2,19 @@
   <a-form :form="form" class="form">
     <detail-list title="基础信息">
       <a-row class="form-row" :gutter="16">
-        <a-col v-show="!!this.model.id" :lg="8" :md="12" :sm="24">
+        <a-col :lg="8" :md="12" :sm="24">
           <a-form-item style="display:none">
             <a-input v-decorator="['id']" />
           </a-form-item>
           <a-form-item label="发票号码">
-            <span>{{this.model.invoiceNumber}}</span>
+            <span v-show="!!this.model.id">{{this.model.invoiceNumber}}</span>
+            <a-input
+              v-show="!this.model.id"
+              placeholder="请输入发票号码"
+              v-decorator="[
+              'invoiceNumber', {rules: [{ required: true, message: '请输入发票号码'}]} 
+            ]"
+            />
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
@@ -94,23 +101,13 @@
     <a-divider style="margin-bottom: 32px" />
     <detail-list title="开票项目">
       <a-row class="form-row" :gutter="16">
-        <a-col v-show="!this.model.id" :lg="8" :md="12" :sm="24">
-          <a-form-item label="发票号码">
-            <a-input
-              placeholder="请输入发票号码"
-              v-decorator="[
-              'invoiceNumber', {rules: [{ required: true, message: '请输入发票号码'}]} 
-            ]"
-            />
-          </a-form-item>
-        </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="开票日期">
             <j-date
               showTime
               :trigger-change="true"
               placeholder="开票日期"
-              dateFormat="YYYY-MM-DD HH:mm:ss"
+              dateFormat="YYYY-MM-DD"
               style="width:100%"
               v-decorator="['invoiceDate',{rules: [{ required: true, message: '请选择结算时间'}]}]"
             />
@@ -156,7 +153,7 @@
 <script>
 import pick from 'lodash.pick'
 import DetailList from '@/components/tools/DetailList'
-import { getVendors, getProjects } from '@/api/api'
+import { getVendors, getProjects, getFiscalyear } from '@/api/api'
 import JDate from '@/components/jeecg/JDate'
 
 import FormFieldMixin from '@/mixins/FormFieldMixin'
@@ -192,6 +189,9 @@ export default {
       }
     }
   },
+  mounted() {
+    this.getFiscalyear()
+  },
   methods: {
     add() {
       this.edit({})
@@ -219,6 +219,17 @@ export default {
           taxRate: isNaN(record.taxRate) ? record.taxRate : '' + record.taxRate
         })
       })
+    },
+    getFiscalyear() {
+      getFiscalyear()
+        .then(res => {
+          if (res.success) {
+            this.form.setFieldsValue({
+              fiscalYear: res.result.fiscalYear
+            })
+          }
+        })
+        .finally(() => {})
     },
     fetchMaterialList(word) {
       this.request({

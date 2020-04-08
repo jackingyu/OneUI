@@ -24,7 +24,6 @@ import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
 import { getInvoices, getInvoice, createInvoice, updateInvoice, delInvoice } from '@/api/api'
-import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {

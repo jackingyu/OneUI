@@ -32,7 +32,6 @@
 
 <script>
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
-import RowProjectModal from '../RowProjectModal'
 import { getBanks } from '@/api/api'
 import { formItems } from '../formOptions'
 
@@ -41,7 +40,6 @@ import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUt
 export default {
   name: 'AttachFilesForm',
   components: {
-    RowProjectModal
   },
   props: {
     showSubmit: {

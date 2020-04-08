@@ -4,33 +4,32 @@ export const formItems = [
     valueKey: 'projectId',
     inputType: 'select',
     required: true,
-    settlementType: ''
+    settlementType: '',
+    evalueTable: function (kv) {
+      return kv.projectId_dictText
+    }
   },
   {
     label: '物料名称',
     valueKey: 'materialId',
     inputType: 'select',
     required: true,
-    settlementType: ''
+    settlementType: '',
+    evalueTable: function (kv) {
+      return kv.materialId_dictText
+    }
   },
   {
-    label: '合同内容',
+    label: '合同实施内容',
     valueKey: 'contractContent',
     inputType: 'input',
     required: true,
     settlementType: ''
   },
   {
-    label: '合同',
-    valueKey: 'contractId',
-    inputType: 'select',
-    required: true,
-    settlementType: ''
-  },
-  {
-    label: '合同行项目',
-    valueKey: 'contractItemId',
-    inputType: 'select',
+    label: '月份',
+    valueKey: 'clearPeriod',
+    inputType: 'month',
     required: true,
     settlementType: ''
   },
@@ -40,13 +39,16 @@ export const formItems = [
     inputType: 'input',
     required: true,
     settlementType: '',
-    suffix: {
-      label: '单位',
-      valueKey: 'unitCode',
-      inputType: 'dict',
-      required: true,
-      dict: 'unit',
-      settlementType: ''
+  },
+  {
+    label: '单位',
+    valueKey: 'unitCode',
+    inputType: 'dict',
+    required: true,
+    dict: 'unit',
+    settlementType: '',
+    evalueTable: function (kv) {
+      return kv.unitCode_dictText
     }
   },
   {
@@ -63,7 +65,8 @@ export const formItems = [
     readOnly: true,
     justShow: true,
     settlementType: '',
-    evalue: function (unitPrice = 0, quantity = 0) {
+    evalue: function (record) {
+      let unitPrice = record.unitPrice, quantity = record.quantity
       let val = unitPrice * quantity
       return isNaN(val) ? 0 : val.toFixed(2)
     }

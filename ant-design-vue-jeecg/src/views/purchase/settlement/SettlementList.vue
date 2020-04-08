@@ -27,9 +27,9 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="12">
-            <a-form-item label>
+            <a-form-item label="结算日期">
               <a-range-picker
-                v-decorator="['settlementTime',{rules: [{ required: true, message: '请选择生效日期'}]}]"
+                v-decorator="['settlementTime',{rules: [{ required: false, message: '请选择结算日期'}]}]"
                 format="YYYY-MM-DD"
                 @change="settlementTimeChange"
                 :placeholder="['开始时间', '结束时间']"
@@ -112,8 +112,8 @@ export default {
   },
   data() {
     let now = moment()
-    let to = now.format('YYYY-MM-DD+HH:mm:ss')
-    let from = now.add(-1, 'year').format('YYYY-MM-DD+HH:mm:ss')
+    let to = now.format('YYYY-MM-DD')
+    let from = now.add(-1, 'year').format('YYYY-MM-DD')
     return {
       description: '',
       queryParam: {},
@@ -121,7 +121,7 @@ export default {
       oneTimeFlags: [],
       vendors: [],
       queryParam: {
-        settlementTime_start: from,
+        settlementTime_begin: from,
         settlementTime_end: to
       },
       columns: [
@@ -132,14 +132,19 @@ export default {
           dataIndex: 'vendorSettlementId'
         },
         {
-          title: '行项目',
+          title: '合同行号',
           align: 'center',
+          width: 100,
           dataIndex: 'contractItemNo'
         },
         {
-          title: '结算时间',
+          title: '结算日期',
           align: 'center',
-          dataIndex: 'settlementTime'
+          width: 140,
+          dataIndex: 'settlementTime',
+          customRender(h) {
+            return moment(h).format('YYYY-MM-DD')
+          }
         },
         {
           title: '单价',
@@ -149,6 +154,7 @@ export default {
         {
           title: '单位',
           align: 'center',
+           width: 60,
           dataIndex: 'unitCode_dictText'
         },
         {
@@ -176,7 +182,7 @@ export default {
           dataIndex: 'action',
           scopedSlots: { customRender: 'action' },
           align: 'center',
-          width: 170
+          width: 100
         }
       ],
       url: {
@@ -221,11 +227,11 @@ export default {
     },
     settlementTimeChange(momentArr, strArr) {
       if (momentArr.length == 0) {
-        this.queryParam.settlementTime_start = ''
+        this.queryParam.settlementTime_begin = ''
         this.queryParam.settlementTime_end = ''
       } else {
-        let msArr = momentArr.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
-        this.queryParam.settlementTime_start = msArr[0]
+        let msArr = momentArr.map(item => item.format('YYYY-MM-DD'))
+        this.queryParam.settlementTime_begin = msArr[0]
         this.queryParam.settlementTime_end = msArr[1]
       }
     },

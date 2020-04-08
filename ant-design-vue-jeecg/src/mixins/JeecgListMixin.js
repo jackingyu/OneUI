@@ -144,8 +144,14 @@ export const JeecgListMixin = {
       this.$refs.superQueryModal.show();
     },
     searchReset() {
+      this.onReset()
+      if (this.jform) {
+        this.jform.resetFields()
+      }
       this.queryParam = {}
       this.loadData(1);
+    },
+    onReset() {
     },
     batchDel: function () {
       if (!this.url.deleteBatch) {

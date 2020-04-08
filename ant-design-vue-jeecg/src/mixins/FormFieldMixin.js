@@ -44,8 +44,6 @@ export default {
       this.__baseRequest(API.getMaterials(params), key, mapper ? mapper : item => {
         return {
           node: item,
-          // key: item.materialCode,
-          // value: item.materialCode,
           key: item.id,
           value: item.id,
           label: item.materialName

@@ -134,7 +134,7 @@ export default {
   },
   methods: {
     add() {
-      this.edit({ fiscalYear: '2020' })
+      this.edit({ fiscalYear: '' })
     },
     edit(record) {
       this.model = record || {}
@@ -163,7 +163,9 @@ export default {
       getFiscalyear()
         .then(res => {
           if (res.success) {
-            debugger
+            this.form.setFieldsValue({
+              fiscalYear:res.result.fiscalYear
+            })
           }
         })
         .finally(() => {})
