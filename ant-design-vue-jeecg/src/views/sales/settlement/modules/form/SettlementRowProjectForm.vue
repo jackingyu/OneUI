@@ -42,13 +42,13 @@ let getColumns = thiz => {
         customRender = text => {
           return filterDictText(thiz.dicts[item.dict] || [], text) || text
         }
-      } else if (item.valueKey == 'materialCode') {
+      } else if (item.evalueTable) {
         customRender = (text, record) => {
-          return record.materialName
+          return item.evalueTable(record)
         }
       } else if (item.evalue) {
         customRender = (text, record) => {
-          return item.evalue(record.unitPrice, record.quantity)
+          return item.evalue(record)
         }
       }
       return {
@@ -84,7 +84,6 @@ export default {
   },
   mounted() {
     this.initDictConfig()
-    
   },
   watch: {
     data(n) {
@@ -173,15 +172,7 @@ export default {
     editRow(key) {
       let target = this.data.filter(item => item.key === key)[0] || {}
       target = {
-        ...target,
-        materialCode: {
-          key: target.materialCode,
-          label: target.materialName
-        }
-        // taxRate: {
-        //   key: target.taxRate,
-        //   label: target.taxRate
-        // }
+        ...target
       }
       this.$refs.projectModal.edit(target)
     }

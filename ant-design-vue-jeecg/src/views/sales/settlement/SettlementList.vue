@@ -189,15 +189,15 @@ export default {
       }
     },
     handleEdit(record) {
-      // this.$router.push({
-      //   path: '/sales/settlement',
-      //   query: {
-      //     id: record.id
-      //   }
-      // })
+      this.$router.push({
+        path: '/sales/settlement',
+        query: {
+          id: record.id
+        }
+      })
     },
     handleAdd() {
-      // this.$router.push({ path: '/sales/settlement' })
+      this.$router.push({ path: '/sales/settlement' })
     },
     handleDelete(id) {}
   }

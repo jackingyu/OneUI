@@ -19,7 +19,6 @@
                   :placeholder="`请选择${item.label}`"
                   :filterOption="false"
                   :disabled="item.readOnly"
-                  labelInValue
                   @search="word=>searchWordSelect(word,item.valueKey)"
                   @change="v=>onSelectChangeWithKey(v,item.valueKey)"
                   :showSearch="!item.onlySelect"
@@ -114,9 +113,18 @@
                   :dictCode="item.dict"
                 />
               </template>
+              <template v-else-if="item.inputType=='month'">
+                <a-month-picker
+                  :trigger-change="true"
+                  format="YYYY-MM"
+                  :placeholder="`请选择${item.label}`"
+                  style="width:100%"
+                  v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
+                />
+              </template>
               <template v-else>
                 <span
-                  v-text="item.evalue?item.evalue(form.getFieldValue('unitPrice'),form.getFieldValue('quantity')):item.value"
+                  v-text="item.evalue?item.evalue({unitPrice:form.getFieldValue('unitPrice'),quantity:form.getFieldValue('quantity')}):item.value"
                 ></span>
               </template>
             </a-form-item>
@@ -134,15 +142,21 @@ import moment from 'moment'
 import { getMaterials } from '@/api/api'
 import { formItems } from './formOptions'
 import FormFieldMixin from '@/mixins/FormFieldMixin'
+import JDate from '@/components/jeecg/JDate'
+import ValidationMixin from '@/mixins/ValidationMixin'
+
 export default {
   name: 'RowProjectModal',
+  components: {
+    JDate
+  },
   props: {
     type: {
       type: String,
       default: 'st'
     }
   },
-  mixins: [FormFieldMixin],
+  mixins: [FormFieldMixin, ValidationMixin],
   watch: {
     type: function(n, o) {
       this.contractType = n
@@ -174,21 +188,6 @@ export default {
             }
           }
         },
-        contractItems: {
-          key: 'contractItemId',
-          funcName: 'GetContractsItems',
-          params: {},
-          mapper: item => {
-            return {
-              key: item.id,
-              value: item.id,
-              label: '[' + item.itemNo + ']' + item.comments
-            }
-          },
-          resTransformer: res => {
-            return res.result.purchaseContractItems
-          }
-        },
         project: {
           key: 'projectId',
           funcName: 'GetProjects',
@@ -207,12 +206,7 @@ export default {
       model: {},
       col: 3,
       confirmLoading: false,
-      form: this.$form.createForm(this),
-      validatorRules: {},
-      url: {
-        add: '/test/jeecgDemo/add',
-        edit: '/test/jeecgDemo/edit'
-      }
+      form: this.$form.createForm(this)
     }
   },
   created() {
@@ -226,53 +220,24 @@ export default {
       this.form.resetFields()
       this.model = Object.assign({}, record)
       this.visible = true
+      for (let key in this.model) {
+        let va = this.model[key]
+        if (!isNaN(va) && va != null) {
+          this.model[key] = `${va}`
+        }
+      }
       this.$nextTick(() => {
-        this.form.setFieldsValue(
-          pick(
-            this.model,
-            'unitPrice',
-            'quantity',
-            'itemNo',
-            'comments',
-            'taxRate',
-            'acceptanceCriteria',
-            'contractSchedule',
-            'qualityStandard',
-            'paymentTerm'
-          )
-        )
-        this.form.setFieldsValue({
-          materialGroupCode: record.materialGroupCode,
-          unitCode: isNaN(record.unitCode) ? record.unitCode : '' + record.unitCode
-        })
-        if (record.materialId) {
+        this.form.setFieldsValue(this.model)
+        if (this.model.clearPeriod) {
           this.form.setFieldsValue({
-            materialId: {
-              key: record.materialId,
-              label: record.materialName
-            }
+            clearPeriod: moment(this.model.clearPeriod)
           })
         }
       })
-      // const demoData = {
-      //   unitPrice: '100',
-      //   quantity: '33',
-      //   itemNo: 10,
-      //   materialGroupCode: '2',
-      //   materialCode: { key: 'M6', label: '测试物料6' },
-      //   comments: '合同内容',
-      //   unitCode: '1',
-      //   taxRate: '0.225',
-      //   // taxRate: { key: 6.25, label: '6.25‰', value: 6.25 },
-      //   acceptanceCriteria: 'YE',
-      //   contractSchedule: '180天',
-      //   qualityStandard: 'ISO9001',
-      //   paymentMethodCode: '1',
-      //   paymentTerm: '合同期前'
-      // }
     },
     close() {
       this.$emit('close')
+      this.confirmLoading = false
       this.visible = false
     },
     handleOk() {
@@ -280,17 +245,27 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           this.confirmLoading = true
-          let formData = pick(values, 'unitPrice', 'quantity', 'unitCode', 'contractContent')
+          let clearPeriod = values.clearPeriod
+          clearPeriod = clearPeriod.format('YYYY-MM')
           let postData = {
-            ...formData,
-            projectId: values.projectId.key,
-            materialId: values.materialId.key,
-            contractId: values.contractId.key,
-            contractItemId: values.contractItemId.key
+            ...this.model,
+            ...values,
+            clearPeriod
+          }
+          let mat = this.FormFieldOptions.materialId.find(item => item.key == values.materialId)
+          if (mat) {
+            postData.materialId_dictText = mat.label
+          }
+          mat = this.FormFieldOptions.projectId.find(item => item.key == values.projectId)
+          if (mat) {
+            postData.projectId_dictText = mat.label
+          }
+          mat = this.FormFieldOptions.projectId.find(item => item.key == values.unitCode)
+          if (mat) {
+            postData.unitCode_dictText = mat.label
           }
           this.$emit('submit', postData)
-          this.visible = false
-          this.confirmLoading = false
+          this.close()
         }
       })
     },
@@ -299,36 +274,16 @@ export default {
     },
     searchWordSelect(word, key) {
       if (key == 'materialId') {
-        let code = this.form.getFieldValue('materialGroupCode')
         this.materialList({
-          materialGroupCode: code,
           materialName: word ? `*${word}*` : undefined
         })
       } else if (key == 'projectId') {
         this.projectList({
           projectName: word ? `*${word}*` : undefined
         })
-      } else if (key == 'contractId') {
-        this.contractList({
-          contractName: word ? `*${word}*` : undefined
-        })
       }
     },
-    onSelectChangeWithKey(val, key) {
-      if (key == 'materialGroupCode') {
-        this.form.setFieldsValue({ materialId: {} })
-        this.materialList({
-          materialGroupCode: val
-        })
-      } else if (key == 'contractId') {
-        this.contractItemsList({
-          id: val.key
-        })
-      }
-    },
-    initFields() {
-      return Object.values(this.FieldsSet)
-    },
+    onSelectChangeWithKey(val, key) {},
     materialList(params) {
       this.request({
         ...this.FieldsSet.material,
@@ -338,18 +293,6 @@ export default {
     projectList(params) {
       this.request({
         ...this.FieldsSet.project,
-        params
-      })
-    },
-    contractItemsList(params) {
-      this.request({
-        ...this.FieldsSet.contractItems,
-        params
-      })
-    },
-    contractList(params) {
-      this.request({
-        ...this.FieldsSet.contract,
         params
       })
     }
