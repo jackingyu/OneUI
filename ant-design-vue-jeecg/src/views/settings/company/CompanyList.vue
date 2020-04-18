@@ -25,10 +25,9 @@
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator" style="border-top: 5px">
+    <!-- <div class="table-operator" style="border-top: 5px">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-    </div>
-
+    </div>-->
     <!-- table区域-begin -->
     <div>
       <a-table
@@ -74,7 +73,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
 
 export default {
-  name: 'Customer',
+  name: 'CompanyList',
   mixins: [JeecgListMixin],
   components: {
     JInput
@@ -109,14 +108,14 @@ export default {
           align: 'center',
           dataIndex: 'createTime',
           width: 120
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          scopedSlots: { customRender: 'action' },
+          align: 'center',
+          width: 100
         }
-        // {
-        //   title: '操作',
-        //   dataIndex: 'action',
-        //   scopedSlots: { customRender: 'action' },
-        //   align: 'center',
-        //   width: 170
-        // }
       ],
       url: {
         list: Rest.GET_COMPANIES.url
@@ -143,7 +142,7 @@ export default {
     },
     handleEdit(record) {
       this.$router.push({
-        path: '/masterdata/customer-info',
+        path: '/company/info',
         query: {
           id: record.id
         }

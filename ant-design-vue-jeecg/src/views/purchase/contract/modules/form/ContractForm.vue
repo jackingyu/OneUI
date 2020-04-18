@@ -9,7 +9,7 @@
           <a-form-item label="合同编号">
             <a-input
               placeholder="请输入合同编号"
-              :disabled="model && !!model.id"
+              :disabled="model && !!model.id || (model.id && !model.editable)"
               v-decorator="[
               'contractCode',
               {rules: [{ required: true, message: '请输入合同编号', whitespace: false}]}
@@ -21,6 +21,7 @@
           <a-form-item label="合同名称">
             <a-input
               placeholder="合同名称"
+              :disabled="(model.id && !model.editable)"
               v-decorator="[
               'contractTitle',
               {rules: [{ required: true, message: '请输入合同名称', whitespace: false}]}
@@ -35,7 +36,7 @@
               :triggerChange="true"
               placeholder="请选择合同类型"
               dictCode="contract_type"
-              :disabled="model && !!model.id"
+              :disabled="model && !!model.id || (model.id && !model.editable)"
               @change="contractChange"
             />
           </a-form-item>
@@ -49,6 +50,7 @@
               placeholder="请选择项目"
               :filterOption="false"
               :showSearch="true"
+              :disabled="(model.id && !model.editable)"
               @search="fetchProjectList"
             >
               <a-select-option
@@ -65,9 +67,13 @@
             <a-range-picker
               v-decorator="['dateSpan',{rules: [{ required: true, message: '请选择生效日期'}]}]"
               format="YYYY-MM-DD"
+              :disabled="(model.id && !model.editable)"
               :placeholder="['开始时间', '结束时间']"
             />
           </a-form-item>
+        </a-col>
+        <a-col v-if="model.status_dictText" :lg="8" :md="12" :sm="24">
+          <a-form-item label="状态">{{model.status_dictText}}</a-form-item>
         </a-col>
       </a-row>
     </detail-list>
@@ -82,6 +88,7 @@
               :filterOption="false"
               :showSearch="true"
               allowClear
+              :disabled="(model.id && !model.editable)"
               @search="fetchVendorList"
               @change="handleVendorChange"
             >

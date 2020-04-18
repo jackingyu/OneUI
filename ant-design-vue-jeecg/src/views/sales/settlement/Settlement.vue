@@ -3,7 +3,7 @@
     <div slot="route-view">
       <a-card>
         <settlement-form
-          @settlementTypeCodeChange="settlementTypeCodeChange"
+          @salesSettlementTypeCodeChange="salesSettlementTypeCodeChange"
           ref="settlement"
           :showSubmit="false"
         />
@@ -97,7 +97,7 @@ export default {
         this.$refs.settlement.add()
       }
     },
-    settlementTypeCodeChange(v) {
+    salesSettlementTypeCodeChange(v) {
       this.cType = v
       this.rowFields = formItems.filter(item => !item.settlementType || item.settlementType == v)
       this.$refs.rowproj.settlementType(v)

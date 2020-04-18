@@ -118,7 +118,7 @@ export default {
         {
           title: '结算类型',
           align: 'center',
-          dataIndex: 'settlementTypeCode'
+          dataIndex: 'salesSettlementTypeCode'
         },
         {
           title: '结算总价',

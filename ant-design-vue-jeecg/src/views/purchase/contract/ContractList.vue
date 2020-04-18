@@ -132,6 +132,11 @@ export default {
           }
         },
         {
+          title: '状态',
+          align: 'center',
+          dataIndex: 'status'
+        },
+        {
           title: '操作',
           dataIndex: 'action',
           scopedSlots: { customRender: 'action' },

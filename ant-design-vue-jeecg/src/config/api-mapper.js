@@ -16,6 +16,14 @@ export default {
     url: `/finance/fiscalyear`,
     method: 'get'
   },
+  CLOSE_FISCALYEAR: {
+    url: `/finance/fiscalyear/close`,
+    method: 'POST'
+  },
+  OPEN_FISCALYEAR: {
+    url: `/finance/fiscalyear/open`,
+    method: 'POST'
+  },
   CREATE_MATERIAL: {
     url: `/masterdata/materials`,
     method: 'POST'
@@ -107,6 +115,14 @@ export default {
     url: `/company`,
     method: 'GET'
   },
+  GET_COMPANY: {
+    url: `/company/%@`,
+    method: 'GET'
+  },
+  UPDATE_COMPANY: {
+    url: `/company`,
+    method: 'put'
+  },
   //---- 合同
   GET_CONTRACTS: {
     url: '/purchasecontracts',
@@ -122,6 +138,10 @@ export default {
   },
   UPDATE_CONTRACT: {
     url: '/purchasecontracts',
+    method: 'PUT'
+  },
+  PUT_APPROVE_CONTRACT: {
+    url: '/purchasecontracts/approve',
     method: 'PUT'
   },
   // GET_CONTRACT_ITEMS: {
