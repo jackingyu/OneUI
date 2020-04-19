@@ -18,10 +18,14 @@
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
         <a-button type="info" @click="back('/purchase/contracts')">返回采购合同列表</a-button>
-        <a-divider type="vertical" />
-        <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
-        <a-divider type="vertical" />
-        <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
+        <template v-if="!!model.id && !!model.allowedToApprove">
+          <a-divider type="vertical" />
+          <a-button type="primary" @click="e=>validate(true)" :loading="loading">提交审批</a-button>
+        </template>
+        <template v-if="!model.id || !!model.editable">
+          <a-divider type="vertical" />
+          <a-button type="info" @click="e=>validate(false)" :loading="loading">暂存</a-button>
+        </template>
       </footer-tool-bar>
     </div>
   </page-view>
@@ -36,7 +40,7 @@ import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import DetailList from '@/components/tools/DetailList'
 import PageView from '@comp/layouts/PageView'
-import { getContract, getContracts, createContract, updateContract } from '@/api/api'
+import { getContract, getContracts, createContract, updateContract, approveContract } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import FormPageActionMixin from '@/mixins/FormPageActionMixin'
@@ -86,7 +90,7 @@ export default {
               ...res.result
             }
             this.$refs.contract.edit(this.model)
-            this.$refs.rowproj.edit(res.result.purchaseContractItems)
+            this.$refs.rowproj.edit(res.result)
           } else {
             this.$message.warning(res.message)
           }
@@ -100,9 +104,13 @@ export default {
       this.rowFields = formItems.filter(item => !item.contractType || item.contractType == v)
       this.$refs.rowproj.contract(v)
     },
-    submitContract(postData) {
+    submitContract(data) {
       this.loading = true
       let promises
+      const postData = {
+        ...this.model,
+        ...data
+      }
       if (postData.id) {
         promises = updateContract(postData)
       } else {
@@ -124,8 +132,36 @@ export default {
           this.loading = false
         })
     },
+    approve(postData) {
+      this.loading = true
+      if (!this.model.id) {
+        return
+      }
+      postData = {
+        ...this.model,
+        ...postData,
+        id: this.model.id
+      }
+      approveContract(postData)
+        .then(res => {
+          if (res.success) {
+            this.$loadData(this.model.id)
+            this.$message.success(res.message)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
     // 最终全页面提交
-    validate() {
+    validate(isApprove = false) {
+      const canDo =
+        (isApprove && this.model.allowedToApprove) || (!isApprove && (!this.model.id || this.model.editable))
+      if (!canDo) {
+        return
+      }
       let that = this
       that.$refs.contract.form.validateFields((err, values) => {
         console.info('contract', values)
@@ -192,7 +228,11 @@ export default {
                 return item
               })
               postData.purchaseContractItems = arData
-              that.submitContract(postData)
+              if (!isApprove) {
+                that.submitContract(postData)
+              } else {
+                that.approve(postData)
+              }
             }
           })
         }

@@ -39,11 +39,11 @@
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="结算类型">
             <j-dict-select-tag
-              v-decorator="['settlementTypeCode']"
+              v-decorator="['salesSettlementTypeCode']"
               dictCode="sales_settlement_type"
               :triggerChange="true"
               placeholder="请选择"
-              @change="settlementTypeCodeChange"
+              @change="salesSettlementTypeCodeChange"
             />
           </a-form-item>
         </a-col>
@@ -96,11 +96,12 @@ import DetailList from '@/components/tools/DetailList'
 import { getVendors, getProjects, getFiscalyear } from '@/api/api'
 
 import FormFieldMixin from '@/mixins/FormFieldMixin'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 import ValidationMixin from '@/mixins/ValidationMixin'
 import JDate from '@/components/jeecg/JDate'
 export default {
   name: 'SettlementForm',
-  mixins: [FormFieldMixin, ValidationMixin],
+  mixins: [FormFieldMixin, ValidationMixin, FormPageActionMixin],
   components: {
     JBankSelectTag,
     DetailList,
@@ -149,11 +150,11 @@ export default {
       }
       this.$nextTick(() => {
         that.form.setFieldsValue(pick(this.model, 'id', 'contractCode', 'contractTitle', 'projectId'))
-        if (this.model.settlementTypeCode) {
+        if (this.model.salesSettlementTypeCode) {
           that.form.setFieldsValue({
-            settlementTypeCode: '' + this.model.settlementTypeCode
+            salesSettlementTypeCode: '' + this.model.salesSettlementTypeCode
           })
-          that.settlementTypeCodeChange(this.model.settlementTypeCode)
+          that.salesSettlementTypeCodeChange(this.model.salesSettlementTypeCode)
         }
         let vendor = this.model.vendor
         if (vendor) {
@@ -197,8 +198,8 @@ export default {
         }
       })
     },
-    settlementTypeCodeChange(v) {
-      this.$emit('settlementTypeCodeChange', v)
+    salesSettlementTypeCodeChange(v) {
+      this.$emit('salesSettlementTypeCodeChange', v)
     },
     handleSubmit(e) {
       e.preventDefault()

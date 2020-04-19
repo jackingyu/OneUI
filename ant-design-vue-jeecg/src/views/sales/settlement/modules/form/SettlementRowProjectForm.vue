@@ -21,7 +21,11 @@
       icon="plus"
       @click="newMember"
     >新增行项目</a-button>
-    <row-project-modal :type="this.settlementTypeCode" @submit="getRowData" ref="projectModal" />
+    <row-project-modal
+      :type="this.salesSettlementTypeCode"
+      @submit="getRowData"
+      ref="projectModal"
+    />
   </a-form>
 </template>
 
@@ -32,9 +36,9 @@ import { formItems } from '../formOptions'
 import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
 
 let getColumns = thiz => {
-  let settlementTypeCode = thiz.settlementTypeCode
+  let salesSettlementTypeCode = thiz.salesSettlementTypeCode
   return formItems
-    .filter(item => !item.settlementType || item.settlementType == settlementTypeCode)
+    .filter(item => !item.settlementType || item.settlementType == salesSettlementTypeCode)
     .filter(item => !item.noTable)
     .map(item => {
       let customRender = null
@@ -76,7 +80,7 @@ export default {
     return {
       form: this.$form.createForm(this),
       loading: false,
-      settlementTypeCode: '',
+      salesSettlementTypeCode: '',
       model: {},
       dicts: {},
       data: []
@@ -113,7 +117,7 @@ export default {
       // })
     },
     settlementType(v) {
-      this.settlementTypeCode = v
+      this.salesSettlementTypeCode = v
     },
     edit(rows) {
       this.data = rows.map(item => {
@@ -155,13 +159,13 @@ export default {
       }
     },
     newMember() {
-      if (!this.settlementTypeCode) {
+      if (!this.salesSettlementTypeCode) {
         this.$message.error('请先选择结算类型')
         return
       }
       this.$refs.projectModal.add({
         ...this.model,
-        settlementTypeCode: this.settlementTypeCode
+        salesSettlementTypeCode: this.salesSettlementTypeCode
       })
     },
     remove(key) {

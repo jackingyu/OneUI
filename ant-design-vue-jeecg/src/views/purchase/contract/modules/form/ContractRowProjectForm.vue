@@ -24,6 +24,7 @@
       style="width: 100%; margin-top: 16px; margin-bottom: 8px"
       type="dashed"
       icon="plus"
+      v-if="!model.id || model.editable"
       @click="newMember"
     >新增行项目</a-button>
     <row-project-modal :type="this.contractType" @submit="getRowData" ref="projectModal" />
@@ -86,12 +87,12 @@ export default {
       contractType: '',
       banks: [],
       dicts: {},
+      model: {},
       data: []
     }
   },
   mounted() {
     this.initDictConfig()
-    
   },
   watch: {
     data(n) {
@@ -103,12 +104,14 @@ export default {
       let cl = getColumns(this)
       return [
         ...cl,
-        {
-          title: '操作',
-          key: 'action',
-          width: 120,
-          scopedSlots: { customRender: 'operation' }
-        }
+        !this.model.id || this.model.editable
+          ? {
+              title: '操作',
+              key: 'action',
+              width: 120,
+              scopedSlots: { customRender: 'operation' }
+            }
+          : {}
       ]
     }
   },
@@ -123,7 +126,11 @@ export default {
     contract(v) {
       this.contractType = v
     },
-    edit(rows) {
+    edit(model = {}) {
+      this.model = {
+        ...model
+      }
+      let rows = model.purchaseContractItems
       this.data = rows.map(item => {
         return {
           ...item,

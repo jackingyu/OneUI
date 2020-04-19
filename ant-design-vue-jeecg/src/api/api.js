@@ -101,6 +101,8 @@ const loadCategoryData = (params) => getAction("/sys/category/loadAllData", para
 import Rest, { sloter } from '@/config/api-mapper.js'
 
 const getFiscalyear = (params) => getAction(Rest.GET_FISCALYEAR.url, params);
+const closeFiscalyear = (params) => postAction(Rest.CLOSE_FISCALYEAR.url, params);
+const openFiscalyear = (params) => postAction(Rest.OPEN_FISCALYEAR.url, params);
 const getMaterials = (params) => getAction(Rest.GET_MATERIALS.url, params);
 const createMaterial = (params) => postAction(Rest.CREATE_MATERIAL.url, params);
 const updateMaterial = (params) => putAction(Rest.UPDATE_MATERIAL.url, params);
@@ -109,6 +111,7 @@ const getContracts = (params) => getAction(Rest.GET_CONTRACTS.url, params);
 const getContract = (id, params) => getAction(sloter(Rest.GET_CONTRACT.url, id), params);
 const createContract = (params) => postAction(Rest.CREATE_CONTRACT.url, params);
 const updateContract = (params) => putAction(Rest.UPDATE_CONTRACT.url, params);
+const approveContract = (params) => putAction(Rest.PUT_APPROVE_CONTRACT.url, params);
 
 const getSaleContracts = (params) => getAction(Rest.GET_SALECONTRACTS.url, params);
 const getSaleContract = (id, params) => getAction(sloter(Rest.GET_SALECONTRACT.url, id), params);
@@ -172,6 +175,8 @@ const updateSaleSettlement = (params) => putAction(Rest.UPDATE_SALESETTLEMENT.ur
 
 
 const getCompanies = (params) => getAction(Rest.GET_COMPANIES.url, params);
+const updateCompany = (params) => putAction(Rest.UPDATE_COMPANY.url, params);
+const getCompany = (id, params) => getAction(sloter(Rest.GET_COMPANY.url, id), params);
 
 // ✨ Bussiness END - by Fred
 
@@ -225,6 +230,8 @@ export {
   loadCategoryData,
   // ✨ Bussiness Start - by Fred
   getFiscalyear,
+  closeFiscalyear,
+  openFiscalyear,
   getMaterials,
   createMaterial,
   updateMaterial,
@@ -235,10 +242,13 @@ export {
   updateVendor,
   getSuplier,
   getCompanies,
+  updateCompany,
+  getCompany,
   getContracts,
   getContract,
   createContract,
   updateContract,
+  approveContract,
   getCustomer,
   getCustomers,
   createCustomer,
@@ -275,7 +285,7 @@ export {
   getSaleSettlements,
   getSaleSettlement,
   createSaleSettlement,
-  updateSaleSettlement
+  updateSaleSettlement,
   // ✨ Bussiness END - by Fred
 }
 
