@@ -22,10 +22,14 @@
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
         <a-button type="info" @click="back('/purchase/settlements')">返回供应商结算列表</a-button>
-        <a-divider type="vertical" />
-        <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
-        <a-divider type="vertical" />
-        <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
+        <template v-if="!!model.id && !!model.allowedToApprove">
+          <a-divider type="vertical" />
+          <a-button type="primary" @click="e=>validate(true)" :loading="loading">提交审批</a-button>
+        </template>
+        <template v-if="!model.id || !!model.editable">
+          <a-divider type="vertical" />
+          <a-button type="info" @click="e=>validate(false)" :loading="loading">暂存</a-button>
+        </template>
       </footer-tool-bar>
     </div>
   </page-view>
@@ -40,7 +44,7 @@ import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getSettlements, getSettlement, createSettlement, updateSettlement } from '@/api/api'
+import { getSettlements, approveSettlement, getSettlement, createSettlement, updateSettlement } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import FormPageActionMixin from '@/mixins/FormPageActionMixin'
@@ -84,28 +88,31 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getSettlement(id).then(res => {
-          if (res.success) {
-            this.model = {
-              ...res.result,
-              id
-            }
-            this.$refs.settlement.edit(this.model)
-            let items = this.model.vendorSettlementItems.map(item => {
-              return {
-                ...item,
-                key: item.id,
-                materialName: item.materialName
-              }
-            })
-            this.$refs.rowproj.edit(items)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        this.$loadData(id)
       } else {
         this.$refs.settlement.add()
       }
+    },
+    $loadData(id) {
+      getSettlement(id).then(res => {
+        if (res.success) {
+          this.model = {
+            ...res.result,
+            id
+          }
+          this.$refs.settlement.edit(this.model)
+          let items = this.model.vendorSettlementItems.map(item => {
+            return {
+              ...item,
+              key: item.id,
+              materialName: item.materialName
+            }
+          })
+          this.$refs.rowproj.edit(items)
+        } else {
+          this.$message.warning(res.message)
+        }
+      })
     },
     formChange(rows) {
       let totalAmount = rows.map(item => item.totalAmount).reduce((n, p) => Number(n) + Number(p), 0)
@@ -142,8 +149,36 @@ export default {
           this.loading = false
         })
     },
+    approve(postData) {
+      this.loading = true
+      if (!this.model.id) {
+        return
+      }
+      postData = {
+        ...this.model,
+        ...postData,
+        id: this.model.id
+      }
+      approveSettlement(postData)
+        .then(res => {
+          if (res.success) {
+            this.$loadData(this.model.id)
+            this.$message.success(res.message)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
     // 最终全页面提交
-    validate() {
+    validate(isApprove) {
+      const canDo =
+        (isApprove && this.model.allowedToApprove) || (!isApprove && (!this.model.id || this.model.editable))
+      if (!canDo) {
+        return
+      }
       let that = this
       that.$refs.settlement.form.validateFields((err, values) => {
         console.info('settlement', values)
@@ -181,7 +216,11 @@ export default {
                 }
               }
               postData.vendorSettlementItems = arData
-              that.submitSettlement(postData)
+              if (!isApprove) {
+                that.submitSettlement(postData)
+              } else {
+                that.approve(postData)
+              }
             }
           })
         }

@@ -7,6 +7,8 @@
       <!-- table -->
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
+        <a-button type="info" @click="back('/sales/invoices')">返回销售开票列表</a-button>
+        <a-divider type="vertical" />
         <a-button type="primary" @click="validate" :loading="loading">{{$t('actions.submit')}}</a-button>
         <!-- <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>-->

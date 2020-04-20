@@ -138,7 +138,6 @@
 </template>
 
 <script>
-import { httpAction } from '@/api/manage'
 import pick from 'lodash.pick'
 import moment from 'moment'
 import { getMaterials } from '@/api/api'
@@ -236,7 +235,7 @@ export default {
     },
     diabledFunction({ valueKey }) {
       if (this.model.id) {
-        return ['salesContractCode','contractTypeCode'].indexOf(valueKey) != -1
+        return ['salesContractCode', 'contractTypeCode'].indexOf(valueKey) != -1
       }
       return false
     },

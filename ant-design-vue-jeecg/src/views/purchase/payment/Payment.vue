@@ -14,10 +14,16 @@
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
         <a-button type="info" @click="back('/purchase/payments')">返回供应商付款列表</a-button>
-        <a-divider type="vertical" />
-        <a-button type="primary" @click="validate" :loading="loading">提交</a-button>
         <!-- <a-divider type="vertical" />
         <a-button type="info" @click="validate" :loading="loading">暂存</a-button>-->
+        <template v-if="!!model.id && !!model.allowedToApprove">
+          <a-divider type="vertical" />
+          <a-button type="primary" @click="e=>validate(true)" :loading="loading">提交审批</a-button>
+        </template>
+        <template v-if="!model.id || !!model.editable">
+          <a-divider type="vertical" />
+          <a-button type="info" @click="e=>validate(false)" :loading="loading">暂存</a-button>
+        </template>
       </footer-tool-bar>
     </div>
   </page-view>
@@ -30,7 +36,13 @@ import PaymentForm from './modules/form/PaymentForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getVendorPayment, getVendorPayments, createVendorPayment, updateVendorPayment } from '@/api/api'
+import {
+  getVendorPayment,
+  getVendorPayments,
+  createVendorPayment,
+  updateVendorPayment,
+  approveVendorPayment
+} from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import BankForm from './modules/form/BankForm'
@@ -64,22 +76,25 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getVendorPayment(id).then(res => {
-          if (res.success) {
-            this.model = res.result
-            this.$refs.payform.edit(res.result)
-            // let bankModel = pick(res.result, 'bankId', 'bankName', 'bankAccountId', 'subBranchId')
-            // bankModel.bankAccount = bankModel.bankAccountId
-            // bankModel.key = -new Date()
-            // delete bankModel.bankAccountId
-            // this.$refs.bank.edit([bankModel])
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        this.$loadData(id)
       } else {
         this.$refs.payform.add()
       }
+    },
+    $loadData(id) {
+      getVendorPayment(id).then(res => {
+        if (res.success) {
+          this.model = res.result
+          this.$refs.payform.edit(res.result)
+          // let bankModel = pick(res.result, 'bankId', 'bankName', 'bankAccountId', 'subBranchId')
+          // bankModel.bankAccount = bankModel.bankAccountId
+          // bankModel.key = -new Date()
+          // delete bankModel.bankAccountId
+          // this.$refs.bank.edit([bankModel])
+        } else {
+          this.$message.warning(res.message)
+        }
+      })
     },
     submitPayment(postData) {
       this.loading = true
@@ -110,8 +125,36 @@ export default {
           this.loading = false
         })
     },
+    approve(postData) {
+      this.loading = true
+      if (!this.model.id) {
+        return
+      }
+      postData = {
+        ...this.model,
+        ...postData,
+        id: this.model.id
+      }
+      approveVendorPayment(postData)
+        .then(res => {
+          if (res.success) {
+            this.$loadData(this.model.id)
+            this.$message.success(res.message)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
     // 最终全页面提交
-    validate() {
+    validate(isApprove) {
+      const canDo =
+        (isApprove && this.model.allowedToApprove) || (!isApprove && (!this.model.id || this.model.editable))
+      if (!canDo) {
+        return
+      }
       let that = this
       that.$refs.payform.form.validateFields((err, values) => {
         console.info('payform', values)
@@ -121,7 +164,11 @@ export default {
             paymentDate: values.paymentDate + ' 00:00:00'
           }
           delete postData.accounts
-          this.submitPayment(postData)
+          if (!isApprove) {
+            that.submitPayment(postData)
+          } else {
+            that.approve(postData)
+          }
           // this.$refs.bank.form.validateFields((err2, {data}) => {
           //   let banks
           //   if (data instanceof Array) {

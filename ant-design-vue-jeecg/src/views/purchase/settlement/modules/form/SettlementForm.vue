@@ -81,6 +81,9 @@
             />
           </a-form-item>
         </a-col>
+        <a-col v-if="model.status_dictText" :lg="8" :md="12" :sm="24">
+          <a-form-item label="状态">{{model.status_dictText}}</a-form-item>
+        </a-col>
       </a-row>
     </detail-list>
     <a-form-item v-if="showSubmit">
@@ -94,7 +97,7 @@ import pick from 'lodash.pick'
 import moment from 'moment'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import DetailList from '@/components/tools/DetailList'
-import { getVendors, getProjects ,getFiscalyear} from '@/api/api'
+import { getVendors, getProjects, getFiscalyear } from '@/api/api'
 
 import JDate from '@/components/jeecg/JDate'
 export default {
@@ -164,7 +167,7 @@ export default {
         .then(res => {
           if (res.success) {
             this.form.setFieldsValue({
-              fiscalYear:res.result.fiscalYear
+              fiscalYear: res.result.fiscalYear
             })
           }
         })

@@ -9,16 +9,20 @@
           <detail-list title="合同附件">
             <attach-files-form ref="rowfiles" :showSubmit="false" />
           </detail-list>
-        </template> -->
+        </template>-->
       </a-card>
 
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
         <a-button type="info" @click="back('/sales/contracts')">返回销售合同列表</a-button>
-        <a-divider type="vertical" />
-        <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
-        <a-divider type="vertical" />
-        <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
+        <template v-if="!!model.id && !!model.allowedToApprove">
+          <a-divider type="vertical" />
+          <a-button type="primary" @click="e=>validate(true)" :loading="loading">提交审批</a-button>
+        </template>
+        <template v-if="!model.id || !!model.editable">
+          <a-divider type="vertical" />
+          <a-button type="info" @click="e=>validate(false)" :loading="loading">暂存</a-button>
+        </template>
       </footer-tool-bar>
     </div>
   </page-view>
@@ -31,7 +35,13 @@ import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import DetailList from '@/components/tools/DetailList'
 import PageView from '@comp/layouts/PageView'
-import { getSaleContract, getSaleContracts, createSaleContract, updateSaleContract } from '@/api/api'
+import {
+  getSaleContract,
+  approveSaleContract,
+  getSaleContracts,
+  createSaleContract,
+  updateSaleContract
+} from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import FormComposer from '@/views/sales/contract/modules/FormComposer'
@@ -110,13 +120,44 @@ export default {
           this.loading = false
         })
     },
+    approve(postData) {
+      this.loading = true
+      if (!this.model.id) {
+        return
+      }
+      postData = {
+        ...this.model,
+        ...postData,
+        id: this.model.id
+      }
+      approveSaleContract(postData)
+        .then(res => {
+          if (res.success) {
+            this.$loadData(this.model.id)
+            this.$message.success(res.message)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
     // 最终全页面提交
-    validate() {
+    validate(isApprove) {
+      const canDo =
+        (isApprove && this.model.allowedToApprove) || (!isApprove && (!this.model.id || this.model.editable))
+      if (!canDo) {
+        return
+      }
       let that = this
       that.$refs.contract.form.validateFields((err, values) => {
-        console.info('contract', values)
         if (!err) {
-          that.submitContract(values)
+          if (!isApprove) {
+            that.submitContract(values)
+          } else {
+            that.approve(values)
+          }
         }
       })
     }

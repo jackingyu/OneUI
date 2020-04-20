@@ -42,7 +42,7 @@ export const formItems = [
   },
   {
     label: '状态',
-    valueKey: 'status',
+    valueKey: 'status_dictText',
     inputType: 'label',
     readOnly: true,
     baseField: true,
@@ -139,15 +139,15 @@ export const formItems = [
     contractType: ''
   },
   {
-    label: '延期付款约定',
-    valueKey: 'overduePaymentTerms',
+    label: '支付方式',
+    valueKey: 'paymentMethodCode',
     inputType: 'input',
     required: true,
     contractType: 'st',
   },
   {
-    label: '支付方式',
-    valueKey: 'paymentMethodCode',
+    label: '延期付款约定',
+    valueKey: 'overduePaymentTerms',
     inputType: 'input',
     required: true,
     contractType: 'st',

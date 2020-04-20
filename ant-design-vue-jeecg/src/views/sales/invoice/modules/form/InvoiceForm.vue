@@ -42,7 +42,7 @@
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="合同实施内容">
-            <a-input
+            <a-textarea
               placeholder="请输入合同实施内容"
               v-decorator="[
               'contractContent',{rules:[{ required: true, message: '请输入合同实施内容'}]}
@@ -136,7 +136,7 @@
 
         <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="备注">
-            <a-input placeholder="请输入备注" v-decorator="[
+            <a-textarea placeholder="请输入备注" v-decorator="[
               'comments'
             ]" />
           </a-form-item>

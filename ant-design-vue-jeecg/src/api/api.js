@@ -101,8 +101,9 @@ const loadCategoryData = (params) => getAction("/sys/category/loadAllData", para
 import Rest, { sloter } from '@/config/api-mapper.js'
 
 const getFiscalyear = (params) => getAction(Rest.GET_FISCALYEAR.url, params);
-const closeFiscalyear = (params) => postAction(Rest.CLOSE_FISCALYEAR.url, params);
-const openFiscalyear = (params) => postAction(Rest.OPEN_FISCALYEAR.url, params);
+const getFiscalyearByCompany = (params) => getAction(Rest.GET_FISCALYEAR_BY_COMPANY.url, params);
+const closeFiscalyear = (params) => postAction(Rest.CLOSE_FISCALYEAR.url + `?${toQuery(params)}`, params);
+const openFiscalyear = (params) => postAction(Rest.OPEN_FISCALYEAR.url + `?${toQuery(params)}`, params);
 const getMaterials = (params) => getAction(Rest.GET_MATERIALS.url, params);
 const createMaterial = (params) => postAction(Rest.CREATE_MATERIAL.url, params);
 const updateMaterial = (params) => putAction(Rest.UPDATE_MATERIAL.url, params);
@@ -117,6 +118,7 @@ const getSaleContracts = (params) => getAction(Rest.GET_SALECONTRACTS.url, param
 const getSaleContract = (id, params) => getAction(sloter(Rest.GET_SALECONTRACT.url, id), params);
 const createSaleContract = (params) => postAction(Rest.CREATE_SALECONTRACT.url, params);
 const updateSaleContract = (params) => putAction(Rest.UPDATE_SALECONTRACT.url, params);
+const approveSaleContract = (params) => putAction(Rest.APPROVE_SALECONTRACT.url, params);
 
 const getBankAccounts = (params) => getAction(Rest.GET_BANK_ACCOUNTS.url, params);
 
@@ -144,11 +146,13 @@ const getVendorPayment = (id, params) => getAction(sloter(Rest.GET_VENDORPAYMENT
 const getVendorPayments = (params) => getAction(Rest.GET_VENDORPAYMENTS.url, params);
 const createVendorPayment = (params) => postAction(Rest.CREATE_VENDORPAYMENT.url, params);
 const updateVendorPayment = (params) => putAction(Rest.UPDATE_VENDORPAYMENT.url, params);
+const approveVendorPayment = (params) => putAction(Rest.APPROVE_VENDORPAYMENT.url, params);
 
 const getSettlements = (params) => getAction(Rest.GET_SETTLEMENTS.url, params);
 const getSettlement = (id, params) => getAction(sloter(Rest.GET_SETTLEMENT.url, id), params);
 const createSettlement = (params) => postAction(Rest.CREATE_SETTLEMENT.url, params);
 const updateSettlement = (params) => putAction(Rest.UPDATE_SETTLEMENT.url, params);
+const approveSettlement = (params) => putAction(Rest.APPROVE_SETTLEMENT.url, params);
 
 const getSaleInvoices = (params) => getAction(Rest.GET_SALEINVOICES.url, params);
 const getSaleInvoice = (id, params) => getAction(sloter(Rest.GET_SALEINVOICE.url, id), params);
@@ -175,8 +179,18 @@ const updateSaleSettlement = (params) => putAction(Rest.UPDATE_SALESETTLEMENT.ur
 
 
 const getCompanies = (params) => getAction(Rest.GET_COMPANIES.url, params);
-const updateCompany = (params) => putAction(Rest.UPDATE_COMPANY.url, params);
+const updateCompany = (data) => putAction(Rest.UPDATE_COMPANY.url, data);
 const getCompany = (id, params) => getAction(sloter(Rest.GET_COMPANY.url, id), params);
+
+
+function toQuery(params = {}) {
+  let queries = [];
+  for (let key in params) {
+    queries.push(`${key}=${params[key]}`)
+  }
+  return queries.join('&')
+}
+
 
 // ✨ Bussiness END - by Fred
 
@@ -230,6 +244,7 @@ export {
   loadCategoryData,
   // ✨ Bussiness Start - by Fred
   getFiscalyear,
+  getFiscalyearByCompany,
   closeFiscalyear,
   openFiscalyear,
   getMaterials,
@@ -260,10 +275,12 @@ export {
   getVendorPayments,
   createVendorPayment,
   updateVendorPayment,
+  approveVendorPayment,
   getSettlements,
   getSettlement,
   createSettlement,
   updateSettlement,
+  approveSettlement,
   getInvoices,
   getInvoice,
   createInvoice,
@@ -282,6 +299,7 @@ export {
   getSaleContract,
   createSaleContract,
   updateSaleContract,
+  approveSaleContract,
   getSaleSettlements,
   getSaleSettlement,
   createSaleSettlement,

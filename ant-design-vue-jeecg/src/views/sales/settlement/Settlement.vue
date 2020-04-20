@@ -43,6 +43,7 @@ import PageView from '@comp/layouts/PageView'
 import { getSaleSettlements, getSaleSettlement, createSaleSettlement, updateSaleSettlement } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import moment from 'moment'
 export default {
   name: 'Settlement',
   components: {
@@ -105,7 +106,8 @@ export default {
     submitSettlement(postData) {
       this.loading = true
       let promises
-      if (postData.id) {
+      if (this.model.id) {
+        postData.id = this.model.id
         promises = updateSaleSettlement(postData)
       } else {
         promises = createSaleSettlement(postData)
@@ -144,6 +146,9 @@ export default {
               }
               arData.forEach(element => {
                 delete element.key
+                if (element.clearPeriod) {
+                  element.clearPeriod = moment(element.clearPeriod + '-01').format('M')
+                }
               })
               let typeFields = that.rowFields
               let fields = typeFields.filter(item => !item.justShow).map(item => item.valueKey)

@@ -23,7 +23,7 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
+        <a-col v-show="!!model.id" :lg="8" :md="12" :sm="24">
           <a-form-item label="当前累计欠款">
             <a-input
               placeholder="当前累计欠款"
@@ -32,7 +32,7 @@
               'paymentdebtAmount'
             ]"
             />
-            <div style="min-height:3rem">{{this.form.getFieldValue('paymentdebtAmount')}}</div>
+            <div style="min-height:3rem">{{this.form.getFieldValue('paymentdebtAmount')||0}}</div>
           </a-form-item>
         </a-col>
         <a-col :lg="8" :md="12" :sm="24">
@@ -40,6 +40,9 @@
             <a-input hidden v-decorator="['fiscalYear']" />
             {{this.form.getFieldValue('fiscalYear')}}
           </a-form-item>
+        </a-col>
+        <a-col v-if="model.status_dictText" :lg="8" :md="12" :sm="24">
+          <a-form-item label="状态">{{model.status_dictText}}</a-form-item>
         </a-col>
       </a-row>
     </detail-list>
@@ -164,7 +167,7 @@ export default {
     return {
       form: this.$form.createForm(this),
       contractType: 'Null',
-      model: null,
+      model: {},
       banks: [],
       projects: [],
       FieldsSet: {

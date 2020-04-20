@@ -30,28 +30,25 @@
         <a-col :span="24">
           <a-form-item label="财务年度">
             <!-- fiscalYear -->
-            <a-input-group compact>
-              <a-row :gutter="16">
-                <a-col :span="8">
-                  <a-input v-decorator="['fiscalYear']" />
-                </a-col>
-                <a-col :span="16" :offset="0">
-                  <a-button
-                    style="display:inline"
-                    type="danger"
-                    :loading="closeLoading"
-                    @click="closeFiscal"
-                    ghost
-                  >关闭财年</a-button>
-                  <a-button
-                    style="display:inline;margin-left:16px"
-                    :loading="openLoading"
-                    @click="openFiscal"
-                    type="primary"
-                  >开启财年</a-button>
-                </a-col>
-              </a-row>
-            </a-input-group>
+            <a-row :gutter="16">
+              <a-col :span="8">
+                <span>{{fiscalYear?fiscalYear:'未开启财年'}}</span>
+
+                <a-button
+                  style="display:inline;margin-left:16px"
+                  :loading="openLoading"
+                  @click="openFiscal"
+                  type="primary"
+                >开启财年</a-button>
+                <a-button
+                  style="display:inline;margin-left:16px"
+                  type="danger"
+                  :loading="closeLoading"
+                  @click="closeFiscal"
+                  ghost
+                >{{fiscalClosed?'已关闭':'关闭财年'}}</a-button>
+              </a-col>
+            </a-row>
           </a-form-item>
         </a-col>
       </a-row>
@@ -67,7 +64,7 @@ import pick from 'lodash.pick'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 
 import DetailList from '@/components/tools/DetailList'
-import { getFiscalyear, closeFiscalyear, openFiscalyear } from '@/api/api'
+import { getFiscalyearByCompany, closeFiscalyear, openFiscalyear } from '@/api/api'
 import JDate from '@/components/jeecg/JDate'
 import FormFieldMixin from '@/mixins/FormFieldMixin'
 import ValidationMixin from '@/mixins/ValidationMixin'
@@ -91,6 +88,8 @@ export default {
       contractType: 'Null',
       closeLoading: false,
       openLoading: false,
+      fiscalClosed: false,
+      fiscalYear: void 0,
       model: {},
       banks: [],
       vendors: [],
@@ -107,9 +106,6 @@ export default {
       }
     }
   },
-  created() {
-    this.getFiscalyear()
-  },
   methods: {
     add() {
       this.edit({})
@@ -117,6 +113,7 @@ export default {
     edit(record) {
       this.model = record
       let that = this
+      this.getFiscalyear()
       this.$nextTick(() => {
         that.form.setFieldsValue({
           ...pick(record, 'id', 'fiscalYear')
@@ -124,10 +121,14 @@ export default {
       })
     },
     openFiscal() {
+      // let fiscalYear = this.form.getFieldValue('fiscalYear')
+      // if (!/^20\d{2}$/.test(fiscalYear)) {
+      //   this.$message.warning('请输入正确的年份')
+      //   return
+      // }
       this.openLoading = true
-      let fiscalYear = this.form.getFieldValue('fiscalYear')
       openFiscalyear({
-        fiscalYear,
+        // fiscalYear,
         companyId: this.model.id
       })
         .then(res => {
@@ -144,7 +145,7 @@ export default {
     },
     closeFiscal() {
       this.closeLoading = true
-      let fiscalYear = this.form.getFieldValue('fiscalYear')
+      // let fiscalYear = this.form.getFieldValue('fiscalYear')
       closeFiscalyear({
         companyId: this.model.id
       })
@@ -161,15 +162,20 @@ export default {
         })
     },
     getFiscalyear() {
-      getFiscalyear()
-        .then(res => {
-          if (res.success) {
-            this.form.setFieldsValue({
-              fiscalYear: res.result.fiscalYear
-            })
-          }
-        })
-        .finally(() => {})
+      if (!!this.model.id) {
+        getFiscalyearByCompany({ companyId: this.model.id })
+          .then(res => {
+            if (res.success) {
+              this.fiscalYear = res.result.fiscalYear
+              // this.form.setFieldsValue({
+              //   fiscalYear: res.result.fiscalYear
+              // })
+            } else {
+              this.fiscalClosed = true
+            }
+          })
+          .finally(() => {})
+      }
     },
     fetchCustomerList(word) {
       this.request({
