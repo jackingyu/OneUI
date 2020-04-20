@@ -207,14 +207,15 @@ export default {
       },
       col: 3,
       confirmLoading: false,
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this, { name: 'sale_contract' })
     }
+  },
+  mounted() {
+    this.edit(this.model || {})
   },
   methods: {
     add(num) {
-      this.edit({
-        itemNo: num
-      })
+      this.edit({})
     },
     edit(record) {
       this.form.resetFields()
@@ -231,6 +232,9 @@ export default {
       }
       this.$nextTick(() => {
         this.form.setFieldsValue(this.model)
+        setTimeout(() => {
+          this.form.setFieldsValue(this.model)
+        }, 100)
       })
     },
     diabledFunction({ valueKey }) {

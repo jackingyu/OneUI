@@ -1,14 +1,14 @@
 export const formItems = [
-  {
-    label: '项目',
-    valueKey: 'projectId',
-    inputType: 'select',
-    required: true,
-    settlementType: '',
-    evalueTable: function (kv) {
-      return kv.projectId_dictText
-    }
-  },
+  // {
+  //   label: '项目',
+  //   valueKey: 'projectId',
+  //   inputType: 'select',
+  //   required: true,
+  //   settlementType: '',
+  //   evalueTable: function (kv) {
+  //     return kv.projectId_dictText
+  //   }
+  // },
   {
     label: '物料名称',
     valueKey: 'materialId',
