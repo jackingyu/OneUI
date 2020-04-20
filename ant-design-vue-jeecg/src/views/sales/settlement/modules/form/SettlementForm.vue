@@ -149,25 +149,24 @@ export default {
         }
       }
       this.$nextTick(() => {
-        that.form.setFieldsValue(pick(this.model, 'id', 'contractCode', 'contractTitle', 'projectId'))
-        if (this.model.salesSettlementTypeCode) {
-          that.form.setFieldsValue({
-            salesSettlementTypeCode: '' + this.model.salesSettlementTypeCode
-          })
+        that.form.setFieldsValue(
+          pick(
+            this.model,
+            'comments',
+            'bidAmount',
+            'customerId_dictText',
+            'salesSettlementTypeCode',
+            'settlementTime',
+            'customerId',
+            'lateFee',
+            'id',
+            'settlementAmount',
+            'projectId',
+            'fiscalYear'
+          )
+        )
+        if (this.model.salesSettlementTypeCode != undefined) {
           that.salesSettlementTypeCodeChange(this.model.salesSettlementTypeCode)
-        }
-        let vendor = this.model.vendor
-        if (vendor) {
-          that.form.setFieldsValue({
-            contactPhone: vendor.contactPhone,
-            contactPerson: vendor.contactPerson,
-            vendorId: vendor.id != undefined ? '' + vendor.id : ''
-          })
-        }
-        if (this.model.beginDate) {
-          that.form.setFieldsValue({
-            dateSpan: [moment(this.model.beginDate), moment(this.model.endDate)]
-          })
         }
       })
     },

@@ -16,6 +16,10 @@ export default {
     url: `/finance/fiscalyear`,
     method: 'get'
   },
+  GET_FISCALYEAR_BY_COMPANY: {
+    url: `/finance/fiscalyear/bycompany`,
+    method: 'get'
+  },
   CLOSE_FISCALYEAR: {
     url: `/finance/fiscalyear/close`,
     method: 'POST'
@@ -169,6 +173,10 @@ export default {
     url: '/vendorsettlements',
     method: 'PUT'
   },
+  APPROVE_SETTLEMENT: {
+    url: '/vendorsettlements/approve',
+    method: 'PUT'
+  },
   //---- 供应商付款
   GET_VENDORPAYMENT: {
     url: '/vendorpayments/%@',
@@ -177,6 +185,10 @@ export default {
   GET_VENDORPAYMENTS: {
     url: '/vendorpayments',
     method: 'GET'
+  },
+  APPROVE_VENDORPAYMENT: {
+    url: '/vendorpayments/approve',
+    method: 'put'
   },
   CREATE_VENDORPAYMENT: {
     url: '/vendorpayments',
@@ -273,6 +285,10 @@ export default {
   },
   UPDATE_SALECONTRACT: {
     url: '/salescontracts',
+    method: 'PUT'
+  },
+  APPROVE_SALECONTRACT: {
+    url: '/salescontracts/approve',
     method: 'PUT'
   },
 }

@@ -116,7 +116,7 @@
               <template v-else-if="item.inputType=='month'">
                 <a-month-picker
                   :trigger-change="true"
-                  format="YYYY-MM"
+                  format="M月"
                   :placeholder="`请选择${item.label}`"
                   style="width:100%"
                   v-decorator="[item.valueKey,{rules: [{ required: item.required, message: '请选择'+item.label}]}]"
