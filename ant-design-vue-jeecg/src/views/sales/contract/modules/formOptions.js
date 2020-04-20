@@ -117,7 +117,7 @@ export const formItems = [
   },
   {
     label: '税票约定',
-    valueKey: 'invoiceAgreement',
+    valueKey: 'invoiceAgreementCode',
     inputType: 'dict',
     dict: 'invoice_agreement',
     required: true,
@@ -141,8 +141,9 @@ export const formItems = [
   {
     label: '支付方式',
     valueKey: 'paymentMethodCode',
-    inputType: 'input',
+    inputType: 'dict',
     required: true,
+    dict: 'payment_method',
     contractType: 'st',
   },
   {
