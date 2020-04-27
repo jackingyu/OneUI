@@ -291,4 +291,13 @@ export default {
     url: '/salescontracts/approve',
     method: 'PUT'
   },
+  //----- report
+  GET_VENDOR_REPORT: {
+    url: '/report/vendors',
+    method: 'GET'
+  },
+  GET_CUSTOMER_REPORT: {
+    url: '/report/customers',
+    method: 'GET'
+  },
 }
