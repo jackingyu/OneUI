@@ -30,7 +30,7 @@
       <a-col :lg="8" :md="8" :sm="24">
         <a-form-item label="供应商分组">
           <j-dict-select-tag
-            v-decorator="[ 'vendorGroupCode', {rules: [{ required: true, message: '请选择管理员'}]} ]"
+            v-decorator="[ 'vendorGroupCode', {rules: [{ required: true, message: '请选择供应商分组'}]} ]"
             :triggerChange="true"
             placeholder="请选择供应商分组"
             dictCode="vendor_group"

@@ -123,7 +123,7 @@ export default {
         {
           title: '结算总价',
           align: 'center',
-          dataIndex: 'amount'
+          dataIndex: 'settlementAmount'
         },
         {
           title: '结算日期',

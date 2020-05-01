@@ -22,10 +22,15 @@
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
         <a-button type="info" @click="back('/sales/settlements')">返回销售结算列表</a-button>
-        <a-divider type="vertical" />
-        <a-button type="primary" @click="validate" :loading="loading">提交审批</a-button>
-        <a-divider type="vertical" />
-        <a-button type="info" @click="validate" :loading="loading">暂存</a-button>
+
+        <template v-if="!!model.id && !!model.allowedToApprove">
+          <a-divider type="vertical" />
+          <a-button type="primary" @click="e=>validate(true)" :loading="loading">提交审批</a-button>
+        </template>
+        <template v-if="!model.id || !!model.editable">
+          <a-divider type="vertical" />
+          <a-button type="info" @click="e=>validate(false)" :loading="loading">暂存</a-button>
+        </template>
       </footer-tool-bar>
     </div>
   </page-view>
@@ -40,9 +45,16 @@ import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getSaleSettlements, getSaleSettlement, createSaleSettlement, updateSaleSettlement } from '@/api/api'
+import {
+  approveSaleSettlement,
+  getSaleSettlements,
+  getSaleSettlement,
+  createSaleSettlement,
+  updateSaleSettlement
+} from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 import moment from 'moment'
 export default {
   name: 'Settlement',
@@ -54,6 +66,7 @@ export default {
     AttachFilesForm,
     DetailList
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       cType: '',
@@ -82,26 +95,52 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getSaleSettlement(id).then(res => {
-          if (res.success) {
-            this.model = {
-              ...res.result,
-              id
-            }
-            this.$refs.settlement.edit(this.model)
-            this.$refs.rowproj.edit(res.result.salesBillingDocumentItems)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        this.$loadData(id)
       } else {
         this.$refs.settlement.add()
       }
+    },
+    $loadData(id) {
+      getSaleSettlement(id).then(res => {
+        if (res.success) {
+          this.model = {
+            ...res.result,
+            id
+          }
+          this.$refs.settlement.edit(this.model)
+          this.$refs.rowproj.edit(res.result.salesBillingDocumentItems)
+        } else {
+          this.$message.warning(res.message)
+        }
+      })
     },
     salesSettlementTypeCodeChange(v) {
       this.cType = v
       this.rowFields = formItems.filter(item => !item.settlementType || item.settlementType == v)
       this.$refs.rowproj.settlementType(v)
+    },
+    approve(postData) {
+      this.loading = true
+      if (!this.model.id) {
+        return
+      }
+      postData = {
+        ...this.model,
+        ...postData,
+        id: this.model.id
+      }
+      approveSaleSettlement(postData)
+        .then(res => {
+          if (res.success) {
+            this.$loadData(this.model.id)
+            this.$message.success(res.message)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     submitSettlement(postData) {
       this.loading = true
@@ -115,6 +154,10 @@ export default {
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)
@@ -125,7 +168,12 @@ export default {
         })
     },
     // 最终全页面提交
-    validate() {
+    validate(isApprove) {
+      const canDo =
+        (isApprove && this.model.allowedToApprove) || (!isApprove && (!this.model.id || this.model.editable))
+      if (!canDo) {
+        return
+      }
       let that = this
       that.$refs.settlement.form.validateFields((err, values) => {
         if (!err) {
@@ -165,7 +213,11 @@ export default {
                 }
               }
               postData.salesBillingDocumentItems = arData
-              that.submitSettlement(postData)
+              if (!isApprove) {
+                that.submitSettlement(postData)
+              } else {
+                that.approve(postData)
+              }
             }
           })
         }

@@ -53,7 +53,6 @@
         </a-col>
       </a-row>
     </detail-list>
-    <a-divider style="margin-bottom: 32px" />
     <a-form-item v-if="showSubmit">
       <a-button htmlType="submit">Submit</a-button>
     </a-form-item>
@@ -151,11 +150,11 @@ export default {
       })
         .then(res => {
           if (res.success) {
-            this.getFiscalyear()
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)
           }
+          this.getFiscalyear()
         })
         .finally(() => {
           this.closeLoading = false
@@ -171,7 +170,8 @@ export default {
               //   fiscalYear: res.result.fiscalYear
               // })
             } else {
-              this.fiscalClosed = true
+              // this.fiscalClosed = true
+              this.fiscalYear = ''
             }
           })
           .finally(() => {})

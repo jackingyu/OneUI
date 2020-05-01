@@ -198,6 +198,13 @@ export default {
     },
     edit(record) {
       this.model = { ...record }
+      for (let key in this.model) {
+        let va = this.model[key]
+        if (!isNaN(va) && va != null) {
+          this.model[key] = `${va}`
+        }
+      }
+      this.materialGroupCode = this.model.materialGroupCode
       this.$nextTick(() => {
         this.form.setFieldsValue(
           pick(

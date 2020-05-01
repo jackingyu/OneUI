@@ -269,12 +269,10 @@ export default {
       this.close()
     },
     searchWordSelect(word, key) {
-      if (key == 'materialId') {
-        let code = this.form.getFieldValue('materialGroupCode')
-        this.materialList({
-          materialGroupCode: code,
-          materialName: word ? `*${word}*` : undefined
-        })
+      if (key == 'customerId') {
+         this.fetchCustomerList(word)
+      }else if (key == 'projectId') {
+         this.fetchProjectList(word)
       }
     },
     onSelectChangeWithKey(val, key) {
@@ -289,13 +287,6 @@ export default {
           })
         }
       }
-    },
-    materialList(params) {
-      this.request({
-        key: 'materialId',
-        funcName: 'GetMaterials',
-        params
-      })
     },
     fetchCustomerList(word) {
       this.request({

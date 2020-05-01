@@ -175,7 +175,7 @@ const getSaleSettlements = (params) => getAction(Rest.GET_SALESETTLEMENTS.url, p
 const getSaleSettlement = (id, params) => getAction(sloter(Rest.GET_SALESETTLEMENT.url, id), params);
 const createSaleSettlement = (params) => postAction(Rest.CREATE_SALESETTLEMENT.url, params);
 const updateSaleSettlement = (params) => putAction(Rest.UPDATE_SALESETTLEMENT.url, params);
-
+const approveSaleSettlement = (params) => putAction(Rest.APPROVE_SALESETTLEMENT.url, params);
 
 
 const getCompanies = (params) => getAction(Rest.GET_COMPANIES.url, params);
@@ -304,6 +304,7 @@ export {
   getSaleSettlement,
   createSaleSettlement,
   updateSaleSettlement,
+  approveSaleSettlement,
   // ✨ Bussiness END - by Fred
 }
 
