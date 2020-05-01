@@ -12,7 +12,32 @@ const hookMenu = [
       "keepAlive": false,
       "internalOrExternal": false
     },
-
+  },
+  {
+    "id": "89015b2769fc80643392d04e84ca059d",
+    "path": "/vendor/report",
+    "name": "vendorreport",
+    "component": "stastics/VendorsReportList",
+    "route": "1",
+    "meta": {
+      "title": "供应商总账报表",
+      "icon": "setting",
+      "keepAlive": false,
+      "internalOrExternal": false
+    },
+  },
+  {
+    "id": "89015b27698617643392d04e84ca059d",
+    "path": "/customer/report",
+    "name": "customerreport",
+    "component": "stastics/CustomerReportList",
+    "route": "1",
+    "meta": {
+      "title": "客户总账报表",
+      "icon": "setting",
+      "keepAlive": false,
+      "internalOrExternal": false
+    },
   }
 ]
 let exportedMenu = [];

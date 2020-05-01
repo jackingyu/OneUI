@@ -4,34 +4,10 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
+          <a-col :md="8" :sm="12">
             <a-form-item label="客户名称">
               <j-input placeholder="请输入客户名称" v-model="queryParam.customerName"></j-input>
             </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="12">
-            <!-- <a-form-item label="合同类型">
-              <j-dict-select-tag
-                v-model="queryParam.contractTypeCode"
-                placeholder="请选择合同类型"
-                dictCode="sales_settlement_type"
-              />
-            </a-form-item> -->
-            <a-form-item label="项目名称">
-            <a-select
-              v-model="queryParam.projectId"
-              placeholder="请选择项目"
-              :filterOption="false"
-              :showSearch="true"
-              @search="fetchProjectList"
-            >
-              <a-select-option
-                v-for="(project, index) in FormFieldOptions.projects"
-                :key="index"
-                :value="project.id"
-              >{{project.projectName}}</a-select-option>
-            </a-select>
-          </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -49,10 +25,9 @@
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator" style="border-top: 5px">
+    <!-- <div class="table-operator" style="border-top: 5px">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-    </div>
-
+    </div>-->
     <!-- table区域-begin -->
     <div>
       <a-table
@@ -66,7 +41,6 @@
         :loading="loading"
         @change="handleTableChange"
       >
-        <span slot="date" slot-scope="text, record">{{record.beginDate + '~' + record.endDate}}</span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <!-- <a-divider type="vertical" /> -->
@@ -87,24 +61,21 @@
       </a-table>
     </div>
     <!-- table区域-end -->
-    <!-- <project-modal ref="modalForm" @ok="modalFormOk"></project-modal> -->
   </a-card>
 </template>
 
 <script>
 import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
-// import ProjectModal from './modules/ProjectModal'
 import { putAction } from '@/api/manage'
 import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JInput from '@/components/jeecg/JInput'
-import FormFieldMixin from '@/mixins/FormFieldMixin'
+
 export default {
-  name: 'ContractList',
-  mixins: [JeecgListMixin,FormFieldMixin],
+  name: 'CustomerReportList',
+  mixins: [JeecgListMixin],
   components: {
-    // ProjectModal,
     JInput
   },
   data() {
@@ -113,45 +84,47 @@ export default {
       queryParam: {},
       materialGroups: [],
       oneTimeFlags: [],
-      FieldsSet: {
-        project: {
-          key: 'projects',
-          funcName: 'GetProjects',
-          params: {}
-        }
-      },
       columns: [
-        {
-          title: '项目名称',
-          align: 'center',
-          dataIndex: 'projectId_dictText'
-        },
         {
           title: '客户名称',
           align: 'center',
-          width: 100,
-          dataIndex: 'customerId_dictText'
+          dataIndex: 'customerName'
         },
         {
-          title: '中标总价',
+          title: '财年',
           align: 'center',
-          dataIndex: 'bidAmount'
+          dataIndex: 'year'
         },
         {
-          title: '合同金额',
+          title: '当年开票总额',
           align: 'center',
-          dataIndex: 'contractAmount'
+          dataIndex: 'invoiceAmount',
         },
         {
-          title: '操作',
-          dataIndex: 'action',
-          scopedSlots: { customRender: 'action' },
+          title: '当年收款总额',
           align: 'center',
-          width: 170
+          dataIndex: 'receivedAmount',
+        },
+        {
+          title: '当年结算总额',
+          align: 'center',
+          dataIndex: 'billingAmount',
+        },
+        {
+          title: '上年度未开票结转',
+          align: 'center',
+          dataIndex: 'cfUnbillingAmount',
+          ellipsis: true
+        },
+        {
+          title: '上年度欠款结转',
+          align: 'center',
+          dataIndex: 'cfUnreceivedAmount',
+          ellipsis: true
         }
       ],
       url: {
-        list: Rest.GET_SALECONTRACTS.url
+        list: Rest.GET_CUSTOMER_REPORT.url
       }
     }
   },
@@ -173,24 +146,16 @@ export default {
         }
       })
     },
-    fetchProjectList(word) {
-      this.request({
-        ...this.FieldsSet.project,
-        params: {
-          projectName: word ? `*${word}*` : ''
-        }
-      })
-    },
     handleEdit(record) {
       this.$router.push({
-        path: '/sales/contract',
+        path: '/company/info',
         query: {
           id: record.id
         }
       })
     },
     handleAdd() {
-      this.$router.push({ path: '/sales/contract' })
+      this.$router.push({ path: '/masterdata/customer-info' })
     },
     handleDelete(id) {}
   }
