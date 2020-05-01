@@ -270,6 +270,10 @@ export default {
     url: '/salesbillingdocuments',
     method: 'PUT'
   },
+  APPROVE_SALESETTLEMENT: {
+    url: '/salesbillingdocuments/approve',
+    method: 'PUT'
+  },
   //----  销售合同
   GET_SALECONTRACT: {
     url: '/salescontracts/%@',
