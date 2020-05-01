@@ -67,7 +67,6 @@
       style="width: 100%; margin-top: 16px; margin-bottom: 8px"
       type="dashed"
       icon="plus"
-      v-if="!single ||(single && data.length==0)"
       @click="newMember"
     >新增账号</a-button>
   </a-form>

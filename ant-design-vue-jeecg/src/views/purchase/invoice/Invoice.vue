@@ -60,17 +60,20 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getInvoice(id).then(res => {
-          if (res.success) {
-            this.model = res.result
-            this.$refs.invoice.edit(res.result)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        this.$loadData(id)
       } else {
         this.$refs.invoice.add()
       }
+    },
+    $loadData(id) {
+      getInvoice(id).then(res => {
+        if (res.success) {
+          this.model = res.result
+          this.$refs.invoice.edit(res.result)
+        } else {
+          this.$message.warning(res.message)
+        }
+      })
     },
     submitInvoice(postData) {
       this.loading = true
@@ -86,6 +89,7 @@ export default {
             if (res.result.id && !this.model.id) {
               this.closePathFreshDetail(res.result.id)
             }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)

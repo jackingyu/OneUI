@@ -67,21 +67,24 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getCompany(id).then(res => {
-          if (res.success) {
-            this.model = {
-              ...res.result,
-              id
-            }
-            this.$refs.receipt.edit(res.result)
-            this.$refs.bank.edit(res.result.bankAccounts)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        this.$loadData(id)
       } else {
         this.$refs.receipt.add()
       }
+    },
+    $loadData(id) {
+      getCompany(id).then(res => {
+        if (res.success) {
+          this.model = {
+            ...res.result,
+            id
+          }
+          this.$refs.receipt.edit(res.result)
+          this.$refs.bank.edit(res.result.bankAccounts)
+        } else {
+          this.$message.warning(res.message)
+        }
+      })
     },
     submitCompany(postData) {
       this.loading = true
@@ -96,6 +99,7 @@ export default {
             if (res.result.id && !this.model.id) {
               this.closePathFreshDetail(res.result.id)
             }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)

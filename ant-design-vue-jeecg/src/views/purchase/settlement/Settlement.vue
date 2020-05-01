@@ -140,6 +140,7 @@ export default {
             if (res.result.id && !this.model.id) {
               this.closePathFreshDetail(res.result.id)
             }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)

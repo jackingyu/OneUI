@@ -61,28 +61,28 @@ export default {
   mounted() {
     this.initModel()
   },
-  created() {
-    window.TT = this
-  },
   methods: {
     ...mapGetters(['userInfo']),
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getSaleReceipt(id).then(res => {
-          if (res.success) {
-            this.model = {
-              ...res.result,
-              id
-            }
-            this.$refs.receipt.edit(res.result)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        this.$loadData(id)
       } else {
         this.$refs.receipt.add()
       }
+    },
+    $loadData(id) {
+      getSaleReceipt(id).then(res => {
+        if (res.success) {
+          this.model = {
+            ...res.result,
+            id
+          }
+          this.$refs.receipt.edit(res.result)
+        } else {
+          this.$message.warning(res.message)
+        }
+      })
     },
     submitSaleReceipt(postData) {
       this.loading = true
@@ -102,6 +102,7 @@ export default {
             if (res.result.id && !this.model.id) {
               this.closePathFreshDetail(res.result.id)
             }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)

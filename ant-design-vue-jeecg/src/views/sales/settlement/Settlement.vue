@@ -43,6 +43,7 @@ import PageView from '@comp/layouts/PageView'
 import { getSaleSettlements, getSaleSettlement, createSaleSettlement, updateSaleSettlement } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 import moment from 'moment'
 export default {
   name: 'Settlement',
@@ -54,6 +55,7 @@ export default {
     AttachFilesForm,
     DetailList
   },
+  mixins: [FormPageActionMixin],
   data() {
     return {
       cType: '',
@@ -82,21 +84,24 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getSaleSettlement(id).then(res => {
-          if (res.success) {
-            this.model = {
-              ...res.result,
-              id
-            }
-            this.$refs.settlement.edit(this.model)
-            this.$refs.rowproj.edit(res.result.salesBillingDocumentItems)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        this.$loadData(id)
       } else {
         this.$refs.settlement.add()
       }
+    },
+    $loadData(id) {
+      getSaleSettlement(id).then(res => {
+        if (res.success) {
+          this.model = {
+            ...res.result,
+            id
+          }
+          this.$refs.settlement.edit(this.model)
+          this.$refs.rowproj.edit(res.result.salesBillingDocumentItems)
+        } else {
+          this.$message.warning(res.message)
+        }
+      })
     },
     salesSettlementTypeCodeChange(v) {
       this.cType = v
@@ -115,6 +120,10 @@ export default {
       promises
         .then(res => {
           if (res.success) {
+            if (res.result.id && !this.model.id) {
+              this.closePathFreshDetail(res.result.id)
+            }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)

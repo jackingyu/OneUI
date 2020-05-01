@@ -45,19 +45,22 @@ export default {
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {
-        getCustomer(id).then(res => {
-          if (res.success) {
-            this.model = {
-              ...res.result
-            }
-            this.$refs.customerForm.edit(this.model)
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
+        this.$loadData(id)
       } else {
         this.$refs.customerForm.edit(this.$route.query)
       }
+    },
+    $loadData(id) {
+      getCustomer(id).then(res => {
+        if (res.success) {
+          this.model = {
+            ...res.result
+          }
+          this.$refs.customerForm.edit(this.model)
+        } else {
+          this.$message.warning(res.message)
+        }
+      })
     },
     _submitForm(postData = {}) {
       this.loading = true
@@ -74,6 +77,7 @@ export default {
             if (res.result.id && !this.model.id) {
               this.closePathFreshDetail(res.result.id)
             }
+            this.$loadData(res.result.id)
             this.$message.success(res.message)
           } else {
             this.$message.warning(res.message)
