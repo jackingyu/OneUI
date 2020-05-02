@@ -296,12 +296,37 @@ export default {
     method: 'PUT'
   },
   //----- report
-  GET_VENDOR_REPORT: {
+  GET_VENDOR_REPORTS: {
     url: '/report/vendors',
     method: 'GET'
   },
   GET_CUSTOMER_REPORT: {
     url: '/report/customers',
+    method: 'GET'
+  },
+  //供应商付款表-按供应商和财年查询供应商付款列表
+  GET_VENDOR_PAY_REPORT: {
+    url: '/vendorpayments/%@/%@',
+    method: 'GET'
+  },
+  //供应商发票表-按供应商和财年查询供应商发票列表
+  GET_VENDOR_INVOICE_REPORT: {
+    url: '/vendorinvoices/%@/%@',
+    method: 'GET'
+  },
+  //供应商结算表-按供应商和财年查询供应商付款列表
+  GET_VENDOR_SETTLEMENTS_REPORT: {
+    url: '/vendorsettlements/%@/%@',
+    method: 'GET'
+  },
+  //供应商结算行项目表-按供应商和财年查询供应商付款列表
+  GET_VENDOR_SETTLEMENTS_ITEM_REPORT: {
+    url: '/vendorsettlementitems/%@/%@',
+    method: 'GET'
+  },
+  //销售结算表-查询销售结算
+  GET_VENDOR_SALES_BILLING_REPORT: {
+    url: '/salesbillingdocuments/%@/%@',
     method: 'GET'
   },
 }

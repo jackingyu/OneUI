@@ -42,21 +42,7 @@
         @change="handleTableChange"
       >
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-          <!-- <a-divider type="vertical" /> -->
-          <a-dropdown v-if="false">
-            <a class="ant-dropdown-link">
-              更多
-              <a-icon type="down" />
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a @click="handleDetail(record)">查看明细</a>
         </span>
       </a-table>
     </div>
@@ -65,7 +51,6 @@
 </template>
 
 <script>
-import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
 import { putAction } from '@/api/manage'
 import { createMaterial, updateMaterial, frozenBatch } from '@/api/api'
 import Rest from '@/config/api-mapper.js'
@@ -98,17 +83,17 @@ export default {
         {
           title: '当年开票总额',
           align: 'center',
-          dataIndex: 'invoiceAmount',
+          dataIndex: 'invoiceAmount'
         },
         {
           title: '当年收款总额',
           align: 'center',
-          dataIndex: 'receivedAmount',
+          dataIndex: 'receivedAmount'
         },
         {
           title: '当年结算总额',
           align: 'center',
-          dataIndex: 'billingAmount',
+          dataIndex: 'billingAmount'
         },
         {
           title: '上年度未开票结转',
@@ -121,6 +106,13 @@ export default {
           align: 'center',
           dataIndex: 'cfUnreceivedAmount',
           ellipsis: true
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          scopedSlots: { customRender: 'action' },
+          align: 'center',
+          width: 140
         }
       ],
       url: {
@@ -134,30 +126,16 @@ export default {
     }
   },
   methods: {
-    initDictConfig() {
-      initDictOptions('material_group').then(res => {
-        if (res.success) {
-          this.materialGroups = res.result
-        }
-      })
-      initDictOptions('material_property').then(res => {
-        if (res.success) {
-          this.oneTimeFlags = res.result
-        }
-      })
-    },
-    handleEdit(record) {
+    handleDetail(record) {
       this.$router.push({
-        path: '/company/info',
+        path: '/customer/report/detail',
         query: {
-          id: record.id
+          ...record,
+          year: record.year,
+          vendorId: record.vendorId
         }
       })
-    },
-    handleAdd() {
-      this.$router.push({ path: '/masterdata/customer-info' })
-    },
-    handleDelete(id) {}
+    }
   }
 }
 </script>
