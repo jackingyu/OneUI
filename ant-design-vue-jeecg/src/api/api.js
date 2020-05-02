@@ -183,6 +183,20 @@ const updateCompany = (data) => putAction(Rest.UPDATE_COMPANY.url, data);
 const getCompany = (id, params) => getAction(sloter(Rest.GET_COMPANY.url, id), params);
 
 
+
+
+
+//供应商付款表-按供应商和财年查询供应商付款列表
+const getVendorPayReport = (year, customerId, params) => getAction(sloter(Rest.GET_VENDOR_PAY_REPORT.url, year, customerId), params);
+//供应商发票表-按供应商和财年查询供应商发票列表
+const getVendorInvoiceReport = (year, customerId, params) => getAction(sloter(Rest.GET_VENDOR_INVOICE_REPORT.url, year, customerId), params);
+//供应商结算表-按供应商和财年查询供应商付款列表
+const getVendorSettlementsReport = (year, customerId, params) => getAction(sloter(Rest.GET_VENDOR_SETTLEMENTS_REPORT.url, year, customerId), params);
+//供应商结算行项目表-按供应商和财年查询供应商付款列表
+const getVendorSettlementItemReport = (year, customerId, params) => getAction(sloter(Rest.GET_VENDOR_SETTLEMENTS_ITEM_REPORT.url, year, customerId), params);
+//销售结算表-查询销售结算
+const getSaleBillingReport = (year, customerId, params) => getAction(sloter(Rest.GET_VENDOR_SALES_BILLING_REPORT.url, year, customerId), params);
+
 function toQuery(params = {}) {
   let queries = [];
   for (let key in params) {
@@ -305,6 +319,11 @@ export {
   createSaleSettlement,
   updateSaleSettlement,
   approveSaleSettlement,
+  getVendorPayReport,
+  getVendorSettlementsReport,
+  getVendorSettlementItemReport,
+  getVendorInvoiceReport,
+  getSaleBillingReport
   // ✨ Bussiness END - by Fred
 }
 

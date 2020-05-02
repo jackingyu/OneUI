@@ -51,21 +51,7 @@
         @change="handleTableChange"
       >
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-          <!-- <a-divider type="vertical" /> -->
-          <a-dropdown v-if="false">
-            <a class="ant-dropdown-link">
-              更多
-              <a-icon type="down" />
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a @click="handleDetail(record)">查看明细</a>
         </span>
       </a-table>
     </div>
@@ -113,17 +99,17 @@ export default {
         {
           title: '当年发票总额',
           align: 'center',
-          dataIndex: 'invoiceAmount',
+          dataIndex: 'invoiceAmount'
         },
         {
           title: '当年付款总额',
           align: 'center',
-          dataIndex: 'paidAmount',
+          dataIndex: 'paidAmount'
         },
         {
           title: '当年结算总额',
           align: 'center',
-          dataIndex: 'settlementAmount',
+          dataIndex: 'settlementAmount'
         },
         {
           title: '上年度未收到发票结转',
@@ -136,10 +122,17 @@ export default {
           align: 'center',
           dataIndex: 'cfUnpaidAmount',
           ellipsis: true
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          scopedSlots: { customRender: 'action' },
+          align: 'center',
+          width: 140
         }
       ],
       url: {
-        list: Rest.GET_VENDOR_REPORT.url
+        list: Rest.GET_VENDOR_REPORTS.url
       }
     }
   },
@@ -161,18 +154,16 @@ export default {
         }
       })
     },
-    handleEdit(record) {
+    handleDetail(record) {
       this.$router.push({
-        path: '/company/info',
+        path: '/vendor/report/detail',
         query: {
-          id: record.id
+          ...record,
+          year: record.year,
+          vendorId: record.vendorId
         }
       })
-    },
-    handleAdd() {
-      this.$router.push({ path: '/masterdata/customer-info' })
-    },
-    handleDelete(id) {}
+    }
   }
 }
 </script>
