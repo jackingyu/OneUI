@@ -195,7 +195,7 @@ const getVendorSettlementsReport = (year, customerId, params) => getAction(slote
 //供应商结算行项目表-按供应商和财年查询供应商付款列表
 const getVendorSettlementItemReport = (year, customerId, params) => getAction(sloter(Rest.GET_VENDOR_SETTLEMENTS_ITEM_REPORT.url, year, customerId), params);
 //销售结算表-查询销售结算
-const getSaleBillingReport = (year, customerId, params) => getAction(sloter(Rest.GET_VENDOR_SALES_BILLING_REPORT.url, year, customerId), params);
+const getSaleBillingReport = (year, customerId, params) => getAction(sloter(Rest.GET_CUSTOMER_SALES_BILLING_REPORT.url, year, customerId), params);
 
 function toQuery(params = {}) {
   let queries = [];

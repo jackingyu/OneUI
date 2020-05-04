@@ -11,7 +11,11 @@
       :pagination="ipagination"
       :loading="loading"
       @change="handleTableChange"
-    ></a-table>
+    >
+      <template slot="goToVendorPayDetail" slot-scope="text, record, index">
+        <a :href="`/purchase/payment?id=${record.id}`" style="width:80px">{{record.id}}</a>
+      </template>
+    </a-table>
   </div>
   <!-- table区域-end -->
 </template>
@@ -41,6 +45,12 @@ export default {
         //   align: 'center',
         //   dataIndex: 'vendorId_dictText'
         // },
+        {
+          title: '付款单号',
+          align: 'center',
+          dataIndex: 'id',
+          scopedSlots: { customRender: 'goToVendorPayDetail' }
+        },
         {
           title: '付款方式',
           align: 'center',
