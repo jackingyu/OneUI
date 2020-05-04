@@ -12,8 +12,6 @@
       <span slot="text" slot-scope="text, record, index">{{ text }}</span>
       <template slot="operation" slot-scope="text, record, index">
         <span>
-          <a @click="editRow(record.key)">编辑</a>
-          <a-divider type="vertical" />
           <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
             <a>删除</a>
           </a-popconfirm>
@@ -26,13 +24,14 @@
       icon="plus"
       @click="newMember"
     >上传附件</a-button>
-    <row-project-modal :type="this.contractType" @submit="getRowData" ref="projectModal" />
+
+    <upload-modal ref="uploadModal" />
   </a-form>
 </template>
 
 <script>
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
-import RowProjectModal from '../RowProjectModal'
+import UploadModal from '@/components/tools/UploadModal.vue'
 import { getBanks } from '@/api/api'
 import { formItems } from '../formOptions'
 
@@ -41,7 +40,7 @@ import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUt
 export default {
   name: 'AttachFilesForm',
   components: {
-    RowProjectModal
+    UploadModal
   },
   props: {
     showSubmit: {
@@ -148,36 +147,12 @@ export default {
       }
     },
     newMember() {
-      // if (!this.contractType) {
-      //   this.$message.error('请先选择合同类型')
-      //   return
-      // }
-      // let MaxRowNum = this.data.map(item => item.itemNo).sort()
-      // let maxCount = 0
-      // if (MaxRowNum && MaxRowNum.length > 0) {
-      //   maxCount = MaxRowNum[MaxRowNum.length - 1]
-      // }
-      // this.$refs.projectModal.add(maxCount + 10)
+      this.$refs.uploadModal.show()
     },
     remove(key) {
       const newData = this.data.filter(item => item.key !== key)
       this.data = newData
       this.setForm(this.data)
-    },
-    editRow(key) {
-      let target = this.data.filter(item => item.key === key)[0] || {}
-      target = {
-        ...target,
-        materialCode: {
-          key: target.materialCode,
-          label: target.materialName
-        }
-        // taxRate: {
-        //   key: target.taxRate,
-        //   label: target.taxRate
-        // }
-      }
-      this.$refs.projectModal.edit(target)
     }
     // handleChange(value, key, column) {
     //   const newData = [...this.data]

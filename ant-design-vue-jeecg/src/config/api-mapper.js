@@ -10,7 +10,7 @@ export function sloter(literal, ...substitutions) {
   result += literals[literals.length - 1];
   return result;
 }
-
+export const DOMAIN = process.env.VUE_APP_BASE_URL
 export default {
   GET_FISCALYEAR: {
     url: `/finance/fiscalyear`,
