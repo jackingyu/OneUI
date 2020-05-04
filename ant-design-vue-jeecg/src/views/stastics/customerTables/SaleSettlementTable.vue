@@ -11,7 +11,11 @@
       :pagination="ipagination"
       :loading="loading"
       @change="handleTableChange"
-    ></a-table>
+    >
+      <template slot="goToSettlementDetail" slot-scope="text, record, index">
+        <a :href="`/sales/settlement?id=${record.id}`" style="width:80px">{{record.id}}</a>
+      </template>
+    </a-table>
   </div>
   <!-- table区域-end -->
 </template>
@@ -36,6 +40,12 @@ export default {
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
+        {
+          title: '结算单号',
+          align: 'center',
+          dataIndex: 'id',
+          scopedSlots: { customRender: 'goToSettlementDetail' }
+        },
         {
           title: '项目名称',
           align: 'center',
@@ -77,7 +87,7 @@ export default {
   },
   methods: {
     loadTable(year, customerId) {
-      this.url.list = sloter(Rest.GET_VENDOR_SALES_BILLING_REPORT.url, year, customerId)
+      this.url.list = sloter(Rest.GET_CUSTOMER_SALES_BILLING_REPORT.url, year, customerId)
       this.loadData()
     }
   }

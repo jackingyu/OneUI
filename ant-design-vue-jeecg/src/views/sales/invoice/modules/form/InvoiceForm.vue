@@ -22,6 +22,7 @@
             <a-select
               v-decorator="['customerId',{rules: [{ required: true, message: '请选择客户', whitespace: true}]}]"
               placeholder="请选择客户"
+              :filterOption="false"
               :showSearch="true"
               @search="fetchCustomerList"
             >

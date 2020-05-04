@@ -11,7 +11,14 @@
       :pagination="ipagination"
       :loading="loading"
       @change="handleTableChange"
-    ></a-table>
+    >
+      <template slot="goToContractItem" slot-scope="text, record, index">
+        <a
+          :href="`/purchase/settlement?id=${record.vendorSettlementId}`"
+          style="width:80px"
+        >{{record.vendorSettlementId}}</a>
+      </template>
+    </a-table>
   </div>
   <!-- table区域-end -->
 </template>
@@ -36,6 +43,17 @@ export default {
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
+        {
+          title: '行项目编号',
+          align: 'center',
+          dataIndex: 'contractItemNo'
+        },
+        {
+          title: '结算单编号',
+          align: 'center',
+          dataIndex: 'vendorSettlementId',
+          scopedSlots: { customRender: 'goToContractItem' }
+        },
         {
           title: '合同内容',
           align: 'center',

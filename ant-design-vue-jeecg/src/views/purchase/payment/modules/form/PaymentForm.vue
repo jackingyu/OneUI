@@ -81,7 +81,7 @@
             />
           </a-form-item>
         </a-col>
-        <a-col :lg="8" :md="12" :sm="24">
+        <!-- <a-col :lg="8" :md="12" :sm="24">
           <a-form-item label="付款账户">
             <a-select
               v-decorator="['accounts',{rules: [{ required: true, message: '请选择付款账户', whitespace: true}]}]"
@@ -99,7 +99,7 @@
               >{{`${bank.bankName} ${bank.bankAccountName}(${bank.bankAccount})`}}</a-select-option>
             </a-select>
           </a-form-item>
-        </a-col>
+        </a-col>-->
         <a-col v-show="false" :lg="8" :md="12" :sm="24">
           <a-form-item label="付款银行">
             <a-input disabled v-decorator="['bankName']" />

@@ -11,7 +11,11 @@
       :pagination="ipagination"
       :loading="loading"
       @change="handleTableChange"
-    ></a-table>
+    >
+      <template slot="goToInvoiceDetail" slot-scope="text, record, index">
+        <a :href="`/purchase/invoice?id=${record.id}`" style="width:80px">{{record.invoiceNumber}}</a>
+      </template>
+    </a-table>
   </div>
   <!-- table区域-end -->
 </template>
@@ -44,7 +48,8 @@ export default {
         {
           title: '发票号码',
           align: 'center',
-          dataIndex: 'invoiceNumber'
+          dataIndex: 'invoiceNumber',
+          scopedSlots: { customRender: 'goToInvoiceDetail' }
         },
         {
           title: '开票金额',

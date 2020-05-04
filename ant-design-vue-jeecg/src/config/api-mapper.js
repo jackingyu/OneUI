@@ -300,10 +300,6 @@ export default {
     url: '/report/vendors',
     method: 'GET'
   },
-  GET_CUSTOMER_REPORT: {
-    url: '/report/customers',
-    method: 'GET'
-  },
   //供应商付款表-按供应商和财年查询供应商付款列表
   GET_VENDOR_PAY_REPORT: {
     url: '/vendorpayments/%@/%@',
@@ -324,9 +320,24 @@ export default {
     url: '/vendorsettlementitems/%@/%@',
     method: 'GET'
   },
-  //销售结算表-查询销售结算
-  GET_VENDOR_SALES_BILLING_REPORT: {
+  //客户
+  GET_CUSTOMER_REPORT: {
+    url: '/report/customers',
+    method: 'GET'
+  },
+  //销售结算表-按客户和财年查询销售结算列表
+  GET_CUSTOMER_SALES_BILLING_REPORT: {
     url: '/salesbillingdocuments/%@/%@',
+    method: 'GET'
+  },
+  //销售开票表-按客户和财年查询销售发票列表
+  GET_CUSTOMER_SALES_INVOICE_REPORT: {
+    url: '/salesinvoices/%@/%@',
+    method: 'GET'
+  },
+  //销售收款表-按客户和财年查询销售收款列表
+  GET_CUSTOMER_SALES_RECEIPT_REPORT: {
+    url: '/salesreceipts/%@/%@',
     method: 'GET'
   },
 }

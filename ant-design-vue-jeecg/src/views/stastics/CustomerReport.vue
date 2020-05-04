@@ -46,6 +46,14 @@
           <SaleSettlementTable ref="table1" />
         </detail-list>
         <a-divider style="margin-top:12px" />
+        <detail-list title="发票结算">
+          <CustomerInvoiceTable ref="table2" />
+        </detail-list>
+        <a-divider style="margin-top:12px" />
+        <detail-list title="收款结算">
+          <CustomerReceiptTable ref="table3" />
+        </detail-list>
+        <a-divider style="margin-top:12px" />
       </a-card>
 
       <!-- fixed footer toolbar -->
@@ -62,6 +70,8 @@ import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import PageView from '@comp/layouts/PageView'
 import SaleSettlementTable from './customerTables/SaleSettlementTable'
+import CustomerReceiptTable from './customerTables/CustomerReceiptTable'
+import CustomerInvoiceTable from './customerTables/CustomerInvoiceTable'
 // import {
 //   getVendorPayReport,
 //   getVendorSettlementsReport,
@@ -80,7 +90,9 @@ export default {
     PageView,
     FooterToolBar,
     DetailList,
-    SaleSettlementTable
+    SaleSettlementTable,
+    CustomerReceiptTable,
+    CustomerInvoiceTable
   },
   mixins: [FormPageActionMixin],
   data() {
@@ -112,6 +124,8 @@ export default {
     },
     $loadData(year, customerId) {
       this.$refs.table1.loadTable(year, customerId)
+      this.$refs.table2.loadTable(year, customerId)
+      this.$refs.table3.loadTable(year, customerId)
     }
   }
 }

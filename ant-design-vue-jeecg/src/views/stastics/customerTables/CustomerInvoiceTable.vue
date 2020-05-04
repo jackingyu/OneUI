@@ -11,7 +11,11 @@
       :pagination="ipagination"
       :loading="loading"
       @change="handleTableChange"
-    ></a-table>
+    >
+      <template slot="goToInvoiceDetail" slot-scope="text, record, index">
+        <a :href="`/sales/invoice?id=${record.id}`" style="width:80px">{{record.invoiceNumber}}</a>
+      </template>
+    </a-table>
   </div>
   <!-- table区域-end -->
 </template>
@@ -24,7 +28,7 @@ import JInput from '@/components/jeecg/JInput'
 
 //供应商付款表
 export default {
-  name: 'VendorInvoiceTable',
+  name: 'CustomerInvoiceTable',
   mixins: [JeecgListMixin],
   components: {
     JInput
@@ -36,15 +40,11 @@ export default {
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
-        // {
-        //   title: '供应商名称',
-        //   align: 'center',
-        //   dataIndex: 'vendorName'
-        // },
         {
           title: '发票号码',
           align: 'center',
-          dataIndex: 'invoiceNumber'
+          dataIndex: 'invoiceNumber',
+          scopedSlots: { customRender: 'goToInvoiceDetail' }
         },
         {
           title: '开票金额',
@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     loadTable(year, customerId) {
-      this.url.list = sloter(Rest.GET_VENDOR_INVOICE_REPORT.url, year, customerId)
+      this.url.list = sloter(Rest.GET_CUSTOMER_SALES_INVOICE_REPORT.url, year, customerId)
       this.loadData()
     }
   }

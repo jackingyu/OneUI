@@ -111,6 +111,7 @@ export default {
             'vendorId',
             'contractContent',
             'invoiceDate',
+            'unitCode',
             'amount',
             'invoiceNumber',
             'taxRate'

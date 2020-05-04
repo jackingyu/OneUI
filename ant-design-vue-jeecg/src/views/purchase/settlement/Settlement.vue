@@ -22,6 +22,10 @@
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
         <a-button type="info" @click="back('/purchase/settlements')">返回供应商结算列表</a-button>
+        <template v-if="!!model.id && model.printable">
+          <a-divider type="vertical" />
+          <a-button type="info" @click="print">打印</a-button>
+        </template>
         <template v-if="!!model.id && !!model.allowedToApprove">
           <a-divider type="vertical" />
           <a-button type="primary" @click="e=>validate(true)" :loading="loading">提交审批</a-button>
@@ -31,12 +35,27 @@
           <a-button type="info" @click="e=>validate(false)" :loading="loading">暂存</a-button>
         </template>
       </footer-tool-bar>
+      <print-modal :show="showPrintDialog" @close="showPrintDialog=false">
+        <div>
+          <h2 style="text-align:center">结算单</h2>
+          <h4 style="text-align:center">{{this.model.settlementTime}}</h4>
+          <a-table
+            bordered
+            size="small"
+            :rowKey="(record,index)=>index"
+            :columns="columns"
+            :dataSource="dataSource"
+            :pagination="false"
+          ></a-table>
+        </div>
+      </print-modal>
     </div>
   </page-view>
 </template>
 
 <script>
 import pick from 'lodash.pick'
+import PrintModal from '@/views/printable/PrintModal.vue'
 import SettlementForm from './modules/form/SettlementForm'
 import SettlementRowProjectForm from './modules/form/SettlementRowProjectForm'
 import AttachFilesForm from './modules/form/AttachFilesForm'
@@ -48,6 +67,8 @@ import { getSettlements, approveSettlement, getSettlement, createSettlement, upd
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import FormPageActionMixin from '@/mixins/FormPageActionMixin'
+import { columns, numToCNY } from './print/helper.js'
+import moment from 'moment'
 export default {
   name: 'Settlement',
   components: {
@@ -56,14 +77,18 @@ export default {
     SettlementRowProjectForm,
     SettlementForm,
     AttachFilesForm,
-    DetailList
+    DetailList,
+    PrintModal
   },
   mixins: [FormPageActionMixin],
   data() {
+    let moneyDiv = value => <div style="text-align:left">{value}</div>
     return {
       cType: '',
+      showPrintDialog: false,
       loading: false,
       model: {},
+      columns: columns(moneyDiv),
       rowFields: []
     }
   },
@@ -73,6 +98,19 @@ export default {
     },
     orgCode() {
       return this.userInfo().orgCode
+    },
+    dataSource() {
+      let data = this.model.vendorSettlementItems || []
+      data.push({
+        vendorId: '合计人民币（大写）',
+        isTotal: true,
+        totalAmount: '￥' + this.model.totalAmount,
+        materialId_dictText: numToCNY(this.model.totalAmount)
+      })
+      return data
+    },
+    nowDate() {
+      return moment().format('YYYY-MM-DD')
     }
   },
   mounted() {
@@ -85,6 +123,9 @@ export default {
   },
   methods: {
     ...mapGetters(['userInfo']),
+    print() {
+      this.showPrintDialog = true
+    },
     initModel() {
       let { id = undefined } = this.$route.query
       if (id) {

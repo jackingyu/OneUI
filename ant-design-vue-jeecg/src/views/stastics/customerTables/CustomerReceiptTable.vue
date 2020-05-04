@@ -11,7 +11,11 @@
       :pagination="ipagination"
       :loading="loading"
       @change="handleTableChange"
-    ></a-table>
+    >
+      <template slot="goToReceiptDetail" slot-scope="text, record, index">
+        <a :href="`/sales/receipt?id=${text}`" style="width:80px">{{text}}</a>
+      </template>
+    </a-table>
   </div>
   <!-- table区域-end -->
 </template>
@@ -24,7 +28,7 @@ import JInput from '@/components/jeecg/JInput'
 import moment from 'moment'
 //供应商付款表
 export default {
-  name: 'VendorPayTable',
+  name: 'CustomerReceiptTable',
   mixins: [JeecgListMixin],
   components: {
     JInput
@@ -36,25 +40,26 @@ export default {
       materialGroups: [],
       oneTimeFlags: [],
       columns: [
-        // {
-        //   title: '供应商名称',
-        //   align: 'center',
-        //   dataIndex: 'vendorId_dictText'
-        // },
         {
-          title: '付款方式',
+          title: '收款单号',
+          align: 'center',
+          dataIndex: 'id',
+          scopedSlots: { customRender: 'goToReceiptDetail' }
+        },
+        {
+          title: '收款方式',
           align: 'center',
           dataIndex: 'paymentMethodCode_dictText'
         },
         {
-          title: '付款金额',
+          title: '收款金额',
           align: 'center',
-          dataIndex: 'paymentAmount'
+          dataIndex: 'amount'
         },
         {
-          title: '付款日期',
+          title: '收款日期',
           align: 'center',
-          dataIndex: 'paymentDate',
+          dataIndex: 'receiptDate',
           customRender: function(value, record) {
             return moment(value).format('YYYY-MM-DD')
           }
@@ -72,7 +77,7 @@ export default {
   },
   methods: {
     loadTable(year, customerId) {
-      this.url.list = sloter(Rest.GET_VENDOR_PAY_REPORT.url, year, customerId)
+      this.url.list = sloter(Rest.GET_CUSTOMER_SALES_RECEIPT_REPORT.url, year, customerId)
       this.loadData()
     }
   }
