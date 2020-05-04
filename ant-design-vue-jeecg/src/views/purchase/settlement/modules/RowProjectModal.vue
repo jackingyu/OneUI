@@ -225,9 +225,6 @@ export default {
       validatorRules: {}
     }
   },
-  created() {
-    window.TH = this
-  },
   methods: {
     validatorRulesFor(ruleKey) {
       if (ruleKey) {

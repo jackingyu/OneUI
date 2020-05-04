@@ -110,6 +110,16 @@
             />
           </a-form-item>
         </a-col>
+        <a-col :lg="8" :md="12" :sm="24">
+          <a-form-item label="开票单位">
+            <j-dict-select-tag
+              v-decorator="[ 'unitCode', {rules: [{ required: true, message: '请选择开票单位'}]} ]"
+              :triggerChange="true"
+              placeholder="请选择开票单位"
+              dictCode="unit"
+            />
+          </a-form-item>
+        </a-col>
         <!-- <a-col v-show="!this.model.id" :lg="8" :md="12" :sm="24">
           <a-form-item label="发票号码">
             <a-input
@@ -184,7 +194,7 @@ export default {
       this.model = { ...record }
       this.$nextTick(() => {
         this.form.setFieldsValue(
-          pick(record, 'id', 'vendorId', 'contractContent', 'invoiceDate', 'amount', 'invoiceNumber')
+          pick(record, 'id', 'vendorId', 'contractContent', 'invoiceDate', 'unitCode', 'amount', 'invoiceNumber')
         )
         this.form.setFieldsValue({
           taxRate: isNaN(record.taxRate) ? record.taxRate : '' + record.taxRate
