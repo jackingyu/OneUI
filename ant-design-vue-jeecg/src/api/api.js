@@ -163,6 +163,7 @@ const getSaleReceipts = (params) => getAction(Rest.GET_SALERECEIPTS.url, params)
 const getSaleReceipt = (id, params) => getAction(sloter(Rest.GET_SALERECEIPT.url, id), params);
 const createSaleReceipt = (params) => postAction(Rest.CREATE_SALERECEIPT.url, params);
 const updateSaleReceipt = (params) => putAction(Rest.UPDATE_SALERECEIPT.url, params);
+const approveSaleInvoice = (params) => putAction(Rest.APPROVE_SALERECEIPT.url, params);
 
 const getInvoices = (params) => getAction(Rest.GET_VENDORINVOICES.url, params);
 const getInvoice = (id, params) => getAction(sloter(Rest.GET_VENDORINVOICE.url, id), params);
@@ -308,6 +309,7 @@ export {
   getSaleReceipt,
   createSaleReceipt,
   updateSaleReceipt,
+  approveSaleInvoice,
   getBankAccounts,
   getSaleContracts,
   getSaleContract,

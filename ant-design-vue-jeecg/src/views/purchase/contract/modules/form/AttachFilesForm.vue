@@ -12,7 +12,7 @@
       <span slot="text" slot-scope="text, record, index">{{ text }}</span>
       <template slot="operation" slot-scope="text, record, index">
         <span>
-          <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
+          <a-popconfirm title="是否要删除此行？" @confirm="remove(record.id)">
             <a>删除</a>
           </a-popconfirm>
         </span>
@@ -25,7 +25,7 @@
       @click="newMember"
     >上传附件</a-button>
 
-    <upload-modal ref="uploadModal" />
+    <upload-modal :fileScope="'10'" ref="uploadModal" @uploadComplete="uploadComplete" />
   </a-form>
 </template>
 
@@ -59,12 +59,14 @@ export default {
       columns: [
         {
           title: '附件名称',
-          dataIndex: 'name',
-          key: 'name'
+          dataIndex: 'fileName',
+          width: 200,
+          key: 'fileName'
         },
         {
           title: '附件URL',
           dataIndex: 'url',
+          ellipsis: true,
           key: 'url'
         },
         {
@@ -95,11 +97,11 @@ export default {
     contract(v) {
       this.contractType = v
     },
-    edit(rows) {
+    edit(rows = []) {
       this.data = rows.map(item => {
         return {
           ...item,
-          key: item.itemNo || `${+new Date()}`
+          key: item.id || `${+new Date()}`
         }
       })
       this.$nextTick(() => {
@@ -109,48 +111,23 @@ export default {
     setForm(val) {
       this.form.setFieldsValue({ data: JSON.stringify(val) })
     },
-    defaultSearchWord(record) {
-      if (record) {
-        let m = this.banks.find(item => item.value == record.bankId)
-        if (m) {
-          return m.text
-        }
-      }
-      return ''
-    },
-    defaultOptions(item) {
-      if (item && item.subBranchId) {
-        return [
-          {
-            text: item.subBranchName,
-            title: item.subBranchName,
-            value: item.subBranchId
-          }
-        ]
-      }
-      return []
-    },
     handleSubmit(e) {
       e.preventDefault()
     },
-    getRowData(row) {
-      const newData = [...this.data]
-      let index = newData.findIndex(item => !!row.key && row.key == item.key)
-      if (index != -1) {
-        newData[index] = row
-        this.data = newData
-      } else {
-        this.data.push({
-          key: row.itemNo || `${-new Date()}`,
-          ...row
-        })
-      }
+    uploadComplete(row) {
+      this.data = [
+        ...this.data,
+        {
+          ...row,
+          key: row.id || `${+new Date()}`
+        }
+      ]
     },
     newMember() {
       this.$refs.uploadModal.show()
     },
     remove(key) {
-      const newData = this.data.filter(item => item.key !== key)
+      const newData = this.data.filter(item => item.id !== key)
       this.data = newData
       this.setForm(this.data)
     }

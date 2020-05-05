@@ -8,10 +8,18 @@
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
         <a-button type="info" @click="back('/sales/invoices')">返回销售开票列表</a-button>
-        <a-divider type="vertical" />
-        <a-button type="primary" @click="validate" :loading="loading">{{$t('actions.submit')}}</a-button>
-        <!-- <a-divider type="vertical" />
-        <a-button type="info" @click="validate" :loading="loading">暂存</a-button>-->
+        <template v-if="!!model.id && !!model.allowedToApprove">
+          <a-divider type="vertical" />
+          <a-button type="primary" @click="e=>validate(true)" :loading="loading">提交审批</a-button>
+        </template>
+        <template v-if="!model.id || !!model.editable">
+          <a-divider type="vertical" />
+          <a-button
+            type="info"
+            @click="e=>validate(false)"
+            :loading="loading"
+          >{{$t('actions.submit')}}</a-button>
+        </template>
       </footer-tool-bar>
     </div>
   </page-view>
@@ -23,7 +31,7 @@ import InvoiceForm from './modules/form/InvoiceForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getSaleInvoices, getSaleInvoice, createSaleInvoice, updateSaleInvoice } from '@/api/api'
+import { getSaleInvoices,approveSaleInvoice, getSaleInvoice, createSaleInvoice, updateSaleInvoice } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
@@ -75,6 +83,29 @@ export default {
         this.$refs.invoice.add()
       }
     },
+    approve(postData) {
+      this.loading = true
+      if (!this.model.id) {
+        return
+      }
+      postData = {
+        ...this.model,
+        ...postData,
+        id: this.model.id
+      }
+      approveSaleInvoice(postData)
+        .then(res => {
+          if (res.success) {
+            this.$loadData(this.model.id)
+            this.$message.success(res.message)
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
     submitInvoice(postData) {
       this.loading = true
       let promises
@@ -101,12 +132,21 @@ export default {
     },
     // 最终全页面提交
     validate() {
+      const canDo =
+        (isApprove && this.model.allowedToApprove) || (!isApprove && (!this.model.id || this.model.editable))
+      if (!canDo) {
+        return
+      }
       let that = this
       that.$refs.invoice.form.validateFields((err, values) => {
         console.info('invoice', values)
         if (!err) {
           let postData = values
-          that.submitInvoice(postData)
+          if (!isApprove) {
+            that.submitInvoice(postData)
+          } else {
+            that.approve(postData)
+          }
         }
       })
     }

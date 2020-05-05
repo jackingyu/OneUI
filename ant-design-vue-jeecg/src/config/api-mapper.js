@@ -253,6 +253,10 @@ export default {
     url: '/salesreceipts',
     method: 'PUT'
   },
+  APPROVE_SALERECEIPT: {
+    url: '/salesreceipts/approve',
+    method: 'PUT'
+  },
   //----  销售结算
   GET_SALESETTLEMENT: {
     url: '/salesbillingdocuments/%@',
