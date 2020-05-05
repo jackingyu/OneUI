@@ -7,7 +7,7 @@
         <detail-list title="合同行项目">
           <contract-row-project-form ref="rowproj" :showSubmit="false" />
         </detail-list>
-        <template v-if="!!model.id">
+        <template>
           <a-divider style="margin-bottom: 32px" />
           <detail-list title="合同附件">
             <attach-files-form ref="rowfiles" :showSubmit="false" />
@@ -91,6 +91,7 @@ export default {
             }
             this.$refs.contract.edit(this.model)
             this.$refs.rowproj.edit(res.result)
+            this.$refs.rowfiles.edit(res.result.attachments)
           } else {
             this.$message.warning(res.message)
           }
@@ -181,6 +182,7 @@ export default {
           let spans = values.dateSpan.map(item => item.format('YYYY-MM-DD HH:mm:ss'))
           postData.beginDate = spans[0]
           postData.endDate = spans[1]
+
           that.$refs.rowproj.form.validateFields((err, values) => {
             if (!err) {
               let arData = []
@@ -228,11 +230,29 @@ export default {
                 return item
               })
               postData.purchaseContractItems = arData
-              if (!isApprove) {
-                that.submitContract(postData)
-              } else {
-                that.approve(postData)
-              }
+              that.$refs.rowfiles.form.validateFields((errrr, files) => {
+                if (!errrr) {
+                  let arData = []
+                  if (!(files.data instanceof Array)) {
+                    try {
+                      arData = JSON.parse(files.data)
+                    } catch (error) {
+                      arData = []
+                    }
+                  } else {
+                    arData = files.data
+                  }
+                  arData.forEach(element => {
+                    delete element.key
+                  })
+                  postData.attachments = arData
+                }
+                if (!isApprove) {
+                  that.submitContract(postData)
+                } else {
+                  that.approve(postData)
+                }
+              })
             }
           })
         }
