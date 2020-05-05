@@ -91,7 +91,7 @@ export default {
             }
             this.$refs.contract.edit(this.model)
             this.$refs.rowproj.edit(res.result)
-            this.$refs.rowfiles.edit(res.result.attachments)
+            this.$refs.rowfiles.edit(res.result)
           } else {
             this.$message.warning(res.message)
           }
@@ -243,7 +243,9 @@ export default {
                     arData = files.data
                   }
                   arData.forEach(element => {
+                    element.ossFileId = element.id
                     delete element.key
+                    delete element.id
                   })
                   postData.attachments = arData
                 }

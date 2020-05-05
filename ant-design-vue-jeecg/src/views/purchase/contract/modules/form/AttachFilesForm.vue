@@ -3,7 +3,11 @@
     <a-form-item v-show="false">
       <a-input v-decorator="['data']" />
     </a-form-item>
-    <a-table :columns="columns" :dataSource="data" :pagination="false">
+    <a-table
+      :columns="columns.concat((!model.id || model.editable)?operateColumn:[])"
+      :dataSource="data"
+      :pagination="false"
+    >
       <!-- <template
         v-for="(col, i) in ['bankId', 'subBranchId','bankAccount','bankAccountName']"
         :slot="col"
@@ -22,6 +26,7 @@
       style="width: 100%; margin-top: 16px; margin-bottom: 8px"
       type="dashed"
       icon="plus"
+      v-if="!model.id || model.editable"
       @click="newMember"
     >上传附件</a-button>
 
@@ -55,7 +60,14 @@ export default {
       contractType: '',
       banks: [],
       dicts: {},
+      model: {},
       data: [],
+      operateColumn: {
+        title: '操作',
+        key: 'action',
+        width: 120,
+        scopedSlots: { customRender: 'operation' }
+      },
       columns: [
         {
           title: '附件名称',
@@ -68,12 +80,6 @@ export default {
           dataIndex: 'url',
           ellipsis: true,
           key: 'url'
-        },
-        {
-          title: '操作',
-          key: 'action',
-          width: 120,
-          scopedSlots: { customRender: 'operation' }
         }
       ]
     }
@@ -97,7 +103,11 @@ export default {
     contract(v) {
       this.contractType = v
     },
-    edit(rows = []) {
+    edit(model = {}) {
+      this.model = {
+        ...model
+      }
+      let rows = model.attachments || []
       this.data = rows.map(item => {
         return {
           ...item,
