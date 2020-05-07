@@ -3,6 +3,13 @@
     <div slot="route-view">
       <a-card class="card" :bordered="false">
         <invoice-form ref="invoice" :showSubmit="false" />
+
+        <template>
+          <a-divider style="margin-bottom: 32px" />
+          <detail-list title="发票附件">
+            <attach-files-form :fileScope="'30'" ref="rowfiles" :showSubmit="false" />
+          </detail-list>
+        </template>
       </a-card>
       <!-- table -->
       <!-- fixed footer toolbar -->
@@ -22,7 +29,9 @@ import pick from 'lodash.pick'
 import InvoiceForm from './modules/form/InvoiceForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
+import AttachFilesForm from '@/views/modules/attachment/AttachFilesForm.vue'
 import PageView from '@comp/layouts/PageView'
+import DetailList from '@/components/tools/DetailList'
 import { getInvoices, getInvoice, createInvoice, updateInvoice, delInvoice } from '@/api/api'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import FormPageActionMixin from '@/mixins/FormPageActionMixin'
@@ -31,7 +40,9 @@ export default {
   components: {
     PageView,
     FooterToolBar,
-    InvoiceForm
+    InvoiceForm,
+    DetailList,
+    AttachFilesForm
   },
   mixins: [FormPageActionMixin],
   data() {
@@ -70,6 +81,7 @@ export default {
         if (res.success) {
           this.model = res.result
           this.$refs.invoice.edit(res.result)
+          this.$refs.rowfiles.edit(res.result)
         } else {
           this.$message.warning(res.message)
         }
@@ -117,7 +129,27 @@ export default {
             'taxRate'
           )
           postData.invoiceDate = postData.invoiceDate + ' 00:00:00'
-          that.submitInvoice(postData)
+          that.$refs.rowfiles.form.validateFields((errrr, files) => {
+            if (!errrr) {
+              let arData = []
+              if (!(files.data instanceof Array)) {
+                try {
+                  arData = JSON.parse(files.data)
+                } catch (error) {
+                  arData = []
+                }
+              } else {
+                arData = files.data
+              }
+              arData.forEach(element => {
+                element.ossFileId = element.id
+                delete element.key
+                delete element.id
+              })
+              postData.attachments = arData
+            }
+            that.submitInvoice(postData)
+          })
         }
       })
     }

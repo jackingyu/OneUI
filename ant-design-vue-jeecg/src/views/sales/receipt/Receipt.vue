@@ -7,6 +7,12 @@
         <!-- <detail-list title="银行账号">
           <bank-form ref="bank" single :showSubmit="false" />
         </detail-list>-->
+        <template>
+          <a-divider style="margin-bottom: 32px" />
+          <detail-list title="收款附件">
+            <attach-files-form :fileScope="'80'" ref="rowfiles" :showSubmit="false" />
+          </detail-list>
+        </template>
       </a-card>
       <!-- table -->
       <!-- fixed footer toolbar -->
@@ -34,6 +40,7 @@ import { getSaleReceipt, createSaleReceipt, updateSaleReceipt } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
+import AttachFilesForm from '@/views/modules/attachment/AttachFilesForm.vue'
 import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'Receipt',
@@ -42,6 +49,7 @@ export default {
     FooterToolBar,
     ReceiptForm,
     BankForm,
+    AttachFilesForm,
     DetailList
   },
   mixins: [FormPageActionMixin],
@@ -79,6 +87,7 @@ export default {
             id
           }
           this.$refs.receipt.edit(res.result)
+          this.$refs.rowfiles.edit(res.result)
         } else {
           this.$message.warning(res.message)
         }
@@ -122,7 +131,27 @@ export default {
             // paymentDate: values.paymentDate + ' 00:00:00'
           }
           delete postData.accounts
-          this.submitSaleReceipt(postData)
+          that.$refs.rowfiles.form.validateFields((errrr, files) => {
+            if (!errrr) {
+              let arData = []
+              if (!(files.data instanceof Array)) {
+                try {
+                  arData = JSON.parse(files.data)
+                } catch (error) {
+                  arData = []
+                }
+              } else {
+                arData = files.data
+              }
+              arData.forEach(element => {
+                element.ossFileId = element.id
+                delete element.key
+                delete element.id
+              })
+              postData.attachments = arData
+            }
+            that.submitSaleReceipt(postData)
+          })
         }
       })
     }
