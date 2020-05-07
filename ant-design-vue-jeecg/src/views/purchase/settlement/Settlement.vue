@@ -11,10 +11,10 @@
         <detail-list title="结算行项目">
           <settlement-row-project-form @formChange="formChange" ref="rowproj" :showSubmit="false" />
         </detail-list>
-        <template v-if="!!model.id">
+        <template>
           <a-divider style="margin-bottom: 32px" />
-          <detail-list v-if="!!model.id" title="结算附件">
-            <attach-files-form ref="rowfiles" :showSubmit="false" />
+          <detail-list title="结算附件">
+            <attach-files-form :fileScope="'20'" ref="rowfiles" :showSubmit="false" />
           </detail-list>
         </template>
       </a-card>
@@ -58,7 +58,7 @@ import pick from 'lodash.pick'
 import PrintModal from '@/views/printable/PrintModal.vue'
 import SettlementForm from './modules/form/SettlementForm'
 import SettlementRowProjectForm from './modules/form/SettlementRowProjectForm'
-import AttachFilesForm from './modules/form/AttachFilesForm'
+import AttachFilesForm from '@/views/modules/attachment/AttachFilesForm.vue'
 import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
@@ -150,6 +150,7 @@ export default {
             }
           })
           this.$refs.rowproj.edit(items)
+          this.$refs.rowfiles.edit(res.result)
         } else {
           this.$message.warning(res.message)
         }
@@ -258,11 +259,31 @@ export default {
                 }
               }
               postData.vendorSettlementItems = arData
-              if (!isApprove) {
-                that.submitSettlement(postData)
-              } else {
-                that.approve(postData)
-              }
+              that.$refs.rowfiles.form.validateFields((errrr, files) => {
+                if (!errrr) {
+                  let arData = []
+                  if (!(files.data instanceof Array)) {
+                    try {
+                      arData = JSON.parse(files.data)
+                    } catch (error) {
+                      arData = []
+                    }
+                  } else {
+                    arData = files.data
+                  }
+                  arData.forEach(element => {
+                    element.ossFileId = element.id
+                    delete element.key
+                    delete element.id
+                  })
+                  postData.attachments = arData
+                }
+                if (!isApprove) {
+                  that.submitSettlement(postData)
+                } else {
+                  that.approve(postData)
+                }
+              })
             }
           })
         }

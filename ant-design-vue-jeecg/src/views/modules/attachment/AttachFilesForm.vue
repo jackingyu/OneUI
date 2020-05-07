@@ -30,17 +30,12 @@
       @click="newMember"
     >上传附件</a-button>
 
-    <upload-modal :fileScope="'10'" ref="uploadModal" @uploadComplete="uploadComplete" />
+    <upload-modal :fileScope="fileScope" ref="uploadModal" @uploadComplete="uploadComplete" />
   </a-form>
 </template>
 
 <script>
-import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import UploadModal from '@/components/tools/UploadModal.vue'
-import { getBanks } from '@/api/api'
-import { formItems } from '../formOptions'
-
-import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
 
 export default {
   name: 'AttachFilesForm',
@@ -48,9 +43,9 @@ export default {
     UploadModal
   },
   props: {
-    showSubmit: {
-      type: Boolean,
-      default: false
+    fileScope: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -84,25 +79,12 @@ export default {
       ]
     }
   },
-  mounted() {
-    this.initDictConfig()
-  },
   watch: {
     data(n) {
       this.setForm(this.data)
     }
   },
   methods: {
-    initDictConfig() {
-      initDictOptions('payment_method').then(res => {
-        if (res.success) {
-          this.dicts.payment_method = res.result
-        }
-      })
-    },
-    contract(v) {
-      this.contractType = v
-    },
     edit(model = {}) {
       this.model = {
         ...model

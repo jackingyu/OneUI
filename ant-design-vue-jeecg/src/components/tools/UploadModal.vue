@@ -8,7 +8,7 @@
   >
     <a-upload-dragger
       name="file"
-      :multiple="true"
+      :multiple="false"
       :action="uploadAction"
       :headers="tokenHeader"
       :showUploadList="true"

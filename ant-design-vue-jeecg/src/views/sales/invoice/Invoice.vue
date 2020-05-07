@@ -3,6 +3,13 @@
     <div slot="route-view">
       <a-card class="card" :bordered="false">
         <invoice-form ref="invoice" :showSubmit="false" />
+
+        <template>
+          <a-divider style="margin-bottom: 32px" />
+          <detail-list title="发票附件">
+            <attach-files-form :fileScope="'70'" ref="rowfiles" :showSubmit="false" />
+          </detail-list>
+        </template>
       </a-card>
       <!-- table -->
       <!-- fixed footer toolbar -->
@@ -31,17 +38,20 @@ import InvoiceForm from './modules/form/InvoiceForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
-import { getSaleInvoices,approveSaleInvoice, getSaleInvoice, createSaleInvoice, updateSaleInvoice } from '@/api/api'
+import { getSaleInvoices, approveSaleInvoice, getSaleInvoice, createSaleInvoice, updateSaleInvoice } from '@/api/api'
 import { formItems } from './modules/formOptions'
 import { mapActions, mapGetters, mapState } from 'vuex'
-
+import AttachFilesForm from '@/views/modules/attachment/AttachFilesForm.vue'
+import DetailList from '@/components/tools/DetailList'
 import FormPageActionMixin from '@/mixins/FormPageActionMixin'
 export default {
   name: 'Invoice',
   components: {
     PageView,
     FooterToolBar,
-    InvoiceForm
+    InvoiceForm,
+    DetailList,
+    AttachFilesForm
   },
   mixins: [FormPageActionMixin],
   data() {
@@ -75,6 +85,7 @@ export default {
               ...res.result
             }
             this.$refs.invoice.edit(res.result)
+            this.$refs.rowfiles.edit(res.result)
           } else {
             this.$message.warning(res.message)
           }
@@ -142,11 +153,31 @@ export default {
         console.info('invoice', values)
         if (!err) {
           let postData = values
-          if (!isApprove) {
-            that.submitInvoice(postData)
-          } else {
-            that.approve(postData)
-          }
+          that.$refs.rowfiles.form.validateFields((errrr, files) => {
+            if (!errrr) {
+              let arData = []
+              if (!(files.data instanceof Array)) {
+                try {
+                  arData = JSON.parse(files.data)
+                } catch (error) {
+                  arData = []
+                }
+              } else {
+                arData = files.data
+              }
+              arData.forEach(element => {
+                element.ossFileId = element.id
+                delete element.key
+                delete element.id
+              })
+              postData.attachments = arData
+            }
+            if (!isApprove) {
+              that.submitInvoice(postData)
+            } else {
+              that.approve(postData)
+            }
+          })
         }
       })
     }

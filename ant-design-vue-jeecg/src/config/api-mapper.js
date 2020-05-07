@@ -10,7 +10,15 @@ export function sloter(literal, ...substitutions) {
   result += literals[literals.length - 1];
   return result;
 }
-export const DOMAIN = process.env.VUE_APP_BASE_URL
+
+let domainUrl = void 0
+
+if (location.href.indexOf("localhost") >= 0) {
+  domainUrl = process.env.VUE_APP_BASE_URL
+} else {
+  domainUrl = new URL(location.href).origin + "/dlx/"
+}
+export const DOMAIN = domainUrl
 export default {
   GET_FISCALYEAR: {
     url: `/finance/fiscalyear`,

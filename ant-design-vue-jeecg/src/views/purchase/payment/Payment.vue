@@ -8,8 +8,14 @@
           <bank-form ref="bank" single :showSubmit="false" />
         </detail-list>-->
         <!-- <a-divider style="margin-bottom: 32px" /> -->
-        <detail-list title="附件"></detail-list>
+        <template>
+          <a-divider style="margin-bottom: 32px" />
+          <detail-list title="付款附件">
+            <attach-files-form :fileScope="'40'" ref="rowfiles" :showSubmit="false" />
+          </detail-list>
+        </template>
       </a-card>
+
       <!-- table -->
       <!-- fixed footer toolbar -->
       <footer-tool-bar>
@@ -36,6 +42,7 @@ import PaymentForm from './modules/form/PaymentForm'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import PageView from '@comp/layouts/PageView'
+import AttachFilesForm from '@/views/modules/attachment/AttachFilesForm.vue'
 import {
   getVendorPayment,
   getVendorPayments,
@@ -54,7 +61,8 @@ export default {
     FooterToolBar,
     DetailList,
     PaymentForm,
-    BankForm
+    BankForm,
+    AttachFilesForm
   },
   mixins: [FormPageActionMixin],
   data() {
@@ -86,6 +94,7 @@ export default {
         if (res.success) {
           this.model = res.result
           this.$refs.payform.edit(res.result)
+          this.$refs.rowfiles.edit(res.result)
           // let bankModel = pick(res.result, 'bankId', 'bankName', 'bankAccountId', 'subBranchId')
           // bankModel.bankAccount = bankModel.bankAccountId
           // bankModel.key = -new Date()
@@ -165,11 +174,31 @@ export default {
             paymentDate: values.paymentDate + ' 00:00:00'
           }
           delete postData.accounts
-          if (!isApprove) {
-            that.submitPayment(postData)
-          } else {
-            that.approve(postData)
-          }
+          that.$refs.rowfiles.form.validateFields((errrr, files) => {
+            if (!errrr) {
+              let arData = []
+              if (!(files.data instanceof Array)) {
+                try {
+                  arData = JSON.parse(files.data)
+                } catch (error) {
+                  arData = []
+                }
+              } else {
+                arData = files.data
+              }
+              arData.forEach(element => {
+                element.ossFileId = element.id
+                delete element.key
+                delete element.id
+              })
+              postData.attachments = arData
+            }
+            if (!isApprove) {
+              that.submitPayment(postData)
+            } else {
+              that.approve(postData)
+            }
+          })
           // this.$refs.bank.form.validateFields((err2, {data}) => {
           //   let banks
           //   if (data instanceof Array) {

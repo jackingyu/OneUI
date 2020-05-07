@@ -10,7 +10,7 @@
         <template>
           <a-divider style="margin-bottom: 32px" />
           <detail-list title="合同附件">
-            <attach-files-form ref="rowfiles" :showSubmit="false" />
+            <attach-files-form :fileScope="'10'" ref="rowfiles" :showSubmit="false" />
           </detail-list>
         </template>
       </a-card>
@@ -35,7 +35,7 @@
 import pick from 'lodash.pick'
 import ContractForm from './modules/form/ContractForm'
 import ContractRowProjectForm from './modules/form/ContractRowProjectForm'
-import AttachFilesForm from './modules/form/AttachFilesForm'
+import AttachFilesForm from '@/views/modules/attachment/AttachFilesForm.vue'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import DetailList from '@/components/tools/DetailList'

@@ -4,12 +4,12 @@
       <a-card class="card">
         <form-composer ref="contract" />
         <!-- table -->
-        <!-- <template v-if="!!model.id">
+        <template>
           <a-divider style="margin-bottom: 32px" />
           <detail-list title="合同附件">
-            <attach-files-form ref="rowfiles" :showSubmit="false" />
+            <attach-files-form :fileScope="'50'" ref="rowfiles" :showSubmit="false" />
           </detail-list>
-        </template>-->
+        </template>
       </a-card>
 
       <!-- fixed footer toolbar -->
@@ -30,7 +30,7 @@
 
 <script>
 import pick from 'lodash.pick'
-import AttachFilesForm from './modules/form/AttachFilesForm'
+import AttachFilesForm from '@/views/modules/attachment/AttachFilesForm.vue'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import JBankSelectTag from '@/components/selector/JBankSelectTag'
 import DetailList from '@/components/tools/DetailList'
@@ -87,6 +87,7 @@ export default {
               ...res.result
             }
             this.$refs.contract.edit(this.model)
+            this.$refs.rowfiles.edit(res.result)
           } else {
             this.$message.warning(res.message)
           }
@@ -153,11 +154,32 @@ export default {
       let that = this
       that.$refs.contract.form.validateFields((err, values) => {
         if (!err) {
-          if (!isApprove) {
-            that.submitContract(values)
-          } else {
-            that.approve(values)
-          }
+          let postData = values
+          that.$refs.rowfiles.form.validateFields((errrr, files) => {
+            if (!errrr) {
+              let arData = []
+              if (!(files.data instanceof Array)) {
+                try {
+                  arData = JSON.parse(files.data)
+                } catch (error) {
+                  arData = []
+                }
+              } else {
+                arData = files.data
+              }
+              arData.forEach(element => {
+                element.ossFileId = element.id
+                delete element.key
+                delete element.id
+              })
+              postData.attachments = arData
+            }
+            if (!isApprove) {
+              that.submitContract(postData)
+            } else {
+              that.approve(postData)
+            }
+          })
         }
       })
     }
